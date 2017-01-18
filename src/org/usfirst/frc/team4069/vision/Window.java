@@ -1,3 +1,5 @@
+package org.usfirst.frc.team4069.vision;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 
