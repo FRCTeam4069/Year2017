@@ -1,9 +1,0 @@
-INDEX VERSION 1.129+C:\Users\user\Desktop\FRC2017Stuff\Year2017\.metadata\.plugins\org.eclipse.jdt.core
-1840164666.index
-3437534604.index
-3871520329.index
-592707500.index
-411497035.index
-2232041546.index
-2402295224.index
-4257325822.index
