@@ -40,7 +40,8 @@ public class Robot extends SampleRobot
 
   void SendDataToSmartDashboard()
   {
-
+   // System.out.println("left = "+leftDriveEncoder.get()+", right="+rightDriveEncoder.get()); //+",leftDriveEncoder.get(),rightDriveEncoder.get());
+    
     SmartDashboard.putNumber("LEFTDRIVE", leftDriveEncoder.get());
     SmartDashboard.putNumber("RIGHTDRIVE", leftDriveEncoder.get());
   }
@@ -55,6 +56,8 @@ public class Robot extends SampleRobot
     while (isOperatorControl() && isEnabled())
     {
       SendDataToSmartDashboard();
+    //  System.out.println("left = "+leftDriveEncoder.get()+", right="+rightDriveEncoder.get()); //+",leftDriveEncoder.get(),rightDriveEncoder.get());
+
       myRobot.tankDrive(leftStick, rightStick);
 
       Timer.delay(0.005); // wait for a motor update time

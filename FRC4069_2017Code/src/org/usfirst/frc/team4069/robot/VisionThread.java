@@ -25,10 +25,19 @@ public class VisionThread implements Runnable
     Mat frame = new Mat();
     while (true)
     {
-      vcap.read(frame);
+      boolean retval = vcap.read(frame);
+      if (retval==false)
+      {
+        System.out.println("video read got false");
+      }
+      else
+      {
+        System.out.println("Video read got true");
+      }
       try
       {
         Thread.sleep(1000); // 1000 milliseconds is one second.
+      //  System.out.println("Read a frame...");
       } catch (InterruptedException ex)
       {
         Thread.currentThread().interrupt();

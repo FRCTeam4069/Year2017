@@ -9998,3 +9998,139 @@ Caused by: java.lang.IllegalArgumentException: Widget has the wrong parent
 	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:35)
 	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:182)
 	... 23 more
+!SESSION 2017-01-19 14:34:44.120 -----------------------------------------------
+eclipse.buildId=4.6.2.M20161124-1400
+java.version=1.8.0_77
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.egit.ui 2 0 2017-01-19 14:35:19.107
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\user'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:35:24.396
+!MESSAGE Installing tools if necessary
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:35:24.557
+!MESSAGE Installedtools
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:35:24.692
+!MESSAGE Installing cpp if necessary
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:35:24.702
+!MESSAGE Installedcpp
+
+!ENTRY WPILib_CPP_Robot_Development 1 0 2017-01-19 14:35:24.705
+!MESSAGE Updating projects
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:35:24.862
+!MESSAGE Installing java if necessary
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:35:24.863
+!MESSAGE Installedjava
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:35:24.866
+!MESSAGE Updating projects
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:35:49.767
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\Potentiometer\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:35:49.768
+!MESSAGE Targets: debug-deploy, Mode: debug
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:35:50.913
+!MESSAGE {port=8348, hostname=roborio-4069-FRC.local}
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:35:50.913
+!MESSAGE Attemping to attach debugger...
+
+!ENTRY WPILib_Java_Robot_Development 4 0 2017-01-19 14:36:10.937
+!MESSAGE Unable to attach debugger. 19 attempts remain - waiting 2 second(s) before retrying...
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:36:12.946
+!MESSAGE Attemping to attach debugger...
+!SESSION 2017-01-19 14:36:22.749 -----------------------------------------------
+eclipse.buildId=4.6.2.M20161124-1400
+java.version=1.8.0_77
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.egit.ui 2 0 2017-01-19 14:36:39.396
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\user'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:36:46.070
+!MESSAGE Installing tools if necessary
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:36:46.084
+!MESSAGE Installedtools
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:36:46.107
+!MESSAGE Installing cpp if necessary
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:36:46.239
+!MESSAGE Installedcpp
+
+!ENTRY WPILib_CPP_Robot_Development 1 0 2017-01-19 14:36:46.242
+!MESSAGE Updating projects
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:36:47.349
+!MESSAGE Installing java if necessary
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-19 14:36:47.350
+!MESSAGE Installedjava
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:36:47.411
+!MESSAGE Updating projects
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:37:04.076
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\Potentiometer\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:37:04.076
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:37:56.948
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:37:56.948
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY org.eclipse.launchbar.core 2 0 2017-01-19 14:37:57.018
+!MESSAGE Enablement expression is missing for descriptor type org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY org.eclipse.launchbar.core 2 0 2017-01-19 14:37:57.018
+!MESSAGE Enablement expression is missing for config provider for org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:46:03.304
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:46:03.305
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:47:34.831
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:47:34.832
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:53:15.588
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:53:15.588
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:56:15.419
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 14:56:15.419
+!MESSAGE Targets: deploy, Mode: run
