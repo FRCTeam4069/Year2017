@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/FRC2017Stuff/Year2017/jar_files/cscore.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/FRC2017Stuff/Year2017/jar_files/cscore-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/FRC2017Stuff/Year2017/jar_files/CTRLib.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/FRC2017Stuff/Year2017/jar_files/NetworkTables.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/FRC2017Stuff/Year2017/jar_files/NetworkTables-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/FRC2017Stuff/Year2017/jar_files/opencv.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/FRC2017Stuff/Year2017/jar_files/opencv-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/FRC2017Stuff/Year2017/jar_files/WPILib.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Desktop/FRC2017Stuff/Year2017/jar_files/WPILib-sources.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
