@@ -162,14 +162,12 @@ public class VisionThread implements Runnable
       System.out.println("Hierarchy: " + hierarchy.size());
     }
 
-    int contourMin = 6;  //if contour's x/y size are less than this, ignore the contour
+    int contourMin = 6;
 
     ArrayList<MatOfPoint> contoursToRemove = new ArrayList<MatOfPoint>();
 
     double xcenter = 0;
 
-    //Go thorugh all contours and remove any with xsize/ysize below contourMin
-    //sum all the contours center x positions into xcenter
     for (MatOfPoint mop : contours)
     {
       xcenter += mop.get(0, 0)[0] + mop.size().width / 2;
@@ -179,11 +177,11 @@ public class VisionThread implements Runnable
       }
     } // for
 
-    xcenter /= contours.size();  //ERR if size==0, div by zero! move inside if below?
+    xcenter /= contours.size();
 
-    double mapped = Lerp(0, 640, -1, 1, xcenter); //xcenter could be NAN due to div by zero...
+    double mapped = Lerp(0, 640, -1, 1, xcenter);
 
-    System.out.println(mapped); //NAN if xcenter is NAN
+    System.out.println(mapped);
 
     for (MatOfPoint mop : contoursToRemove)
     {

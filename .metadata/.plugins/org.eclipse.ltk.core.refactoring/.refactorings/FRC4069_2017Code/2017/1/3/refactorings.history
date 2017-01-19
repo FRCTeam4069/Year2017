@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename method &apos;org.usfirst.frc.team4069.robot.VisionThread.map(...)&apos; to &apos;Lerp&apos;&#x0D;&#x0A;- Original project: &apos;FRC4069_2017Code&apos;&#x0D;&#x0A;- Original element: &apos;org.usfirst.frc.team4069.robot.VisionThread.map(...)&apos;&#x0D;&#x0A;- Renamed element: &apos;org.usfirst.frc.team4069.robot.VisionThread.Lerp(...)&apos;&#x0D;&#x0A;- Update references to refactored element" delegate="false" deprecate="false" description="Rename method &apos;map&apos;" flags="589826" id="org.eclipse.jdt.ui.rename.method" input="/src&lt;org.usfirst.frc.team4069.robot{VisionThread.java[VisionThread~map~D~D~D~D~D" name="Lerp" references="true" stamp="1484862520418" version="1.0"/>
+</session>

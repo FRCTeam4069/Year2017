@@ -169,7 +169,7 @@ public class VisionThread implements Runnable
     double xcenter = 0;
 
     //Go thorugh all contours and remove any with xsize/ysize below contourMin
-    //sum all the contours center x positions into xcenter
+    //sum all the contours widths into xcenter
     for (MatOfPoint mop : contours)
     {
       xcenter += mop.get(0, 0)[0] + mop.size().width / 2;
@@ -181,9 +181,9 @@ public class VisionThread implements Runnable
 
     xcenter /= contours.size();  //ERR if size==0, div by zero! move inside if below?
 
-    double mapped = Lerp(0, 640, -1, 1, xcenter); //xcenter could be NAN due to div by zero...
+    double mapped = Lerp(0, 640, -1, 1, xcenter);
 
-    System.out.println(mapped); //NAN if xcenter is NAN
+    System.out.println(mapped);
 
     for (MatOfPoint mop : contoursToRemove)
     {
