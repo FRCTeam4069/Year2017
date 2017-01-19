@@ -1,0 +1,269 @@
+package org.usfirst.frc.team4069.robot;
+
+import org.opencv.core.Mat;
+import org.opencv.videoio.VideoCapture;
+
+import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfInt4;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.RotatedRect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.VideoCapture;
+
+public class VisionThread implements Runnable
+{
+  public static final int MIN_WIDTH = 120;
+
+  public static final int Y_IMAGE_RES = 240;
+
+  public static final double VIEW_ANGLE = 34.8665269;
+
+  public static final double AUTO_STEADY_STATE = 1.9;
+
+  public static final int minR = 0, minG = 80, minB = 0;
+
+  public static final int maxR = 50, maxG = 255, maxB = 75;
+
+  public static final double minHRatio = 1.5, minVRatio = 1.5;
+
+  public static final double maxHRatio = 6.6, maxVRatio = 8.5;
+
+  public static final int MAX_SIZE = 255;
+
+  public static final Scalar RED = new Scalar(0, 0, 255), BLUE = new Scalar(255, 0, 0), GREEN = new Scalar(0, 255, 0),
+      ORANGE = new Scalar(0, 128, 255), YELLOW = new Scalar(0, 255, 255), PINK = new Scalar(255, 0, 255),
+      WHITE = new Scalar(255, 255, 255);
+
+  private Target targets = new Target();
+
+  private Mat frame = new Mat();
+
+  private boolean progRun;
+
+  private Thread videoCaptureThread;
+
+  // private Window window;
+
+  // OpenCV constants
+
+  public static final int CV_CAP_PROP_BRIGHTNESS = 10;
+
+  public static final int CV_CAP_PROP_CONTRAST = 11;
+
+  public static final int CV_CAP_PROP_EXPOSURE_ABSOLUTE = 39;
+
+  public static final int CV_CAP_PROP_FRAME_WIDTH = 3;
+
+  public static final int CV_CAP_PROP_FRAME_HEIGHT = 4;
+
+  public void run()
+  {
+    System.out.println("Hello from a thread!");
+    VideoCapture vcap = new VideoCapture();
+
+    while (!vcap.open(0)) // (videoStreamAddress, 320,240,7.5))
+    {
+      // std::cout << "Error connecting to camera stream, retrying " << count<<
+      // std::endl;
+      // count++;
+      // usleep(1000000);
+    }
+
+    vcap.set(39, 0.1);
+    vcap.set(10, 1); // , value)
+    vcap.set(11, 0);
+    Mat frame = new Mat();
+    while (true)
+    {
+      boolean retval = vcap.read(frame);
+      if (retval == false)
+      {
+        System.out.println("video read got false");
+      } else
+      {
+        System.out.println("Video read got true");
+      }
+      try
+      {
+        Thread.sleep(1000); // 1000 milliseconds is one second.
+        // System.out.println("Read a frame...");
+      } catch (InterruptedException ex)
+      {
+        Thread.currentThread().interrupt();
+      }
+    }
+    // vcap.set( CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1);
+    // vcap.set(CV_CAP_PROP_BRIGHTNESS, 1);
+    // vcap.set(CV_CAP_PROP_CONTRAST, 0);
+
+  }
+
+  public static void main(String args[])
+  {
+    (new Thread(new VisionThread())).start();
+  }
+
+  private void videoCapture()
+  {
+
+    if (Params.From_File)
+    {
+
+      System.out.println("Java opencv doesn't have imread, sorry!");
+
+    } else if (Params.From_Camera)
+    {
+
+      VideoCapture vcap = new VideoCapture();
+
+      if (Params.USB_Cam)
+      {
+
+        int videoStreamAddress = 0;
+
+        System.out.println("Trying to connect to Camera stream... at: " + videoStreamAddress);
+
+        int count = 1;
+
+        while (!vcap.open(videoStreamAddress))
+        {
+
+          System.out.println("Error connecting to camera stream, retrying " + count);
+
+          count++;
+
+          try
+          {
+
+            Thread.sleep(1000);
+
+          } catch (InterruptedException e)
+          {
+
+            e.printStackTrace();
+
+          }
+        }
+
+        vcap.set(CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1);
+
+        vcap.set(CV_CAP_PROP_BRIGHTNESS, 1);
+
+        vcap.set(CV_CAP_PROP_CONTRAST, 0);
+
+        System.out.println(vcap.get(CV_CAP_PROP_FRAME_WIDTH));
+
+        System.out.println(vcap.get(CV_CAP_PROP_FRAME_HEIGHT));
+
+      } else
+      {
+
+        String videoStreamAddress = "http://" + Params.CAMERA_IP + "/mjpg/video.mjpg";
+
+        System.out.println("Trying to connect to Camera stream... at: " + videoStreamAddress);
+
+        int count = 1;
+
+        while (!vcap.open(videoStreamAddress))
+        {
+
+          System.out.println("Error connecting to camera stream, retrying " + count);
+
+          count++;
+
+          try
+          {
+
+            Thread.sleep(1000);
+
+          } catch (InterruptedException e)
+          {
+
+            e.printStackTrace();
+
+          }
+
+        }
+
+      }
+
+      System.out.println("Successfully connected to Camera Stream");
+
+      synchronized (targets)
+      {
+
+        targets.cameraConnected = true;
+
+      }
+
+      while (true)
+      {
+
+        synchronized (frame)
+        {
+
+          vcap.read(frame);
+
+        }
+
+        try
+        {
+
+          Thread.sleep(5);
+
+        } catch (InterruptedException e)
+        {
+
+          e.printStackTrace();
+
+        }
+
+      }
+
+    }
+
+  }//VideoCapture
+
+  private BufferedImage matToImage(Mat mat)
+  {
+
+    MatOfByte buffer = new MatOfByte();
+
+    Imgcodecs.imencode(".png", mat, buffer);
+
+    BufferedImage image = null;
+
+    try
+    {
+      image = ImageIO.read(new ByteArrayInputStream(buffer.toArray()));
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+
+    return image;
+
+  }
+
+}
