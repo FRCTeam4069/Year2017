@@ -261,3 +261,8 @@ This warning can be switched off on the Team > Git > Confirmations and Warnings 
 
 !ENTRY WPILib_Java_Robot_Development 1 0 2017-01-19 08:02:11.473
 !MESSAGE Adding: CTRLib.jar to project: Year2017Robot
+
+!ENTRY org.eclipse.core.resources 2 2 2017-01-19 08:07:10.443
+!MESSAGE Save operation warnings.
+!SUBENTRY 1 org.eclipse.core.resources 2 234 2017-01-19 08:07:10.443
+!MESSAGE The project description file (.project) for 'RemoteSystemsTempFiles' was missing.  This file contains important information about the project.  A new project description file has been created, but some information about the project may have been lost.
