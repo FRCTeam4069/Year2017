@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="org.opencv.core.Rect"/>
+<fullyQualifiedTypeName name="com.ctre.CANTalon"/>
+<fullyQualifiedTypeName name="org.opencv.videoio.VideoCapture"/>
+<fullyQualifiedTypeName name="org.opencv.core.Mat"/>
+</qualifiedTypeNameHistroy>

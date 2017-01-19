@@ -1,0 +1,16 @@
+package org.usfirst.frc.team4069.robot;
+
+
+
+public class VisionThread implements Runnable {
+
+    public void run() {
+        System.out.println("Hello from a thread!");
+    }
+
+    public static void main(String args[]) {
+        (new Thread(new VisionThread())).start();
+    }
+
+}
+

@@ -1,0 +1,69 @@
+package org.usfirst.frc.team4069.robot;
+
+import org.opencv.core.Mat;
+import org.opencv.videoio.VideoCapture;
+
+public class VisionThread implements Runnable {
+
+    public void run() {
+        System.out.println("Hello from a thread!");
+		VideoCapture vcap = new VideoCapture();
+		
+		while (!vcap.open(0)) //(videoStreamAddress, 320,240,7.5))
+		{
+			//std::cout << "Error connecting to camera stream, retrying " << count<< std::endl;
+			//count++;
+			//usleep(1000000);
+		}
+		
+		vcap.set(39, 0.1);
+		vcap.set(10,1); //, value)
+		vcap.set(11, 0);
+		Mat frame;
+		while (true)
+		{
+			//start timer to get time per frame
+			clock_gettime(CLOCK_REALTIME, &start);
+
+			//read frame and store it in global variable
+			pthread_mutex_lock(&frameMutex);
+			vcap.read(frame);
+			pthread_mutex_unlock(&frameMutex);
+
+			//end timer to get time per frame
+			clock_gettime(CLOCK_REALTIME, &end);
+
+
+			if(struct_ptr->Timer)
+				cout << "It took FFMPEG " << diffClock(start,end) << " seconds to grab stream \n";
+
+
+			//end timer to get time since stream started
+			clock_gettime(CLOCK_REALTIME, &bufferEnd);
+			double bufferDifference = diffClock(bufferStart, bufferEnd);
+
+			//The stream takes a while to start up, and because of it, images from the camera
+			//buffer. We don't have a way to jump to the end of the stream to get the latest image, so we
+			//run this loop as fast as we can and throw away all the old images. This wait, waits some number of seconds
+			//before we are at the end of the stream, and can allow processing to begin.
+			if ((bufferDifference >= waitForBufferToClear) && !progRun)
+			{
+				cout<<"Buffer Cleared: Starting Processing Thread"<<endl;
+				progRun = true;
+
+			}
+			usleep(1000); //sleep for 5ms
+		}
+		//vcap.set( CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1);
+//		vcap.set(CV_CAP_PROP_BRIGHTNESS, 1);
+		//vcap.set(CV_CAP_PROP_CONTRAST, 0);
+
+		
+    }
+
+    public static void main(String args[]) {
+        (new Thread(new VisionThread())).start();
+    }
+
+}
+
