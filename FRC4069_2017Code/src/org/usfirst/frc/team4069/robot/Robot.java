@@ -78,8 +78,9 @@ public class Robot extends SampleRobot
     while (isOperatorControl() && isEnabled())
     {
       SendDataToSmartDashboard();
-      myRobot.tankDrive(leftStick, rightStick);
-
+      //myRobot.tankDrive(leftStick, rightStick);
+      myRobot.drive(0.8, VisionThread.xcenter);
+      
       Timer.delay(0.005); // wait for a motor update time
     }
  
