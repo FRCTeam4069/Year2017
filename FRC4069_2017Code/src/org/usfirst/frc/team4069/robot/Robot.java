@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 
+import com.ctre.CANTalon;
+
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
@@ -20,6 +22,9 @@ public class Robot extends SampleRobot
   RobotDrive myRobot = new RobotDrive(0, 1); // class that handles basic drive
   private Encoder leftDriveEncoder;
   private Encoder rightDriveEncoder;
+  
+  private CANTalon shooterEncoder;
+  
   
   Preferences prefs= Preferences.getInstance();
   double ming=0.0;
@@ -49,6 +54,7 @@ public class Robot extends SampleRobot
     myRobot.setExpiration(0.1);
     leftDriveEncoder = new Encoder(IOMapping.LEFT_DRIVE_ENCODER_1, IOMapping.LEFT_DRIVE_ENCODER_2);
     rightDriveEncoder = new Encoder(IOMapping.RIGHT_DRIVE_ENCODER_1, IOMapping.RIGHT_DRIVE_ENCODER_2);
+    shooterEncoder = new CANTalon(IOMapping.SHOOTER_ENCODER_DIO_1, IOMapping.SHOOTER_ENCODER_DIO_2);
 
     Thread thread = new Thread(new VisionThread());
     thread.start();
@@ -59,7 +65,7 @@ public class Robot extends SampleRobot
   {
     SmartDashboard.putNumber("LEFTENCODER", leftDriveEncoder.get());
     SmartDashboard.putNumber("RIGHTENCODER", rightDriveEncoder.get());
-   
+    SmartDashboard.putNumber("SHOOTERENCODER", shooterEncoder.get());
   }
 
   /**
