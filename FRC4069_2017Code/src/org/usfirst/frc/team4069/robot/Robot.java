@@ -60,7 +60,7 @@ public class Robot extends SampleRobot
     myRobot.setSafetyEnabled(true);
     while (isOperatorControl() && isEnabled())
     {
-      SendDataToSmartDashboard();
+     // SendDataToSmartDashboard();
     //  System.out.println("left = "+leftDriveEncoder.get()+", right="+rightDriveEncoder.get()); //+",leftDriveEncoder.get(),rightDriveEncoder.get());
 
       myRobot.tankDrive(leftStick, rightStick);

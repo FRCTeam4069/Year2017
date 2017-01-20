@@ -49,7 +49,8 @@ public class VisionThread implements Runnable
   private Mat frame = new Mat();
   private boolean progRun;
   private Thread videoCaptureThread;
-
+  private Scalar minScalar = new Scalar(minB, minG, minR);
+  private Scalar maxScalar = new Scalar(maxB, maxG, maxR);
   // private Window window;
 
   // OpenCV constants
@@ -99,20 +100,21 @@ public class VisionThread implements Runnable
             frame.copyTo(img);
           }
 
-          thresholded = thresholdImage(img);
-
+          Core.inRange(img, minScalar,maxScalar,thresholded); //Scalar(minB, minG, minR), Scalar(maxB, maxG, maxR), thresholded);
+          Imgproc.blur(thresholded, thresholded, new Size(3, 3));
+          
           synchronized (targets)
           {
             findTarget(img, thresholded);
             CalculateDist();
 
-            if (Params.Debug)
-            {
-              System.out.println("Vert: " + targets.VertGoal);
-              System.out.println("Horiz: " + targets.HorizGoal);
-              System.out.println("Hot Goal: " + targets.HotGoal);
-              System.out.println("Dist: " + targets.targetDistance);
-            }
+            //if (Params.Debug)
+//            {
+              //System.out.println("Vert: " + targets.VertGoal);
+//              System.out.println("Horiz: " + targets.HorizGoal);
+              //System.out.println("Hot Goal: " + targets.HotGoal);
+              //System.out.println("Dist: " + targets.targetDistance);
+            //}
           } // synchronized
         } // if !frameEmpty
       } // if params.process && progrun
@@ -157,10 +159,8 @@ public class VisionThread implements Runnable
   {
     double xcenter=0;
     int contourMin=6;
-    
     MatOfInt4 hierarchy = new MatOfInt4();
     ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-    
     //RETR_EXTERNAL : If you use this flag, it returns only extreme outer contours. All child contours are left behind.
     //CHAIN_APPROX_SIMPLE : removes all redundant points so a line would only return 2 points, rectangle 4 etc. CHAIN_APPROX_NONE returns dozens/hundreds               
     Imgproc.findContours(thresholded, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
@@ -188,24 +188,20 @@ public class VisionThread implements Runnable
     {
       if (Params.Debug)
       {
-        System.out.println("Contours: " + contours.size());
-        System.out.println("Hierarchy: " + hierarchy.size());
+        System.out.println("# Contours: " + contours.size());
+        //System.out.println("# Hierarchy: " + hierarchy.size());
       }
 
       xcenter /= contours.size(); // ERR if size==0, div by zero! move inside if below?
 
       double mapped = Lerp(0, 640, -1, 1, xcenter); // xcenter could be NAN due to div by zero...
 
-      System.out.println(mapped); // NAN if xcenter is NAN
-
+    
       RotatedRect[] minRect = new RotatedRect[contours.size()];
 
       // Mat drawing = Mat.zeros(original.size(), CvType.CV_8UC3);
 
       NullTargets();
-      
-     
-      
 
       if (!contours.isEmpty()) // && !hierarchy.empty())  //NOTE hierarchy's indexes were not discarded when contours were, won't match! 
       {
@@ -275,8 +271,11 @@ public class VisionThread implements Runnable
 
           }
 */
+          System.out.println("MAPPED: "+mapped); // NAN if xcenter is NAN
           if (Params.Debug)
           {
+            System.out.println("---------------------------");
+           
             System.out.println("Contour: " + i);
             System.out.println("X: " + box.x);
             System.out.println("Y: " + box.y);
@@ -288,15 +287,16 @@ public class VisionThread implements Runnable
             System.out.println("Area: " + (box.height * box.width));
           }
 
-          Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
-          Imgproc.line(original, center, center, YELLOW, 3);
-          Imgproc.line(original, new Point(320 / 2, 240 / 2), new Point(320 / 2, 240 / 2), YELLOW, 3);
+        //  Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
+        //  Imgproc.line(original, center, center, YELLOW, 3);
+        //  Imgproc.line(original, new Point(320 / 2, 240 / 2), new Point(320 / 2, 240 / 2), YELLOW, 3);
         }
       } //
-    } else
+    }//if contours.size >0
+    else
     {
 
-      System.out.println("No Contours");
+      //System.out.println("No Contours");
       targets.targetLeftOrRight = 0;
     }
 
@@ -336,13 +336,6 @@ public class VisionThread implements Runnable
     targets.HotGoal = false;
   } // NullTargets
 
-  private Mat thresholdImage(Mat original)
-  {
-    Mat thresholded = new Mat();
-    Core.inRange(original, new Scalar(minB, minG, minR), new Scalar(maxB, maxG, maxR), thresholded);
-    Imgproc.blur(thresholded, thresholded, new Size(3, 3));
-    return thresholded;
-  }
 
   private void videoCapture()
   {
@@ -421,10 +414,7 @@ public class VisionThread implements Runnable
           if (state == false)
           {
             System.out.println("FAILED reading frame");
-          } else
-          {
-            System.out.println("SUCCESS reading frame");
-          }
+          } 
         }
 
         try

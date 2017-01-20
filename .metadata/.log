@@ -10232,3 +10232,116 @@ This warning can be switched off on the Team > Git > Confirmations and Warnings 
 
 !ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 09:51:28.218
 !MESSAGE Targets: deploy, Mode: run
+!SESSION 2017-01-20 10:35:28.160 -----------------------------------------------
+eclipse.buildId=4.6.2.M20161124-1400
+java.version=1.8.0_77
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.core.resources 2 10035 2017-01-20 10:35:33.268
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.egit.ui 2 0 2017-01-20 10:35:44.493
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\user'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-20 10:35:48.194
+!MESSAGE Installing tools if necessary
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-20 10:35:48.522
+!MESSAGE Installedtools
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-20 10:35:48.553
+!MESSAGE Installing cpp if necessary
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-20 10:35:48.732
+!MESSAGE Installedcpp
+
+!ENTRY WPILib_CPP_Robot_Development 1 0 2017-01-20 10:35:48.736
+!MESSAGE Updating projects
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-20 10:35:48.812
+!MESSAGE Installing java if necessary
+
+!ENTRY edu.wpi.first.wpilib.plugins.core 1 0 2017-01-20 10:35:48.813
+!MESSAGE Installedjava
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:35:48.815
+!MESSAGE Updating projects
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:38:42.603
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:38:42.604
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:42:47.972
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:42:47.978
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY org.eclipse.launchbar.core 2 0 2017-01-20 10:42:48.066
+!MESSAGE Enablement expression is missing for descriptor type org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY org.eclipse.launchbar.core 2 0 2017-01-20 10:42:48.067
+!MESSAGE Enablement expression is missing for config provider for org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:43:30.863
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:43:30.865
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:45:30.497
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:45:30.498
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:48:55.609
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:48:55.610
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:57:09.817
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 10:57:09.818
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 11:03:08.273
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 11:03:08.273
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 11:10:40.623
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 11:10:40.624
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 11:15:38.798
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 11:15:38.798
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 11:31:54.208
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 11:31:54.208
+!MESSAGE Targets: deploy, Mode: run
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 11:34:16.760
+!MESSAGE Running ant file: C:\Users\user\Desktop\FRC2017Stuff\Year2017\FRC4069_2017Code\build.xml
+
+!ENTRY WPILib_Java_Robot_Development 1 0 2017-01-20 11:34:16.761
+!MESSAGE Targets: deploy, Mode: run
