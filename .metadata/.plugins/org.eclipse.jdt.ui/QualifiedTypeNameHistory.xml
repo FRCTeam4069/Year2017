@@ -4,4 +4,10 @@
 <fullyQualifiedTypeName name="com.ctre.CANTalon"/>
 <fullyQualifiedTypeName name="org.opencv.videoio.VideoCapture"/>
 <fullyQualifiedTypeName name="org.opencv.core.Mat"/>
+<fullyQualifiedTypeName name="edu.wpi.first.wpilibj.Preferences"/>
+<fullyQualifiedTypeName name="edu.wpi.first.wpilibj.CameraServer"/>
+<fullyQualifiedTypeName name="edu.wpi.cscore.UsbCamera"/>
+<fullyQualifiedTypeName name="edu.wpi.cscore.CvSink"/>
+<fullyQualifiedTypeName name="edu.wpi.cscore.CvSource"/>
+<fullyQualifiedTypeName name="java.io.OutputStream"/>
 </qualifiedTypeNameHistroy>

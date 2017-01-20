@@ -3,6 +3,12 @@ package org.usfirst.frc.team4069.robot;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.Preferences;
+
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -12,6 +18,7 @@ import javax.swing.JLabel;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -47,10 +54,11 @@ public class VisionThread implements Runnable
 
   private Target targets = new Target();
   private Mat frame = new Mat();
+  private Mat outputframe = new Mat();
   private boolean progRun;
   private Thread videoCaptureThread;
-  private Scalar minScalar = new Scalar(minB, minG, minR);
-  private Scalar maxScalar = new Scalar(maxB, maxG, maxR);
+  // private Scalar minScalar = new Scalar(minB, minG, minR);
+  // private Scalar maxScalar = new Scalar(maxB, maxG, maxR);
   // private Window window;
 
   // OpenCV constants
@@ -59,6 +67,8 @@ public class VisionThread implements Runnable
   public static final int CV_CAP_PROP_EXPOSURE_ABSOLUTE = 39;
   public static final int CV_CAP_PROP_FRAME_WIDTH = 3;
   public static final int CV_CAP_PROP_FRAME_HEIGHT = 4;
+  Preferences prefs = Preferences.getInstance();
+  CvSource outputStream;
 
   /**
    * Main Run section for VisionThread
@@ -67,6 +77,7 @@ public class VisionThread implements Runnable
   {
     Mat img = new Mat();
     Mat thresholded = new Mat();
+    outputStream = CameraServer.getInstance().putVideo("USB Camera 0", 640, 480);
 
     videoCaptureThread = new Thread(new Runnable() // Now this thread spawns a thread to do the video capturing
     {
@@ -100,21 +111,24 @@ public class VisionThread implements Runnable
             frame.copyTo(img);
           }
 
-          Core.inRange(img, minScalar,maxScalar,thresholded); //Scalar(minB, minG, minR), Scalar(maxB, maxG, maxR), thresholded);
+          Scalar minScalar = new Scalar(prefs.getDouble("minB", minB), prefs.getDouble("minG", minG), prefs.getDouble("minR", minR));
+          Scalar maxScalar = new Scalar(prefs.getDouble("maxB", maxB), prefs.getDouble("maxG", maxG), prefs.getDouble("maxR", maxR));
+
+          Core.inRange(img, minScalar, maxScalar, thresholded); // Scalar(minB, minG, minR), Scalar(maxB, maxG, maxR), thresholded);
           Imgproc.blur(thresholded, thresholded, new Size(3, 3));
-          
+
           synchronized (targets)
           {
             findTarget(img, thresholded);
             CalculateDist();
 
-            //if (Params.Debug)
-//            {
-              //System.out.println("Vert: " + targets.VertGoal);
-//              System.out.println("Horiz: " + targets.HorizGoal);
-              //System.out.println("Hot Goal: " + targets.HotGoal);
-              //System.out.println("Dist: " + targets.targetDistance);
-            //}
+            // if (Params.Debug)
+            // {
+            // System.out.println("Vert: " + targets.VertGoal);
+            // System.out.println("Horiz: " + targets.HorizGoal);
+            // System.out.println("Hot Goal: " + targets.HotGoal);
+            // System.out.println("Dist: " + targets.targetDistance);
+            // }
           } // synchronized
         } // if !frameEmpty
       } // if params.process && progrun
@@ -154,56 +168,53 @@ public class VisionThread implements Runnable
     return ((num - a1) / (a2 - a1)) * (b2 - b1) - b2;
   }
 
-  
   private void findTarget(Mat original, Mat thresholded)
   {
-    double xcenter=0;
-    int contourMin=6;
+    double xcenter = 0;
+    int contourMin = 6;
     MatOfInt4 hierarchy = new MatOfInt4();
     ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-    //RETR_EXTERNAL : If you use this flag, it returns only extreme outer contours. All child contours are left behind.
-    //CHAIN_APPROX_SIMPLE : removes all redundant points so a line would only return 2 points, rectangle 4 etc. CHAIN_APPROX_NONE returns dozens/hundreds               
+    // RETR_EXTERNAL : If you use this flag, it returns only extreme outer contours. All child contours are left behind.
+    // CHAIN_APPROX_SIMPLE : removes all redundant points so a line would only return 2 points, rectangle 4 etc. CHAIN_APPROX_NONE returns dozens/hundreds
     Imgproc.findContours(thresholded, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
     // FIRST, lets get rid of any contours not of proper size...
     // sum all the contours center x positions into xcenter
-    //Use iterator so we don't have to loop twice while removing, faster.
+    // Use iterator so we don't have to loop twice while removing, faster.
     Iterator<MatOfPoint> it = contours.iterator();
-    while(it.hasNext())
+    while (it.hasNext())
     {
       MatOfPoint mop = (MatOfPoint) it.next();
 
       if (mop.size().width < contourMin && mop.size().height < contourMin)
       {
         it.remove();
-      }
-      else
+      } else
       {
-        xcenter += mop.get(0, 0)[0] + mop.size().width / 2;  //don't add to xcenter for removed contours
+        xcenter += mop.get(0, 0)[0] + mop.size().width / 2; // don't add to xcenter for removed contours
       }
     } // for mop
 
-    //Now contours is 'cleaned' of ones too small
-    
+    // Now contours is 'cleaned' of ones too small
+
     if (contours.size() > 0)
     {
       if (Params.Debug)
       {
         System.out.println("# Contours: " + contours.size());
-        //System.out.println("# Hierarchy: " + hierarchy.size());
+        // System.out.println("# Hierarchy: " + hierarchy.size());
       }
 
       xcenter /= contours.size(); // ERR if size==0, div by zero! move inside if below?
 
       double mapped = Lerp(0, 640, -1, 1, xcenter); // xcenter could be NAN due to div by zero...
 
-    
       RotatedRect[] minRect = new RotatedRect[contours.size()];
 
       // Mat drawing = Mat.zeros(original.size(), CvType.CV_8UC3);
 
       NullTargets();
 
-      if (!contours.isEmpty()) // && !hierarchy.empty())  //NOTE hierarchy's indexes were not discarded when contours were, won't match! 
+      if (!contours.isEmpty()) // && !hierarchy.empty()) //NOTE hierarchy's indexes were not discarded when contours were, won't match!
       {
         for (int i = 0; i < contours.size(); i++)
         {
@@ -222,13 +233,12 @@ public class VisionThread implements Runnable
           } // if visualize
 
           Rect box = minRect[i].boundingRect();
-/*
+
           double WHRatio = box.width / ((double) box.height);
 
           double HWRatio = ((double) box.height) / box.width;
 
-          // check if contour is vert, we use HWRatio because it is greater that 0
-          // for vert target
+          // check if contour is vert, we use HWRatio because it is greater that 0 // for vert target
           if ((HWRatio > minVRatio) && (HWRatio < maxVRatio))
           {
             targets.VertGoal = true;
@@ -266,57 +276,54 @@ public class VisionThread implements Runnable
                 targets.targetLeftOrRight = -1;
               }
             }
-
-            targets.lastTargerLorR = targets.targetLeftOrRight;
-
           }
-*/
-          System.out.println("MAPPED: "+mapped); // NAN if xcenter is NAN
-          if (Params.Debug)
-          {
-            System.out.println("---------------------------");
-           
-            System.out.println("Contour: " + i);
-            System.out.println("X: " + box.x);
-            System.out.println("Y: " + box.y);
-            System.out.println("Height: " + box.height);
-            System.out.println("Width: " + box.width);
-            System.out.println("Angle: " + minRect[i].angle);
-           // System.out.println("Ratio (W/H): " + WHRatio);
-           // System.out.println("Ratio (H/W): " + HWRatio);
-            System.out.println("Area: " + (box.height * box.width));
-          }
+          targets.lastTargerLorR = targets.targetLeftOrRight;
+        //}
 
-        //  Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
-        //  Imgproc.line(original, center, center, YELLOW, 3);
-        //  Imgproc.line(original, new Point(320 / 2, 240 / 2), new Point(320 / 2, 240 / 2), YELLOW, 3);
+        System.out.println("MAPPED: " + mapped); // NAN if xcenter is NAN
+        if (Params.Debug)
+        {
+          System.out.println("---------------------------");
+
+          System.out.println("Contour: " + i);
+          System.out.println("X: " + box.x);
+          System.out.println("Y: " + box.y);
+          System.out.println("Height: " + box.height);
+          System.out.println("Width: " + box.width);
+          System.out.println("Angle: " + minRect[i].angle);
+          // System.out.println("Ratio (W/H): " + WHRatio);
+          // System.out.println("Ratio (H/W): " + HWRatio);
+          System.out.println("Area: " + (box.height * box.width));
         }
-      } //
-    }//if contours.size >0
-    else
-    {
 
-      //System.out.println("No Contours");
-      targets.targetLeftOrRight = 0;
-    }
-
-    if (Params.Visualize)
-    {
-      /*
-       * BufferedImage toShow = matToImage(original);
-       * 
-       * if (toShow != null) { window.getDisplayIcon().setImage(toShow); window.repaint(); }
-       */
-    } // if Params.Visualize
-
-    synchronized (targets)
-    {
-
-      if (!targets.matchStart)
-      {
-        targets.hotLeftOrRight = targets.targetLeftOrRight;
+        Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
+        Imgproc.line(original, center, center, YELLOW, 3);
+        // Imgproc.line(original, new Point(320 / 2, 240 / 2), new Point(320 / 2, 240 / 2), YELLOW, 3);
       }
-    } // synchronized
+    } //
+  } // if contours.size >0
+  else
+  {
+    // System.out.println("No Contours");
+    targets.targetLeftOrRight = 0;
+  }outputStream.putFrame(original); // output);
+  if(Params.Visualize)
+  {
+    /*
+     * BufferedImage toShow = matToImage(original);
+     * 
+     * if (toShow != null) { window.getDisplayIcon().setImage(toShow); window.repaint(); }
+     */
+  } // if Params.Visualize
+
+  synchronized(targets)
+  {
+
+    if (!targets.matchStart)
+    {
+      targets.hotLeftOrRight = targets.targetLeftOrRight;
+    }
+  } // synchronized
   }// findTarget
 
   private void NullTargets()
@@ -336,7 +343,6 @@ public class VisionThread implements Runnable
     targets.HotGoal = false;
   } // NullTargets
 
-
   private void videoCapture()
   {
     if (Params.From_File)
@@ -346,7 +352,6 @@ public class VisionThread implements Runnable
     } else if (Params.From_Camera) // as opposed to file?
     {
       VideoCapture vcap = new VideoCapture();
-
       if (Params.USB_Cam) // if reading from usb camera
       {
         int videoStreamAddress = 0;
@@ -414,7 +419,8 @@ public class VisionThread implements Runnable
           if (state == false)
           {
             System.out.println("FAILED reading frame");
-          } 
+          }
+          // outputStream.putFrame(frame);
         }
 
         try
@@ -427,6 +433,28 @@ public class VisionThread implements Runnable
       } // while true
     }
   }// VideoCapture
+
+  private void videoCapture2()
+  {
+    new Thread(() -> {
+      UsbCamera camera = CameraServer.getInstance().startAutomaticCapture(0);
+      camera.setResolution(640, 480);
+      CvSink cvSink = CameraServer.getInstance().getVideo();
+      CvSource outputStream = CameraServer.getInstance().putVideo("Vid", 640, 480);
+
+      Mat source = new Mat();
+      Mat output = new Mat();
+
+      while (!Thread.interrupted())
+      {
+        cvSink.grabFrame(source);
+        Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+        outputStream.putFrame(source); // output);
+        ;
+      }
+    }).start();
+
+  }// VideoCapture2
 
   /**
    * matToImage : Convert a Mat to a png

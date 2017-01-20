@@ -9,6 +9,7 @@ import org.opencv.videoio.VideoCapture;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -19,19 +20,30 @@ public class Robot extends SampleRobot
   RobotDrive myRobot = new RobotDrive(0, 1); // class that handles basic drive
   private Encoder leftDriveEncoder;
   private Encoder rightDriveEncoder;
-
+  
+  Preferences prefs= Preferences.getInstance();
+  double ming=0.0;
   // operations
   Joystick leftStick = new Joystick(0); // set to ID 1 in DriverStation
   Joystick rightStick = new Joystick(1); // set to ID 2 in DriverStation
   VideoCapture vcap;
   // vcap.set(CV_CAP_PROP_CONTRAST, 0);
 
+  public void robotInit()
+  {
+    ming = prefs.getDouble("minG", 1.0);
+    
+  }
+  
+  
   public Robot()
   {
-   // CameraServer camera = CameraServer.getInstance(); //CameraServer();
+    //CameraServer camera = CameraServer.getInstance(); //CameraServer();
     //camera.startAutomaticCapture(0);
    // camera.startAutomaticCapture();
     
+    ming = prefs.getDouble("minG", 1.0);
+    System.out.println("MING = "+ming);
     
     // vcap.set(propId, value)
     myRobot.setExpiration(0.1);
@@ -45,10 +57,9 @@ public class Robot extends SampleRobot
 
   void SendDataToSmartDashboard()
   {
-   // System.out.println("left = "+leftDriveEncoder.get()+", right="+rightDriveEncoder.get()); //+",leftDriveEncoder.get(),rightDriveEncoder.get());
-    
-    SmartDashboard.putNumber("LEFTDRIVE", leftDriveEncoder.get());
-    SmartDashboard.putNumber("RIGHTDRIVE", leftDriveEncoder.get());
+    SmartDashboard.putNumber("LEFTENCODER", leftDriveEncoder.get());
+    SmartDashboard.putNumber("RIGHTENCODER", rightDriveEncoder.get());
+   
   }
 
   /**
@@ -60,13 +71,12 @@ public class Robot extends SampleRobot
     myRobot.setSafetyEnabled(true);
     while (isOperatorControl() && isEnabled())
     {
-     // SendDataToSmartDashboard();
-    //  System.out.println("left = "+leftDriveEncoder.get()+", right="+rightDriveEncoder.get()); //+",leftDriveEncoder.get(),rightDriveEncoder.get());
-
+      SendDataToSmartDashboard();
       myRobot.tankDrive(leftStick, rightStick);
 
       Timer.delay(0.005); // wait for a motor update time
     }
+ 
   }
 
 }
