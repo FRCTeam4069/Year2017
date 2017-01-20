@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
@@ -27,7 +28,11 @@ public class Robot extends SampleRobot
 
   public Robot()
   {
-
+   // CameraServer camera = CameraServer.getInstance(); //CameraServer();
+    //camera.startAutomaticCapture(0);
+   // camera.startAutomaticCapture();
+    
+    
     // vcap.set(propId, value)
     myRobot.setExpiration(0.1);
     leftDriveEncoder = new Encoder(IOMapping.LEFT_DRIVE_ENCODER_1, IOMapping.LEFT_DRIVE_ENCODER_2);
