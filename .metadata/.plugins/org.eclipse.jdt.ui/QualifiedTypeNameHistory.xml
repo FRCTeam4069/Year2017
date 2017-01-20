@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="org.opencv.core.Rect"/>
-<fullyQualifiedTypeName name="com.ctre.CANTalon"/>
 <fullyQualifiedTypeName name="org.opencv.videoio.VideoCapture"/>
 <fullyQualifiedTypeName name="org.opencv.core.Mat"/>
 <fullyQualifiedTypeName name="edu.wpi.first.wpilibj.Preferences"/>
@@ -10,4 +9,5 @@
 <fullyQualifiedTypeName name="edu.wpi.cscore.CvSink"/>
 <fullyQualifiedTypeName name="edu.wpi.cscore.CvSource"/>
 <fullyQualifiedTypeName name="java.io.OutputStream"/>
+<fullyQualifiedTypeName name="com.ctre.CANTalon"/>
 </qualifiedTypeNameHistroy>

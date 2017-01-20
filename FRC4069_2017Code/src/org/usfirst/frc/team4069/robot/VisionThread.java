@@ -57,6 +57,7 @@ public class VisionThread implements Runnable
   private Mat outputframe = new Mat();
   private boolean progRun;
   private Thread videoCaptureThread;
+  public static double xcenter = 0.0;
   // private Scalar minScalar = new Scalar(minB, minG, minR);
   // private Scalar maxScalar = new Scalar(maxB, maxG, maxR);
   // private Window window;
@@ -170,7 +171,7 @@ public class VisionThread implements Runnable
 
   private void findTarget(Mat original, Mat thresholded)
   {
-    double xcenter = 0;
+    xcenter = 0;
     int contourMin = 6;
     MatOfInt4 hierarchy = new MatOfInt4();
     ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
