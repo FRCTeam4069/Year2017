@@ -89,5 +89,14 @@ public class Robot extends SampleRobot
     }
  
   }
+  
+  public double getLeftEncoder() {
+	  return leftDriveEncoder.get();
+  }
+  
+  public double getRightEncoder() {
+	  return rightDriveEncoder.get();
+  }
+  
 
 }
