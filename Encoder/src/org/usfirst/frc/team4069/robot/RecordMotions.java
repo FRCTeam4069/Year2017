@@ -18,8 +18,8 @@ public class RecordMotions {
 	
 	private void RecordActions () {
 		// THIS METHOD IS NOT CALLED: IT MUST BE UPDATED TO WORK WITH THE FRC LIBRARIES
-		leftWheelValues.add(robot.getLeftEncoder());
-		rightWheelValues.add(robot.getRightEncoder());
+		leftWheelValues.add(robot.drivebase.getLeftDist());
+		rightWheelValues.add(robot.drivebase.getRightDist());
 	}
 	  
 }
