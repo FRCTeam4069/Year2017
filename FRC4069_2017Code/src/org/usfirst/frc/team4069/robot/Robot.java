@@ -84,9 +84,7 @@ public class Robot extends SampleRobot
     mRobotDrive.setSafetyEnabled(true);
     while (isOperatorControl() && isEnabled())
     {
-      InputSystem.ReadAllInput(driverStick, controlStick); // Read all
-                                                           // sensor/input
-                                                           // devices
+      InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
       UpdateDriveMotors(); // update drive motors
@@ -94,8 +92,7 @@ public class Robot extends SampleRobot
 
       // Last move robot. Let the robotdrive class handle the driving aspect of
       // the robot
-      mRobotDrive.arcadeDrive(driverRobotSpeed, driverRobotTurnDirection); // move
-                                                                           // robot
+      mRobotDrive.arcadeDrive(driverRobotSpeed, driverRobotTurnDirection); // move robot
 
       SendDataToSmartDashboard();
 
