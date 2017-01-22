@@ -1,3 +1,7 @@
+/**
+ * VideoCaptureThread Class
+ */
+
 package org.usfirst.frc.team4069.robot;
 
 import org.opencv.core.Mat;
@@ -32,6 +36,7 @@ public class VideoCaptureThread implements Runnable
 
   int mKeepRunning = 1;
   int mCameraConnectionType = VCT_USB;
+  boolean mEnabled = true;
 
   private VideoCapture vcap;
 
@@ -43,7 +48,6 @@ public class VideoCaptureThread implements Runnable
     {
       Capture();
     }
-
   }// run
 
   public static void main(String args[])
@@ -51,6 +55,25 @@ public class VideoCaptureThread implements Runnable
     (new Thread(new VideoCaptureThread())).start();
   }// main
 
+  /**
+   * Enable reading frames
+   */
+  public void Enable()
+  {
+    mEnabled = true;
+  }
+
+  /**
+   * Disable reading frames, sleeps a lot
+   */
+  public void Disable()
+  {
+    mEnabled = false;
+  }
+
+  /*
+   * InitCapture
+   */
   private void InitCapture()
   {
     vcap = new VideoCapture();
@@ -60,50 +83,66 @@ public class VideoCaptureThread implements Runnable
       SetupUSBCamera();
       break;
     case VCT_IP:
-      SetupIPCamera("10.40.69.44"); //ip address of Axis camera
+      SetupIPCamera("10.40.69.44"); // ip address of Axis camera
       break;
     }
   }// InitCapture
 
   /*
-   * Read a frame into framequeue, update indexes allows upto 4 frames to
-   * be stored.  IF no frames have been removed, update last frame location with new frame
+   * Read a frame into framequeue, update indexes allows upto 4 frames to be stored. IF no frames have been removed, update last frame location with new frame
    * 
    */
   private void Capture()
   {
-    while ((true)&&(mKeepRunning==1))
+    while ((true) && (mKeepRunning == 1))
     {
-      boolean state = vcap.read(FrameQueue[FrameInIndex]); // FrameInIndex is always 'safe' to write too by definition
-      if (state == false)
+      if (mEnabled)
       {
-        System.out.println("FAILED reading frame");
-      }
+        boolean state = vcap.read(FrameQueue[FrameInIndex]); // FrameInIndex is always 'safe' to write too by definition
+        if (state == false)
+        {
+          System.out.println("FAILED reading frame");
+        }
+        else
+        {
+          int getcurin = FrameInIndex; // always safe to read...
+          getcurin++; // update locally to new values
+          getcurin &= 3;
+          if (getcurin != FrameOutIndex) // if we are not bumping up against frames waiting to be read...
+          {
+            synchronized (InLock) // only lock writes, reading is always ok
+            {
+              FrameInIndex = getcurin; // write in single statement
+            } // synchronized
+          } // if curin != out
+        } // else frame read successful
+        // outputStream.putFrame(frame);
+
+        try
+        {
+          Thread.sleep(5);// yeild some time 5ms == 200fps, no worries there
+        }
+        catch (InterruptedException e)
+        {
+          System.out.println("Sleep fail in Capture");
+          e.printStackTrace();
+          mKeepRunning = 0;
+        } // catch
+      } // if enabled
       else
       {
-        int getcurin = FrameInIndex; //always safe to read...
-        getcurin++;  //update locally to new values
-        getcurin &= 3;
-        if (getcurin != FrameOutIndex) // if we are not bumping up against frames waiting to be read...
+        try
         {
-          synchronized(InLock)  //only lock writes, reading is always ok
-          {
-            FrameInIndex = getcurin; // write in single statement
-          }//synchronized
-        } //if curin != out
-      } // else frame read successful
-      // outputStream.putFrame(frame);
+          Thread.sleep(250);// 4 times a sec check if we should run
+        }
+        catch (InterruptedException e)
+        {
+          System.out.println("Sleep fail in Capture");
+          e.printStackTrace();
+          mKeepRunning = 0;
+        } // catch
 
-      try
-      {
-        Thread.sleep(5);//yeild some time 5ms == 200fps, no worries there
-      }
-      catch (InterruptedException e)
-      {
-        System.out.println("Sleep fail in Capture");
-        e.printStackTrace();
-        mKeepRunning=0;
-      } // catch
+      } //else Enabled
     } // while true
   }// Capture
 
@@ -114,20 +153,20 @@ public class VideoCaptureThread implements Runnable
   {
     if (FrameOutIndex != FrameInIndex)
     {
-      Mat frameout = FrameQueue[FrameOutIndex].clone(); //NOTE copy!
-      int frametosend = FrameOutIndex; //safe to read...
+      Mat frameout = FrameQueue[FrameOutIndex].clone(); // NOTE copy!
+      int frametosend = FrameOutIndex; // safe to read...
       frametosend++;
-      frametosend &= 3;  //do manipulations locally
-      
-      synchronized (OutLock) //only lock write, reading is always safe
+      frametosend &= 3; // do manipulations locally
+
+      synchronized (OutLock) // only lock write, reading is always safe
       {
-        FrameOutIndex = frametosend;  //update in single statment
+        FrameOutIndex = frametosend; // update in single statment
       }
       return frameout;
     }
-    return null; //no frames available if queue has been drained, 
-                //we could keep last frame sent and resend it, but calling routine could do that
-  }//GetFrame
+    return null; // no frames available if queue has been drained,
+                 // we could keep last frame sent and resend it, but calling routine could do that
+  }// GetFrame
 
   /*
    * Init USB camera
@@ -139,7 +178,7 @@ public class VideoCaptureThread implements Runnable
 
     int count = 1;
 
-    while ((!vcap.open(videoStreamAddress)) && (mKeepRunning==1))
+    while ((!vcap.open(videoStreamAddress)) && (mKeepRunning == 1))
     {
       System.out.println("Error connecting to camera stream, retrying " + count);
       count++;
@@ -178,7 +217,7 @@ public class VideoCaptureThread implements Runnable
 
     int count = 1;
 
-    while ((!vcap.open(videoStreamAddress)) && (mKeepRunning==1))
+    while ((!vcap.open(videoStreamAddress)) && (mKeepRunning == 1))
     {
       System.out.println("Error connecting to camera stream, retrying " + count);
       count++;
@@ -195,4 +234,4 @@ public class VideoCaptureThread implements Runnable
     System.out.println("Successfully connected to IP Camera Stream");
   }// SetupIPCamera
 
-}//VideoCaptureThread class
+}// VideoCaptureThread class

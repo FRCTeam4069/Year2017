@@ -9,22 +9,16 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Preferences;
 
-import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.imageio.ImageIO;
+
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
-import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfInt4;
 import org.opencv.core.MatOfPoint;
@@ -36,7 +30,6 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
 
 public class VisionThreadNew implements Runnable
 {
@@ -44,22 +37,26 @@ public class VisionThreadNew implements Runnable
   public static final int Y_IMAGE_RES = 240;
   public static final double VIEW_ANGLE = 34.8665269;
   public static final double AUTO_STEADY_STATE = 1.9;
+
   public static final int minR = 0, minG = 80, minB = 0;
   public static final int maxR = 50, maxG = 255, maxB = 75;
+
   public static final double minHRatio = 1.5, minVRatio = 1.5;
   public static final double maxHRatio = 6.6, maxVRatio = 8.5;
-  public static final int MAX_SIZE = 255;
-  public static final Scalar RED = new Scalar(0, 0, 255), BLUE = new Scalar(255, 0, 0), GREEN = new Scalar(0, 255, 0), ORANGE = new Scalar(0, 128, 255), YELLOW = new Scalar(0, 255, 255), PINK = new Scalar(255, 0, 255),
-      WHITE = new Scalar(255, 255, 255);
 
-  
-  
-  
+  public static final int MAX_SIZE = 255;
+  public static final Scalar RED = new Scalar(0, 0, 255), BLUE = new Scalar(255, 0, 0), GREEN = new Scalar(0, 255, 0), ORANGE = new Scalar(0, 128, 255), YELLOW = new Scalar(0, 255, 255), PINK = new Scalar(255, 0, 255), WHITE = new Scalar(255, 255, 255);
+
   private Target targets = new Target();
   private Mat frame = new Mat();
   private Mat outputframe = new Mat();
-  private boolean progRun;
-  private Thread videoCaptureThread;
+
+  private boolean mExitThread = false;
+  private boolean mProcessFrames = true;
+
+  private VideoCaptureThread vcap_thread_instance;
+  private Thread vcap_thread_handle;
+
   public static double xcenter = 0.0;
   // private Scalar minScalar = new Scalar(minB, minG, minR);
   // private Scalar maxScalar = new Scalar(maxB, maxG, maxR);
@@ -83,38 +80,22 @@ public class VisionThreadNew implements Runnable
     Mat thresholded = new Mat();
     outputStream = CameraServer.getInstance().putVideo("USB Camera 0", 640, 480);
 
-    videoCaptureThread = new Thread(new Runnable() // Now this thread spawns a thread to do the video capturing
-    {
-      public void run()
-      {
-        videoCapture();
-      }
-    });
-
-    videoCaptureThread.start(); // Calls run() method of videoCapture class below
+    vcap_thread_instance = new VideoCaptureThread(); // Create instance of runnable class
+    vcap_thread_handle = new Thread(vcap_thread_instance); // spawn thread to handle runnable class
+    vcap_thread_handle.start(); // Calls run() method of videoCapture class below
 
     targets.matchStart = false;
     targets.validFrame = false;
     targets.hotLeftOrRight = 0;
-    progRun = true;
 
-    while (true)
+    while ((true) && (mExitThread == false))
     {
-      if (Params.Process && progRun)
+      if (mProcessFrames)
       {
-        boolean frameEmpty;
-        synchronized (frame)
-        {
-          frameEmpty = frame.empty();
-        }
+        img = vcap_thread_instance.GetFrame();
 
-        if (!frameEmpty)
+        if (img != null)
         {
-          synchronized (frame)
-          {
-            frame.copyTo(img);
-          }
-
           Scalar minScalar = new Scalar(prefs.getDouble("minB", minB), prefs.getDouble("minG", minG), prefs.getDouble("minR", minR));
           Scalar maxScalar = new Scalar(prefs.getDouble("maxB", maxB), prefs.getDouble("maxG", maxG), prefs.getDouble("maxR", maxR));
 
@@ -125,22 +106,14 @@ public class VisionThreadNew implements Runnable
           {
             findTarget(img, thresholded);
             CalculateDist();
-
-            // if (Params.Debug)
-            // {
-            // System.out.println("Vert: " + targets.VertGoal);
-            // System.out.println("Horiz: " + targets.HorizGoal);
-            // System.out.println("Hot Goal: " + targets.HotGoal);
-            // System.out.println("Dist: " + targets.targetDistance);
-            // }
           } // synchronized
         } // if !frameEmpty
       } // if params.process && progrun
-
       try
       {
-        Thread.sleep(1);
-      } catch (InterruptedException e)
+        Thread.sleep(5);
+      }
+      catch (InterruptedException e)
       {
         e.printStackTrace();
       }
@@ -192,7 +165,8 @@ public class VisionThreadNew implements Runnable
       if (mop.size().width < contourMin && mop.size().height < contourMin)
       {
         it.remove();
-      } else
+      }
+      else
       {
         xcenter += mop.get(0, 0)[0] + mop.size().width / 2; // don't add to xcenter for removed contours
       }
@@ -205,10 +179,9 @@ public class VisionThreadNew implements Runnable
       if (Params.Debug)
       {
         System.out.println("# Contours: " + contours.size());
-        // System.out.println("# Hierarchy: " + hierarchy.size());
       }
 
-      xcenter /= contours.size(); // ERR if size==0, div by zero! move inside if below?
+      xcenter /= contours.size();
 
       double mapped = Lerp(0, 640, -1, 1, xcenter); // xcenter could be NAN due to div by zero...
 
@@ -232,7 +205,7 @@ public class VisionThreadNew implements Runnable
 
             for (int j = 0; j < 4; j++)
             {
-              Imgproc.line(original, rect_points[j], rect_points[(j + 1) % 4], BLUE);
+              Imgproc.line(original, rect_points[j], rect_points[(j + 1) % 4], BLUE,3);
             }
           } // if visualize
 
@@ -273,7 +246,8 @@ public class VisionThreadNew implements Runnable
             if (targets.VerticalCenter.x < targets.HorizontalCenter.x) // target is right
             {
               targets.targetLeftOrRight = 1;
-            } else
+            }
+            else
             {
               if (targets.VerticalCenter.x > targets.HorizontalCenter.x) // target is left
               {
@@ -282,52 +256,52 @@ public class VisionThreadNew implements Runnable
             }
           }
           targets.lastTargerLorR = targets.targetLeftOrRight;
-        //}
+          // }
 
-        System.out.println("MAPPED: " + mapped); // NAN if xcenter is NAN
-        if (Params.Debug)
-        {
-          System.out.println("---------------------------");
+          System.out.println("MAPPED: " + mapped); // NAN if xcenter is NAN
+          if (Params.Debug)
+          {
+            System.out.println("---------------------------");
 
-          System.out.println("Contour: " + i);
-          System.out.println("X: " + box.x);
-          System.out.println("Y: " + box.y);
-          System.out.println("Height: " + box.height);
-          System.out.println("Width: " + box.width);
-          System.out.println("Angle: " + minRect[i].angle);
-          // System.out.println("Ratio (W/H): " + WHRatio);
-          // System.out.println("Ratio (H/W): " + HWRatio);
-          System.out.println("Area: " + (box.height * box.width));
+            System.out.println("Contour: " + i);
+            System.out.println("X: " + box.x);
+            System.out.println("Y: " + box.y);
+            System.out.println("Height: " + box.height);
+            System.out.println("Width: " + box.width);
+            System.out.println("Angle: " + minRect[i].angle);
+            // System.out.println("Ratio (W/H): " + WHRatio);
+            // System.out.println("Ratio (H/W): " + HWRatio);
+            System.out.println("Area: " + (box.height * box.width));
+          }
+
+          Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
+          Imgproc.line(original, center, center, YELLOW, 3);
+          // Imgproc.line(original, new Point(320 / 2, 240 / 2), new Point(320 / 2, 240 / 2), YELLOW, 3);
         }
-
-        Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
-        Imgproc.line(original, center, center, YELLOW, 3);
-        // Imgproc.line(original, new Point(320 / 2, 240 / 2), new Point(320 / 2, 240 / 2), YELLOW, 3);
-      }
-    } //
-  } // if contours.size >0
-  else
-  {
-    // System.out.println("No Contours");
-    targets.targetLeftOrRight = 0;
-  }outputStream.putFrame(original); // output);
-  if(Params.Visualize)
-  {
-    /*
-     * BufferedImage toShow = matToImage(original);
-     * 
-     * if (toShow != null) { window.getDisplayIcon().setImage(toShow); window.repaint(); }
-     */
-  } // if Params.Visualize
-
-  synchronized(targets)
-  {
-
-    if (!targets.matchStart)
+      } //
+    } // if contours.size >0
+    else
     {
-      targets.hotLeftOrRight = targets.targetLeftOrRight;
+      // System.out.println("No Contours");
+      targets.targetLeftOrRight = 0;
     }
-  } // synchronized
+    outputStream.putFrame(original); // output);
+    if (Params.Visualize)
+    {
+      /*
+       * BufferedImage toShow = matToImage(original);
+       * 
+       * if (toShow != null) { window.getDisplayIcon().setImage(toShow); window.repaint(); }
+       */
+    } // if Params.Visualize
+
+    synchronized (targets)
+    {
+      if (!targets.matchStart)
+      {
+        targets.hotLeftOrRight = targets.targetLeftOrRight;
+      }
+    } // synchronized
   }// findTarget
 
   private void NullTargets()
@@ -347,119 +321,6 @@ public class VisionThreadNew implements Runnable
     targets.HotGoal = false;
   } // NullTargets
 
-  private void videoCapture()
-  {
-    if (Params.From_File)
-    {
-      System.out.println("Java opencv doesn't have imread, sorry!");
-
-    } else if (Params.From_Camera) // as opposed to file?
-    {
-      VideoCapture vcap = new VideoCapture();
-      if (Params.USB_Cam) // if reading from usb camera
-      {
-        int videoStreamAddress = 0;
-        System.out.println("Trying to connect to Camera stream... at: " + videoStreamAddress);
-
-        int count = 1;
-
-        while (!vcap.open(videoStreamAddress))
-        {
-          System.out.println("Error connecting to camera stream, retrying " + count);
-          count++;
-          try
-          {
-            Thread.sleep(1000);
-          } catch (InterruptedException e)
-          {
-            e.printStackTrace();
-          }
-        } // while !open
-
-        vcap.set(CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1);
-
-        vcap.set(CV_CAP_PROP_BRIGHTNESS, 1);
-
-        vcap.set(CV_CAP_PROP_CONTRAST, 0);
-
-        System.out.println(vcap.get(CV_CAP_PROP_FRAME_WIDTH));
-
-        System.out.println(vcap.get(CV_CAP_PROP_FRAME_HEIGHT));
-
-      } else // try ip address camera
-      {
-        String videoStreamAddress = "http://" + Params.CAMERA_IP + "/mjpg/video.mjpg";
-
-        System.out.println("Trying to connect to Camera stream... at: " + videoStreamAddress);
-
-        int count = 1;
-
-        while (!vcap.open(videoStreamAddress))
-        {
-          System.out.println("Error connecting to camera stream, retrying " + count);
-          count++;
-          try
-          {
-            Thread.sleep(1000);
-          } catch (InterruptedException e)
-          {
-            e.printStackTrace();
-          }
-        } // while !vcap.open
-      } // else ip camera
-
-      System.out.println("Successfully connected to Camera Stream");
-
-      synchronized (targets)
-      {
-        targets.cameraConnected = true;
-      }
-
-      while (true)
-      {
-        synchronized (frame)
-        {
-          boolean state = vcap.read(frame);
-          if (state == false)
-          {
-            System.out.println("FAILED reading frame");
-          }
-          // outputStream.putFrame(frame);
-        }
-
-        try
-        {
-          Thread.sleep(5);
-        } catch (InterruptedException e)
-        {
-          e.printStackTrace();
-        } // catch
-      } // while true
-    }
-  }// VideoCapture
-
-  private void videoCapture2()
-  {
-    new Thread(() -> {
-      UsbCamera camera = CameraServer.getInstance().startAutomaticCapture(0);
-      camera.setResolution(640, 480);
-      CvSink cvSink = CameraServer.getInstance().getVideo();
-      CvSource outputStream = CameraServer.getInstance().putVideo("Vid", 640, 480);
-
-      Mat source = new Mat();
-      Mat output = new Mat();
-
-      while (!Thread.interrupted())
-      {
-        cvSink.grabFrame(source);
-        Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-        outputStream.putFrame(source); // output);
-        ;
-      }
-    }).start();
-
-  }// VideoCapture2
-
   /**
    * matToImage : Convert a Mat to a png
    * 
@@ -474,11 +335,11 @@ public class VisionThreadNew implements Runnable
     try
     {
       image = ImageIO.read(new ByteArrayInputStream(buffer.toArray()));
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       e.printStackTrace();
     }
     return image;
-  }
-
+  } // matToImage
 }
