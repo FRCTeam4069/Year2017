@@ -71,7 +71,7 @@ public class Robot extends SampleRobot
     mShooterController = new ShooterControl();
     mShooterController.SetWantedRPM(1500);
 
-    Thread thread = new Thread(new VisionThread());
+    Thread thread = new Thread(new VisionThreadNew());
     thread.start();
     mLastDashboardUpdateTime = System.currentTimeMillis();
   }// Robot()

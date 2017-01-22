@@ -71,8 +71,6 @@ public class VisionThreadNew implements Runnable
   Preferences prefs = Preferences.getInstance();
   CvSource outputStream;
 
-
-  
   public void run()
   {
     Mat img = new Mat();
@@ -274,10 +272,10 @@ public class VisionThreadNew implements Runnable
         Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
         Imgproc.line(original, center, center, YELLOW, 3);
         // Imgproc.line(original, new Point(320 / 2, 240 / 2), new Point(320 / 2, 240 / 2), YELLOW, 3);
-      } //for i <contours.size
+      } // for i <contours.size
     } // if contours.size >0
     else
-    {  //no contours if here
+    { // no contours if here
       // System.out.println("No Contours");
       targets.targetLeftOrRight = 0;
     }
