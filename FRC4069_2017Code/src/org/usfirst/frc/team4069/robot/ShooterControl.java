@@ -72,7 +72,8 @@ public class ShooterControl
   }
 
   /**
-   * 
+   * ShooterTick : Should be called with all the other update functions after inputs have been read/updated
+   * IF proper button held down, will call set speed to set to wanted RPM's
    */
   public void ShooterTick()
   {
@@ -88,6 +89,11 @@ public class ShooterControl
       mlastUpdateTime = System.currentTimeMillis();
     } //if time > 1 second
 
+    if (Robot.InputSystem.A_Button_Control_Stick)
+      mEnabled=1;
+    else
+      mEnabled=0;
+        
     double motorOutput = shooterCANTalon.getOutputVoltage() / shooterCANTalon.getBusVoltage();
     if (mDebug == 1)
     {
