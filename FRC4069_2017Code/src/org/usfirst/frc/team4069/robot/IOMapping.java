@@ -15,6 +15,8 @@ public interface IOMapping
   public static final int LEFT_DRIVE_MOTOR_PWM_PORT = 0;
   public static final int RIGHT_DRIVE_MOTOR_PWM_PORT = 1;
 
+  public static final int SHOOTER_CANBUS_PORT = 0;
+  
   // Left and right arm canbus ports
   public static final int LEFT_ARM_CANBUS_PORT = 2;
   public static final int RIGHT_ARM_CANBUS_PORT = 1;

@@ -22,59 +22,46 @@ public class Robot extends SampleRobot
   RobotDrive myRobot = new RobotDrive(0, 1); // class that handles basic drive
   private Encoder leftDriveEncoder;
   private Encoder rightDriveEncoder;
-  
-  //private CANTalon shooterEncoder;
-  
-  
-  Preferences prefs= Preferences.getInstance();
-  double ming=0.0;
-  // operations
-  Joystick leftStick = new Joystick(0); // set to ID 1 in DriverStation
-  Joystick rightStick = new Joystick(1); // set to ID 2 in DriverStation
-  VideoCapture vcap;
-  // vcap.set(CV_CAP_PROP_CONTRAST, 0);
 
+  private ShooterControl mShooterController = new ShooterControl();
+
+  Preferences prefs = Preferences.getInstance();
+  double ming = 0.0;
+  // operations
+  Joystick driverStick = new Joystick(0); // set to ID 1 in DriverStation
+  Joystick controlStick = new Joystick(1); // set to ID 2 in DriverStation
+  
+  
+  @Override
   public void robotInit()
   {
     ming = prefs.getDouble("minG", 1.0);
-    
   }
-  
-  
+
   public Robot()
   {
-    //CameraServer camera = CameraServer.getInstance(); //CameraServer();
-    //camera.startAutomaticCapture(0);
-   // camera.startAutomaticCapture();
-    
+    // CameraServer camera = CameraServer.getInstance(); //CameraServer();
+    // camera.startAutomaticCapture(0);
+    // camera.startAutomaticCapture();
+
     ming = prefs.getDouble("minG", 1.0);
-    System.out.println("MING = "+ming);
-    
+    System.out.println("MING = " + ming);
+
     // vcap.set(propId, value)
     myRobot.setExpiration(0.1);
     leftDriveEncoder = new Encoder(IOMapping.LEFT_DRIVE_ENCODER_1, IOMapping.LEFT_DRIVE_ENCODER_2);
     rightDriveEncoder = new Encoder(IOMapping.RIGHT_DRIVE_ENCODER_1, IOMapping.RIGHT_DRIVE_ENCODER_2);
-    //shooterEncoder = new CANTalon(IOMapping.SHOOTER_ENCODER_DIO_1, IOMapping.SHOOTER_ENCODER_DIO_2);
+   
+    mShooterController.SetWantedRPM(1500);
+    
 
     Thread thread = new Thread(new VisionThread());
     thread.start();
 
-  }
+  }//Robot()
 
-  void SendDataToSmartDashboard()
-  {
-    System.out.println("xcenter = "+VisionThread.xcenter);
-    //System.out.println("shooter encoder = "+shooterEncoder.get());
-    SmartDashboard.putNumber("LEFTENCODER", leftDriveEncoder.get());
-    SmartDashboard.putNumber("RIGHTENCODER", rightDriveEncoder.get());
-    SmartDashboard.putNumber("SHOOTERENCODER", 33); //ooterEncoder.get());
-    SmartDashboard.putNumber("XCENTER",44); //VisionThread.xcenter);
-    
-  }
 
-  /**
-   * Runs the motors with tank steering.
-   */
+
   @Override
   public void operatorControl()
   {
@@ -82,21 +69,35 @@ public class Robot extends SampleRobot
     while (isOperatorControl() && isEnabled())
     {
       SendDataToSmartDashboard();
-      //myRobot.tankDrive(leftStick, rightStick);
+      // myRobot.tankDrive(leftStick, rightStick);
       myRobot.drive(0.8, VisionThread.xcenter);
+
+      if (driverStick.getRawButton(1)) //only while button pressed
+      {
+        mShooterController.Enable();
+      }
+      else
+        mShooterController.Disable();
+      
+      mShooterController.ShooterTick();  //give some love to the shooter
       
       Timer.delay(0.005); // wait for a motor update time
-    }
- 
-  }
-  
-  public double getLeftEncoder() {
-	  return leftDriveEncoder.get();
-  }
-  
-  public double getRightEncoder() {
-	  return rightDriveEncoder.get();
-  }
-  
+    } //while isEnabled
+  } //operatorControl
 
-}
+
+
+
+
+  void SendDataToSmartDashboard()
+  {
+    System.out.println("xcenter = " + VisionThread.xcenter);
+    // System.out.println("shooter encoder = "+shooterEncoder.get());
+    SmartDashboard.putNumber("LEFTENCODER", leftDriveEncoder.get());
+    SmartDashboard.putNumber("RIGHTENCODER", rightDriveEncoder.get());
+    SmartDashboard.putNumber("SHOOTERENCODER", mShooterController.GetShooterPosition());
+    SmartDashboard.putNumber("XCENTER",  VisionThread.xcenter);
+  } //SendDataToSmartDashboard
+
+
+} //class Robot
