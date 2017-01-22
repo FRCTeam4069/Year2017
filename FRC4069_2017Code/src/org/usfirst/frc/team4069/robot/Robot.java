@@ -3,13 +3,6 @@ package org.usfirst.frc.team4069.robot;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.RobotDrive;
-
-import org.opencv.core.Mat;
-import org.opencv.videoio.VideoCapture;
-
-import com.ctre.CANTalon;
-
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
@@ -17,8 +10,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import edu.wpi.first.wpilibj.vision.*;
 
 public class Robot extends SampleRobot
 {
@@ -146,8 +137,40 @@ public class Robot extends SampleRobot
       mLastDashboardUpdateTime = System.currentTimeMillis();
     }
   } // SendDataToSmartDashboard
-
+  
+  
+  //--------------------------------------------------------------------------------------------
   /**
+   * Linear Interpolation, given a value x2 between x0 and x1 calculate position between Y0 and Y1
+   * @author EA
+   */
+  public double Lerp(double y0,double y1,double x0,double x1,double x2) 
+  {
+    double y2 = y0*(x2-x1) / (x0-x1)+y1*(x2-x0) / (x1-x0);
+    return y2;
+  }
+
+  //--------------------------------------------------------------------------------------------
+  /**
+   * Bounded Linear Interpolation : Limit returned value to be between Y0 and Y1
+   * @author EA
+   */
+  public double BoundLerp(double y0,double y1,double x0,double x1,double x2) 
+  {
+    double y2 = y0*(x2-x1) / (x0-x1)+y1*(x2-x0) / (x1-x0);
+    if (y2 < y0) y2=y0;
+    else
+      if (y2 > y1) y2=y1;
+    return y2;
+  }
+
+  
+  
+  
+  
+  
+
+  /**********************************************************************************
    * InputSystem static class holds all control input states ReadAllInput()
    * should be called at top of main loop to refresh states then all Update
    * routines will pull from here to make their decisions.
