@@ -47,6 +47,9 @@ public class VisionThreadNew implements Runnable
   public static final int MAX_SIZE = 255;
   public static final Scalar RED = new Scalar(0, 0, 255), BLUE = new Scalar(255, 0, 0), GREEN = new Scalar(0, 255, 0), ORANGE = new Scalar(0, 128, 255), YELLOW = new Scalar(0, 255, 255), PINK = new Scalar(255, 0, 255), WHITE = new Scalar(255, 255, 255);
 
+  private boolean mDebug = false;
+  private boolean mShowContours = true;
+
   private Target targets = new Target();
   private Mat frame = new Mat();
   private Mat outputframe = new Mat();
@@ -58,9 +61,6 @@ public class VisionThreadNew implements Runnable
   private Thread vcap_thread_handle;
 
   public static double xcenter = 0.0;
-  // private Scalar minScalar = new Scalar(minB, minG, minR);
-  // private Scalar maxScalar = new Scalar(maxB, maxG, maxR);
-  // private Window window;
 
   // OpenCV constants
   public static final int CV_CAP_PROP_BRIGHTNESS = 10;
@@ -71,9 +71,8 @@ public class VisionThreadNew implements Runnable
   Preferences prefs = Preferences.getInstance();
   CvSource outputStream;
 
-  /**
-   * Main Run section for VisionThread
-   */
+
+  
   public void run()
   {
     Mat img = new Mat();
@@ -108,7 +107,7 @@ public class VisionThreadNew implements Runnable
             CalculateDist();
           } // synchronized
         } // if !frameEmpty
-      } // if params.process && progrun
+      } // if processframes true
       try
       {
         Thread.sleep(5);
@@ -176,7 +175,7 @@ public class VisionThreadNew implements Runnable
 
     if (contours.size() > 0)
     {
-      if (Params.Debug)
+      if (mDebug)
       {
         System.out.println("# Contours: " + contours.size());
       }
@@ -191,109 +190,106 @@ public class VisionThreadNew implements Runnable
 
       NullTargets();
 
-      if (!contours.isEmpty()) // && !hierarchy.empty()) //NOTE hierarchy's indexes were not discarded when contours were, won't match!
+      for (int i = 0; i < contours.size(); i++)
       {
-        for (int i = 0; i < contours.size(); i++)
+        MatOfPoint2f mop2f = new MatOfPoint2f(contours.get(i).toArray());
+        minRect[i] = Imgproc.minAreaRect(mop2f);
+
+        if (mShowContours)
         {
-          MatOfPoint2f mop2f = new MatOfPoint2f(contours.get(i).toArray());
-          minRect[i] = Imgproc.minAreaRect(mop2f);
+          Point[] rect_points = new Point[4];
+          minRect[i].points(rect_points);
 
-          if (Params.Visualize)
+          for (int j = 0; j < 4; j++)
           {
-            Point[] rect_points = new Point[4];
-            minRect[i].points(rect_points);
-
-            for (int j = 0; j < 4; j++)
-            {
-              Imgproc.line(original, rect_points[j], rect_points[(j + 1) % 4], BLUE,3);
-            }
-          } // if visualize
-
-          Rect box = minRect[i].boundingRect();
-
-          double WHRatio = box.width / ((double) box.height);
-
-          double HWRatio = ((double) box.height) / box.width;
-
-          // check if contour is vert, we use HWRatio because it is greater that 0 // for vert target
-          if ((HWRatio > minVRatio) && (HWRatio < maxVRatio))
-          {
-            targets.VertGoal = true;
-            targets.VerticalTarget = box;
-            targets.VerticalAngle = minRect[i].angle;
-            targets.VerticalCenter = new Point(box.x + box.width / 2, box.y + box.height / 2);
-            targets.Vertical_H_W_Ratio = HWRatio;
-            targets.Vertical_W_H_Ratio = WHRatio;
-
+            Imgproc.line(original, rect_points[j], rect_points[(j + 1) % 4], BLUE, 3);
           }
-          // check if contour is horiz, we use WHRatio because it is greater that
-          // 0 for vert target
-          else if ((WHRatio > minHRatio) && (WHRatio < maxHRatio))
-          {
-            targets.HorizGoal = true;
-            targets.HorizontalTarget = box;
-            targets.HorizontalAngle = minRect[i].angle;
-            targets.HorizontalCenter = new Point(box.x + box.width / 2, box.y + box.height / 2);
-            targets.Horizontal_H_W_Ratio = HWRatio;
-            targets.Horizontal_W_H_Ratio = WHRatio;
-          }
+        } // if visualize
 
-          if (targets.HorizGoal && targets.VertGoal)
-          {
-            targets.HotGoal = true;
+        Rect box = minRect[i].boundingRect();
 
-            // determine left or right
-            if (targets.VerticalCenter.x < targets.HorizontalCenter.x) // target is right
-            {
-              targets.targetLeftOrRight = 1;
-            }
-            else
-            {
-              if (targets.VerticalCenter.x > targets.HorizontalCenter.x) // target is left
-              {
-                targets.targetLeftOrRight = -1;
-              }
-            }
-          }
-          targets.lastTargerLorR = targets.targetLeftOrRight;
-          // }
+        double WHRatio = box.width / ((double) box.height);
 
-          System.out.println("MAPPED: " + mapped); // NAN if xcenter is NAN
-          if (Params.Debug)
-          {
-            System.out.println("---------------------------");
+        double HWRatio = ((double) box.height) / box.width;
 
-            System.out.println("Contour: " + i);
-            System.out.println("X: " + box.x);
-            System.out.println("Y: " + box.y);
-            System.out.println("Height: " + box.height);
-            System.out.println("Width: " + box.width);
-            System.out.println("Angle: " + minRect[i].angle);
-            // System.out.println("Ratio (W/H): " + WHRatio);
-            // System.out.println("Ratio (H/W): " + HWRatio);
-            System.out.println("Area: " + (box.height * box.width));
-          }
+        // check if contour is vert, we use HWRatio because it is greater that 0 // for vert target
+        if ((HWRatio > minVRatio) && (HWRatio < maxVRatio))
+        {
+          targets.VertGoal = true;
+          targets.VerticalTarget = box;
+          targets.VerticalAngle = minRect[i].angle;
+          targets.VerticalCenter = new Point(box.x + box.width / 2, box.y + box.height / 2);
+          targets.Vertical_H_W_Ratio = HWRatio;
+          targets.Vertical_W_H_Ratio = WHRatio;
 
-          Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
-          Imgproc.line(original, center, center, YELLOW, 3);
-          // Imgproc.line(original, new Point(320 / 2, 240 / 2), new Point(320 / 2, 240 / 2), YELLOW, 3);
         }
-      } //
+        // check if contour is horiz, we use WHRatio because it is greater that
+        // 0 for vert target
+        else if ((WHRatio > minHRatio) && (WHRatio < maxHRatio))
+        {
+          targets.HorizGoal = true;
+          targets.HorizontalTarget = box;
+          targets.HorizontalAngle = minRect[i].angle;
+          targets.HorizontalCenter = new Point(box.x + box.width / 2, box.y + box.height / 2);
+          targets.Horizontal_H_W_Ratio = HWRatio;
+          targets.Horizontal_W_H_Ratio = WHRatio;
+        }
+
+        if (targets.HorizGoal && targets.VertGoal)
+        {
+          targets.HotGoal = true;
+
+          // determine left or right
+          if (targets.VerticalCenter.x < targets.HorizontalCenter.x) // target is right
+          {
+            targets.targetLeftOrRight = 1;
+          }
+          else
+          {
+            if (targets.VerticalCenter.x > targets.HorizontalCenter.x) // target is left
+            {
+              targets.targetLeftOrRight = -1;
+            }
+          }
+        }
+        targets.lastTargerLorR = targets.targetLeftOrRight;
+        // }
+
+        System.out.println("MAPPED: " + mapped); // NAN if xcenter is NAN
+        if (mDebug)
+        {
+          System.out.println("---------------------------");
+
+          System.out.println("Contour: " + i);
+          System.out.println("X: " + box.x);
+          System.out.println("Y: " + box.y);
+          System.out.println("Height: " + box.height);
+          System.out.println("Width: " + box.width);
+          System.out.println("Angle: " + minRect[i].angle);
+          // System.out.println("Ratio (W/H): " + WHRatio);
+          // System.out.println("Ratio (H/W): " + HWRatio);
+          System.out.println("Area: " + (box.height * box.width));
+        }
+
+        Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
+        Imgproc.line(original, center, center, YELLOW, 3);
+        // Imgproc.line(original, new Point(320 / 2, 240 / 2), new Point(320 / 2, 240 / 2), YELLOW, 3);
+      } //for i <contours.size
     } // if contours.size >0
     else
-    {
+    {  //no contours if here
       // System.out.println("No Contours");
       targets.targetLeftOrRight = 0;
     }
     outputStream.putFrame(original); // output);
-    if (Params.Visualize)
+    if (mShowContours)
     {
       /*
        * BufferedImage toShow = matToImage(original);
        * 
        * if (toShow != null) { window.getDisplayIcon().setImage(toShow); window.repaint(); }
        */
-    } // if Params.Visualize
+    } // if showcontours
 
     synchronized (targets)
     {
