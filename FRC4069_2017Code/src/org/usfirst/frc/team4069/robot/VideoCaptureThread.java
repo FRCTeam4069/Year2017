@@ -88,6 +88,8 @@ public class VideoCaptureThread implements Runnable
     }
   }// InitCapture
 
+  
+  
   /*
    * Read a frame into framequeue, update indexes allows upto 4 frames to be stored. IF no frames have been removed, update last frame location with new frame
    * 

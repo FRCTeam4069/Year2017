@@ -65,11 +65,14 @@ public class Robot extends SampleRobot
 
     // vcap.set(propId, value)
 
+    leftDriveMotorLowPassFilter = new LowPassFilter(350);
+    rightDriveMotorLowPassFilter = new LowPassFilter(250);
+
     leftDriveEncoder = new Encoder(IOMapping.LEFT_DRIVE_ENCODER_1, IOMapping.LEFT_DRIVE_ENCODER_2);
     rightDriveEncoder = new Encoder(IOMapping.RIGHT_DRIVE_ENCODER_1, IOMapping.RIGHT_DRIVE_ENCODER_2);
 
     mShooterController = new ShooterControl();
-    mShooterController.SetWantedRPM(1500);
+    mShooterController.SetWantedRPM(500);
 
     Thread thread = new Thread(new VisionThreadNew());
     thread.start();
