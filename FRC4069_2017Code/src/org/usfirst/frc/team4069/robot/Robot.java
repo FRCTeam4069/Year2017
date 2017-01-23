@@ -31,7 +31,7 @@ public class Robot extends SampleRobot
   private LowPassFilter rightDriveMotorLowPassFilter;
 
   // Shooter Control Class Instance
-  private ShooterControl mShooterController;
+  //private ShooterControl mShooterController;
   private WinchUpdate mWinchController;
 
   // Pull prefs from RoboRio's flash
@@ -96,7 +96,7 @@ public class Robot extends SampleRobot
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
       UpdateDriveMotors(); // update drive motors
-      mShooterController.ShooterTick(); // update shooter
+      //mShooterController.ShooterTick(); // update shooter
       mWinchController.WinchTick();
 
       // Last move robot. Let the robotdrive class handle the driving aspect of
@@ -138,7 +138,7 @@ public class Robot extends SampleRobot
       System.out.println("xcenter = " + VisionThread.xcenter);
       SmartDashboard.putNumber("LEFTENCODER", leftDriveEncoder.get());
       SmartDashboard.putNumber("RIGHTENCODER", rightDriveEncoder.get());
-      SmartDashboard.putNumber("SHOOTERENCODER", mShooterController.GetShooterPosition());
+      //SmartDashboard.putNumber("SHOOTERENCODER", mShooterController.GetShooterPosition());
       SmartDashboard.putNumber("XCENTER", VisionThread.xcenter);
       mLastDashboardUpdateTime = System.currentTimeMillis();
     }
