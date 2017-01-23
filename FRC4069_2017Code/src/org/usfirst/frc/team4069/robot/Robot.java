@@ -71,8 +71,8 @@ public class Robot extends SampleRobot
     leftDriveEncoder = new Encoder(IOMapping.LEFT_DRIVE_ENCODER_1, IOMapping.LEFT_DRIVE_ENCODER_2);
     rightDriveEncoder = new Encoder(IOMapping.RIGHT_DRIVE_ENCODER_1, IOMapping.RIGHT_DRIVE_ENCODER_2);
 
-    mShooterController = new ShooterControl();
-    mShooterController.SetWantedRPM(1500);
+    //mShooterController = new ShooterControl();
+    //mShooterController.SetWantedRPM(1500);
     
     mWinchController = new WinchUpdate();
 
