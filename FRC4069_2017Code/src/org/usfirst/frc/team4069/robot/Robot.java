@@ -32,6 +32,7 @@ public class Robot extends SampleRobot
 
   // Shooter Control Class Instance
   private ShooterControl mShooterController;
+  private WinchUpdate mWinchController;
 
   // Pull prefs from RoboRio's flash
   Preferences prefs = Preferences.getInstance();
@@ -55,6 +56,8 @@ public class Robot extends SampleRobot
    */
   public Robot()
   {
+    leftDriveMotorTalon = new Talon(IOMapping.LEFT_DRIVE_MOTOR_PWM_PORT);
+    rightDriveMotorTalon = new Talon(IOMapping.RIGHT_DRIVE_MOTOR_PWM_PORT);
     mRobotDrive = new RobotDrive(leftDriveMotorTalon, rightDriveMotorTalon);
     mRobotDrive.setInvertedMotor(MotorType.kRearLeft, true);
     mRobotDrive.setInvertedMotor(MotorType.kRearRight, true);
@@ -70,6 +73,8 @@ public class Robot extends SampleRobot
 
     mShooterController = new ShooterControl();
     mShooterController.SetWantedRPM(1500);
+    
+    mWinchController = new WinchUpdate();
 
     Thread thread = new Thread(new VisionThreadNew());
     thread.start();
@@ -89,6 +94,7 @@ public class Robot extends SampleRobot
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
       UpdateDriveMotors(); // update drive motors
       mShooterController.ShooterTick(); // update shooter
+      mWinchController.WinchTick();
 
       // Last move robot. Let the robotdrive class handle the driving aspect of
       // the robot

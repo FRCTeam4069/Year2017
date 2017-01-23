@@ -9,7 +9,6 @@ public class RecordMotions {
 	private List<Double> leftWheelValues = new ArrayList<Double>();
 	private List<Double> rightWheelValues = new ArrayList<Double>();
 	private Robot robot = null;
-
 	
 	public RecordMotions(Robot robot)
 	{
