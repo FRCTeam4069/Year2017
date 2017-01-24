@@ -38,12 +38,12 @@ public class Robot extends SampleRobot
     mWinchController = new WinchUpdate();
     mMoveFunctions = new MoveFunctions(driverStick); //pass joystick
 
-    //Thread thread = new Thread(new VisionThreadNew());
-//    thread.start();
+    Thread thread = new Thread(new VisionThreadNew());
+    thread.start();
     mLastDashboardUpdateTime = System.currentTimeMillis();
   }// Robot()
 
-  // ---------------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------------------
 
   @Override
   public void operatorControl()
@@ -110,9 +110,6 @@ public class Robot extends SampleRobot
     return y2;
   }
 
-  
-  
-  
   
   
 

@@ -122,10 +122,10 @@ public class VisionThreadNew implements Runnable
    * 
    * @param args
    */
-  public static void main(String args[])
-  {
-    (new Thread(new VisionThreadNew())).start();
-  }
+//  public static void main(String args[])
+//  {
+//    (new Thread(new VisionThreadNew())).start();
+//  }
 
   private void CalculateDist()
   {
@@ -268,7 +268,6 @@ public class VisionThreadNew implements Runnable
           // System.out.println("Ratio (H/W): " + HWRatio);
           System.out.println("Area: " + (box.height * box.width));
         }
-
         Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
         Imgproc.line(original, center, center, YELLOW, 3);
         // Imgproc.line(original, new Point(320 / 2, 240 / 2), new Point(320 / 2, 240 / 2), YELLOW, 3);
