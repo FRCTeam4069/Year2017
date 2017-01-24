@@ -13,6 +13,7 @@ public class MoveFunctions
   private Talon rightDriveMotor;
   public Encoder leftEncoder;
   public Encoder rightEncoder;
+  public double muffins;
   private LowPassFilter leftDriveMotorLowPassFilter;
   private LowPassFilter rightDriveMotorLowPassFilter;
   private Joystick driverStick;
@@ -65,6 +66,8 @@ public class MoveFunctions
     mRobotDrive.setInvertedMotor(MotorType.kRearLeft, true);
     mRobotDrive.setInvertedMotor(MotorType.kRearRight, true);
     mRobotDrive.setExpiration(0.1);
+    
+    muffins = ((leftEncoder.get() * METERS_PER_COUNT - initialLeftCount) + (rightEncoder.get() * METERS_PER_COUNT - initialRightCount));
     
   }
   
@@ -156,8 +159,7 @@ public class MoveFunctions
   
   private void Drive_Straight_Tick()
   {
-    System.out.println("tick");
-    if (driveStrMeters <= ((leftEncoder.get() - initialLeftCount) + (rightEncoder.get() - initialRightCount)) / (METERS_PER_COUNT * 2)) {
+    if (driveStrMeters <= ((leftEncoder.get() * METERS_PER_COUNT - initialLeftCount) + (rightEncoder.get() * METERS_PER_COUNT - initialRightCount)) / 2) {
       Stop();
     }
     double leftDelta = leftEncoder.get() * METERS_PER_COUNT - initialLeftCount;

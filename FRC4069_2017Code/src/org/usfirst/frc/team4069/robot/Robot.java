@@ -93,6 +93,7 @@ public class Robot extends SampleRobot
       SmartDashboard.putNumber("RIGHTENCODER", mMoveFunctions.rightEncoder.get());
       SmartDashboard.putNumber("SHOOTERENCODER", mShooterController.GetShooterPosition());
       SmartDashboard.putNumber("XCENTER", VisionThread.xcenter);
+      SmartDashboard.putNumber("DISTANCETRAVELED", mMoveFunctions.muffins);
       mLastDashboardUpdateTime = System.currentTimeMillis();
   //  }
   } // SendDataToSmartDashboard
