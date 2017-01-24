@@ -4,6 +4,9 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Joystick.AxisType;
+
 
 /**
  * ShooterControl : Uses a CANTalon with a encoder and a PID controller to
@@ -16,9 +19,9 @@ public class ShooterControl
   private CANTalon shooterCANTalon;
   private StringBuilder sc_debug_info = new StringBuilder();
   private long mlastUpdateTime = 0;
-  private double mWantedRPM = 3600;
+  private double mWantedRPM = 600;
   private int mEnabled = 0;
-  private int mDebug = 0;
+  private int mDebug = 1;
 
   public ShooterControl()
   {
@@ -75,47 +78,43 @@ public class ShooterControl
    * ShooterTick : Should be called with all the other update functions after inputs have been read/updated
    * IF proper button held down, will call set speed to set to wanted RPM's
    */
-  public void ShooterTick()
+  public void ShooterTick(Joystick _joy)
   {
     long timesincelastupdate = System.currentTimeMillis() - mlastUpdateTime;
+    /* get gamepad axis */
+    double leftYstick = _joy.getAxis(AxisType.kY);
+    double motorOutput = shooterCANTalon.getOutputVoltage() / shooterCANTalon.getBusVoltage();
+    /* prepare line to print */
+    sc_debug_info.append("\tout:");
+    sc_debug_info.append(motorOutput);
+    sc_debug_info.append("\tspd:");
+    sc_debug_info.append(shooterCANTalon.getSpeed());
+
+    if (_joy.getRawButton(1))
+    {
+      /* Speed mode */
+      double targetSpeed = leftYstick * 1500.0; /* 1500 RPM in either direction */
+      shooterCANTalon.changeControlMode(TalonControlMode.Speed);
+      shooterCANTalon.set(targetSpeed); /* 1500 RPM in either direction */
+
+      /* append more signals to print when in speed mode. */
+      sc_debug_info.append("\terr:");
+      sc_debug_info.append(shooterCANTalon.getClosedLoopError());
+      sc_debug_info.append("\ttrg:");
+      sc_debug_info.append(targetSpeed);
+    }
+    else
+    {
+      /* Percent voltage mode */
+      shooterCANTalon.changeControlMode(TalonControlMode.PercentVbus);
+      shooterCANTalon.set(leftYstick);
+    }
 
     if (timesincelastupdate > 1000)
     {
-      if (mDebug == 1)
-      {
-        System.out.println(sc_debug_info.toString());
-        sc_debug_info.setLength(0);
-      }
+      System.out.println(sc_debug_info.toString());
       mlastUpdateTime = System.currentTimeMillis();
-    } //if time > 1 second
-
-    if (Robot.InputSystem.A_Button_Control_Stick)
-      mEnabled=1;
-    else
-      mEnabled=0;
-        
-    double motorOutput = shooterCANTalon.getOutputVoltage() / shooterCANTalon.getBusVoltage();
-    if (mDebug == 1)
-    {
-      /* prepare line to print */
-      sc_debug_info.append("\tout:");
-      sc_debug_info.append(motorOutput);
-      sc_debug_info.append("\tspd:");
-      sc_debug_info.append(shooterCANTalon.getSpeed());
-    }//if debug
-
-    if (mEnabled == 1)
-    {
-    
-      shooterCANTalon.set(mWantedRPM);  //set to neg for direction change 
-      if (mDebug == 1)
-      {
-        /* append more signals to print when in speed mode. */
-        sc_debug_info.append("\terr:");
-        sc_debug_info.append(shooterCANTalon.getClosedLoopError());
-        sc_debug_info.append("\ttrg:");
-        sc_debug_info.append(mWantedRPM);
-      } //if debug
-    } //if enabled  
+    }
+    sc_debug_info.setLength(0);
   }//ShooterTick
 }//ShooterControl

@@ -21,7 +21,7 @@ public class WinchUpdate
   {
     return winchTalon.getPosition();
   }
-  
+
   public void EnableDebug()
   {
     mDebug = 1;
@@ -41,14 +41,19 @@ public class WinchUpdate
   {
     mEnabled = 0;
   }
-  
+
   public void WinchTick()
   {
-    if (Robot.InputSystem.B_Button_Control_Stick && !Robot.InputSystem.Y_Button_Control_Stick) {
+    if (Robot.InputSystem.B_Button_Control_Stick && !Robot.InputSystem.Y_Button_Control_Stick)
+    {
       winchTalon.set(-1);
-    } else if (!Robot.InputSystem.B_Button_Control_Stick && Robot.InputSystem.Y_Button_Control_Stick) {
+    }
+    else if (!Robot.InputSystem.B_Button_Control_Stick && Robot.InputSystem.Y_Button_Control_Stick)
+    {
       winchTalon.set(1);
-    } else {
+    }
+    else
+    {
       winchTalon.set(0);
     }
   }
