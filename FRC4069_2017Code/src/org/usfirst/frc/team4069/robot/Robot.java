@@ -38,8 +38,8 @@ public class Robot extends SampleRobot
     mWinchController = new WinchUpdate();
     mMoveFunctions = new MoveFunctions(driverStick); //pass joystick
 
-    Thread thread = new Thread(new VisionThreadNew());
-    thread.start();
+  //  Thread thread = new Thread(new VisionThreadNew());
+//    thread.start();
     mLastDashboardUpdateTime = System.currentTimeMillis();
   }// Robot()
 
@@ -66,7 +66,20 @@ public class Robot extends SampleRobot
     } // while isEnabled
   } // operatorControl
 
-
+  public void autonomous()
+  {
+    mMoveFunctions.mRobotDrive.setSafetyEnabled(false);
+    long startime = System.currentTimeMillis();
+    mMoveFunctions.MoveStraight(0.5, 2);
+    
+    while((System.currentTimeMillis() - startime) < 5000)
+    {
+      mMoveFunctions.Tick();      
+    }
+    mMoveFunctions.Stop();
+  }
+  
+  
   /**
    * Update smart dashboard every 1 second
    */

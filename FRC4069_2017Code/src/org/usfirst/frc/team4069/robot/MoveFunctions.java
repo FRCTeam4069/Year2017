@@ -43,7 +43,7 @@ public class MoveFunctions
   double mLeftEncoderOrigValue=0;
   double mRightEncoderOrigValue = 0;
   
-  int mType=0;
+  int mType=-1;
   double mSpeed=0;
   double mDistanceWanted=0;
   double mDirection = 0;
@@ -70,8 +70,6 @@ public class MoveFunctions
     mRobotDrive.setInvertedMotor(MotorType.kRearRight, true);
     mRobotDrive.setExpiration(0.1);
     
-    initialLeftCount = leftEncoder.get() * METERS_PER_COUNT;
-    initialRightCount = rightEncoder.get() * METERS_PER_COUNT;
   }
   
   
@@ -94,6 +92,20 @@ public class MoveFunctions
     return true;
   } //updatedrivemotors
   
+
+  public void MoveStraight(double speed,double distance)
+  {
+    mType = DRIVE_STRAIGHT;
+    Drive_Straight_Init();
+  }
+  
+  public void Stop()
+  {
+    mType=-1;
+    leftDriveMotor.set(0);
+    rightDriveMotor.set(0);
+    
+  }
   
   /**
    * Have robot move from current location and direction to a location distance 
@@ -137,6 +149,12 @@ public class MoveFunctions
 
   }
   
+  
+  private void Drive_Straight_Init()
+  {
+    initialLeftCount = leftEncoder.get() * METERS_PER_COUNT;
+    initialRightCount = rightEncoder.get() * METERS_PER_COUNT;
+  }
   
   private void Drive_Straight_Tick()
   {
