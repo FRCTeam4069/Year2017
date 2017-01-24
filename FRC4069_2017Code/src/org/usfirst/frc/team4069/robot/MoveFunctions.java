@@ -159,8 +159,10 @@ public class MoveFunctions
   
   private void Drive_Straight_Tick()
   {
-    if (driveStrMeters <= ((leftEncoder.get() * METERS_PER_COUNT - initialLeftCount) + (rightEncoder.get() * METERS_PER_COUNT - initialRightCount)) / 2) {
+    if (driveStrMeters >= ((-leftEncoder.get() * METERS_PER_COUNT - initialLeftCount) + (rightEncoder.get() * METERS_PER_COUNT - initialRightCount)) / 2) 
+    {
       Stop();
+      return;
     }
     double leftDelta = leftEncoder.get() * METERS_PER_COUNT - initialLeftCount;
     double rightDelta = rightEncoder.get() * METERS_PER_COUNT - initialRightCount;
