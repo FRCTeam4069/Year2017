@@ -9,11 +9,6 @@ import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 
 public class MoveFunctions
 {
-  public static final int DRIVE_STOPPED = 0;
-  public static final int DRIVE_STRAIGHT= 1;
-  public static final int DRIVE_CURVE = 2;
-  public static final int DRIVE_TRACE = 3;
-  
   private Talon leftDriveMotor;
   private Talon rightDriveMotor;
   public Encoder leftEncoder;
@@ -27,6 +22,7 @@ public class MoveFunctions
   private double DRIVE_STRAIGHT_SPEED = 0.4;
   
   private double initialLeftCount, initialRightCount;
+  private double driveStrMeters = 0;
   
   public RobotDrive mRobotDrive; // class that handles basic drive
   public double driverRobotSpeed = 0; // velocity of robot -1 full reverse, +1 = full
@@ -43,7 +39,7 @@ public class MoveFunctions
   double mLeftEncoderOrigValue=0;
   double mRightEncoderOrigValue = 0;
   
-  int mType=-1;
+  MoveStatus mType = MoveStatus.DRIVE_STOPPED;
   double mSpeed=0;
   double mDistanceWanted=0;
   double mDirection = 0;
@@ -93,16 +89,17 @@ public class MoveFunctions
   } //updatedrivemotors
   
 
-  public void MoveStraight(double speed,double distance)
+  public void MoveStraight(double speed, double distance)
   {
-    mType = DRIVE_STRAIGHT;
+    mType = MoveStatus.DRIVE_STRAIGHT;
     DRIVE_STRAIGHT_SPEED = speed;
+    driveStrMeters = distance;
     Drive_Straight_Init();
   }
   
   public void Stop()
   {
-    mType=-1;
+    mType = MoveStatus.DRIVE_STOPPED;
     leftDriveMotor.set(0);
     rightDriveMotor.set(0);
     
@@ -159,6 +156,9 @@ public class MoveFunctions
   
   private void Drive_Straight_Tick()
   {
+    if (driveStrMeters <= ((leftEncoder.get() - initialLeftCount) + (rightEncoder.get() - initialRightCount)) * (METERS_PER_COUNT * 2)) {
+      Stop();
+    }
     double leftDelta = leftEncoder.get() * METERS_PER_COUNT - initialLeftCount;
     double rightDelta = rightEncoder.get() * METERS_PER_COUNT - initialRightCount;
     double error = leftDelta - rightDelta;
@@ -175,6 +175,11 @@ public class MoveFunctions
   {
     
   }
-  
+ 
+  private enum MoveStatus {
+    DRIVE_STOPPED,
+    DRIVE_STRAIGHT,
+    DRIVE_CURVE
+  }
   
 }

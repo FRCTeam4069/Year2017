@@ -70,16 +70,9 @@ public class Robot extends SampleRobot
   public void autonomous()
   {
     mMoveFunctions.mRobotDrive.setSafetyEnabled(false);
-    long startime = System.currentTimeMillis();
-    mMoveFunctions.MoveStraight(0.25, 2);
     mMoveFunctions.leftEncoder.reset();
     mMoveFunctions.rightEncoder.reset();
-    while((System.currentTimeMillis() - startime) < 5000)
-    {
-      mMoveFunctions.Tick();  
-      SendDataToSmartDashboard();
-    }
-    mMoveFunctions.Stop();
+    mMoveFunctions.MoveStraight(0.25, 2);
   }
   
   
