@@ -78,7 +78,7 @@ public class ShooterControl
    * ShooterTick : Should be called with all the other update functions after inputs have been read/updated
    * IF proper button held down, will call set speed to set to wanted RPM's
    */
-  public void ShooterTick(Joystick _joy)
+  public void Tick(Joystick _joy)
   {
     long timesincelastupdate = System.currentTimeMillis() - mlastUpdateTime;
     /* get gamepad axis */

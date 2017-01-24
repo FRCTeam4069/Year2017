@@ -42,7 +42,7 @@ public class WinchUpdate
     mEnabled = 0;
   }
 
-  public void WinchTick()
+  public void Tick()
   {
     if (Robot.InputSystem.B_Button_Control_Stick && !Robot.InputSystem.Y_Button_Control_Stick)
     {

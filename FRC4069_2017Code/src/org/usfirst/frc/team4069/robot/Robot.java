@@ -13,33 +13,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot
 {
-  RobotDrive mRobotDrive; // class that handles basic drive
-  double driverRobotSpeed = 0; // velocity of robot -1 full reverse, +1 = full
-                               // forward
-  double driverRobotTurnDirection = 0; // x axis of drivers left joystick
-
-  // Left and right drive motor talons control the drive motors on either side
-  // of the robot
-  public Talon leftDriveMotorTalon;
-  public Talon rightDriveMotorTalon;
-
-  private Encoder leftDriveEncoder;
-  private Encoder rightDriveEncoder;
-
-  // Control sensitivity of drive motors for driving and steering
-  private LowPassFilter leftDriveMotorLowPassFilter;
-  private LowPassFilter rightDriveMotorLowPassFilter;
-
-  // Shooter Control Class Instance
- private ShooterControl mShooterController;
- private WinchUpdate mWinchController;
-
-  // Pull prefs from RoboRio's flash
+ private ShooterControl mShooterController;   //shooter functions
+ private WinchUpdate mWinchController;        //winch functions
+ private MoveFunctions mMoveFunctions;        //ALL robot movement functions
+ 
   Preferences prefs = Preferences.getInstance();
 
-  double ming = 0.0;
-
-  // init driver and control sticks
   Joystick driverStick = new Joystick(0); // set to ID 1 in DriverStation
   Joystick controlStick = new Joystick(1); // set to ID 2 in DriverStation
 
@@ -48,7 +27,6 @@ public class Robot extends SampleRobot
   @Override
   public void robotInit()
   {
-    ming = prefs.getDouble("minG", 1.0);
   }
 
   /********************************************************************************
@@ -56,27 +34,9 @@ public class Robot extends SampleRobot
    */
   public Robot()
   {
-    leftDriveMotorTalon = new Talon(IOMapping.LEFT_DRIVE_MOTOR_PWM_PORT);
-    rightDriveMotorTalon = new Talon(IOMapping.RIGHT_DRIVE_MOTOR_PWM_PORT);
-    mRobotDrive = new RobotDrive(leftDriveMotorTalon, rightDriveMotorTalon);
-    mRobotDrive.setInvertedMotor(MotorType.kRearLeft, true);
-    mRobotDrive.setInvertedMotor(MotorType.kRearRight, true);
-    mRobotDrive.setExpiration(0.1);
-
-    ming = prefs.getDouble("minG", 1.0);
-    System.out.println("MING = " + ming);
-
-    // vcap.set(propId, value)
-
-    leftDriveMotorLowPassFilter = new LowPassFilter(350);
-    rightDriveMotorLowPassFilter = new LowPassFilter(250);
-
-    leftDriveEncoder = new Encoder(IOMapping.LEFT_DRIVE_ENCODER_1, IOMapping.LEFT_DRIVE_ENCODER_2);
-    rightDriveEncoder = new Encoder(IOMapping.RIGHT_DRIVE_ENCODER_1, IOMapping.RIGHT_DRIVE_ENCODER_2);
-
     mShooterController = new ShooterControl();
-    
     mWinchController = new WinchUpdate();
+    mMoveFunctions = new MoveFunctions(driverStick); //pass joystick
 
     //Thread thread = new Thread(new VisionThreadNew());
 //    thread.start();
@@ -88,43 +48,24 @@ public class Robot extends SampleRobot
   @Override
   public void operatorControl()
   {
-    mRobotDrive.setSafetyEnabled(true);
+    mMoveFunctions.mRobotDrive.setSafetyEnabled(true);
     while (isOperatorControl() && isEnabled())
     {
       InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
-      UpdateDriveMotors(); // update drive motors
-      mShooterController.ShooterTick(controlStick); // update shooter
-      mWinchController.WinchTick();
-
-      // Last move robot. Let the robotdrive class handle the driving aspect of
-      // the robot
-      mRobotDrive.arcadeDrive(driverRobotSpeed, driverRobotTurnDirection); // move robot
-
+      mMoveFunctions.UpdateDriverInputs(); // update driver inputs
+      mShooterController.Tick(controlStick); // update shooter
+      mWinchController.Tick();
+      mMoveFunctions.Tick();   //Give move functions a tick (unrelated to updatedriverinputs)
+      
+ 
       SendDataToSmartDashboard();
 
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled
   } // operatorControl
 
-  /**
-   * 4069 drivers like their drive buttons configured in a interesting manner.
-   * This routine sets the robot speed and direction vars for update to arcade
-   * drive
-   * 
-   * @author EA
-   */
-  boolean UpdateDriveMotors()
-  {
-    // Combined speed of the drive motors
-    double combined = driverStick.getRawAxis(3) * -1 + driverStick.getAxis(AxisType.kZ);
-    driverRobotSpeed = leftDriveMotorLowPassFilter.calculate(combined);
-    // Calculate robot turn direction from the left drive joystick's x-axis
-    // (left-right)
-    driverRobotTurnDirection = rightDriveMotorLowPassFilter.calculate(driverStick.getAxis(AxisType.kX));
-    return true;
-  } //updatedrivemotors
 
   /**
    * Update smart dashboard every 1 second
@@ -135,8 +76,8 @@ public class Robot extends SampleRobot
     if (deltat > 1000)
     {
       System.out.println("xcenter = " + VisionThread.xcenter);
-      SmartDashboard.putNumber("LEFTENCODER", leftDriveEncoder.get());
-      SmartDashboard.putNumber("RIGHTENCODER", rightDriveEncoder.get());
+      SmartDashboard.putNumber("LEFTENCODER", mMoveFunctions.leftEncoder.get());
+      SmartDashboard.putNumber("RIGHTENCODER", mMoveFunctions.rightEncoder.get());
       SmartDashboard.putNumber("SHOOTERENCODER", mShooterController.GetShooterPosition());
       SmartDashboard.putNumber("XCENTER", VisionThread.xcenter);
       mLastDashboardUpdateTime = System.currentTimeMillis();
