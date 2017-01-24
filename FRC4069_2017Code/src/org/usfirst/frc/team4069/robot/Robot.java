@@ -73,6 +73,10 @@ public class Robot extends SampleRobot
     mMoveFunctions.leftEncoder.reset();
     mMoveFunctions.rightEncoder.reset();
     mMoveFunctions.MoveStraight(0.25, 2);
+    while (isAutonomous() && isEnabled()) {
+      mMoveFunctions.Tick();
+    }
+    
   }
   
   

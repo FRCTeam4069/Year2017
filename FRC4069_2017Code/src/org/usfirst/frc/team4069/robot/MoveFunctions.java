@@ -112,7 +112,7 @@ public class MoveFunctions
   {
     mLeftEncoderOrigValue = leftEncoder.get();
     mRightEncoderOrigValue= rightEncoder.get();
-    mSpeed =speed;
+    mSpeed = speed;
     mDirection = direction;
     mDistanceWanted = distance;
   }//Move
@@ -156,7 +156,8 @@ public class MoveFunctions
   
   private void Drive_Straight_Tick()
   {
-    if (driveStrMeters <= ((leftEncoder.get() - initialLeftCount) + (rightEncoder.get() - initialRightCount)) * (METERS_PER_COUNT * 2)) {
+    System.out.println("tick");
+    if (driveStrMeters <= ((leftEncoder.get() - initialLeftCount) + (rightEncoder.get() - initialRightCount)) / (METERS_PER_COUNT * 2)) {
       Stop();
     }
     double leftDelta = leftEncoder.get() * METERS_PER_COUNT - initialLeftCount;
