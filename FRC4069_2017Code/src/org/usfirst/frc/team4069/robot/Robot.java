@@ -49,6 +49,7 @@ public class Robot extends SampleRobot
   public void operatorControl()
   {
     mMoveFunctions.mRobotDrive.setSafetyEnabled(true);
+    SendDataToSmartDashboard();
     while (isOperatorControl() && isEnabled())
     {
       InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
@@ -70,11 +71,13 @@ public class Robot extends SampleRobot
   {
     mMoveFunctions.mRobotDrive.setSafetyEnabled(false);
     long startime = System.currentTimeMillis();
-    mMoveFunctions.MoveStraight(0.5, 2);
-    
+    mMoveFunctions.MoveStraight(0.25, 2);
+    mMoveFunctions.leftEncoder.reset();
+    mMoveFunctions.rightEncoder.reset();
     while((System.currentTimeMillis() - startime) < 5000)
     {
-      mMoveFunctions.Tick();      
+      mMoveFunctions.Tick();  
+      SendDataToSmartDashboard();
     }
     mMoveFunctions.Stop();
   }
@@ -86,15 +89,15 @@ public class Robot extends SampleRobot
   void SendDataToSmartDashboard()
   {
     long deltat = mLastDashboardUpdateTime - System.currentTimeMillis();
-    if (deltat > 1000)
-    {
+//    if (deltat > 1000)
+//    {
       System.out.println("xcenter = " + VisionThread.xcenter);
       SmartDashboard.putNumber("LEFTENCODER", mMoveFunctions.leftEncoder.get());
       SmartDashboard.putNumber("RIGHTENCODER", mMoveFunctions.rightEncoder.get());
       SmartDashboard.putNumber("SHOOTERENCODER", mShooterController.GetShooterPosition());
       SmartDashboard.putNumber("XCENTER", VisionThread.xcenter);
       mLastDashboardUpdateTime = System.currentTimeMillis();
-    }
+  //  }
   } // SendDataToSmartDashboard
   
   

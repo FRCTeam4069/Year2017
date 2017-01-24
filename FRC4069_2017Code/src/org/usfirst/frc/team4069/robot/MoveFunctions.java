@@ -24,7 +24,7 @@ public class MoveFunctions
   
   private final double ERROR_SCALING_CONST_P = 10;
   private final double METERS_PER_COUNT = 0.002133333;
-  private final double DRIVE_STRAIGHT_SPEED = 0.4;
+  private double DRIVE_STRAIGHT_SPEED = 0.4;
   
   private double initialLeftCount, initialRightCount;
   
@@ -96,6 +96,7 @@ public class MoveFunctions
   public void MoveStraight(double speed,double distance)
   {
     mType = DRIVE_STRAIGHT;
+    DRIVE_STRAIGHT_SPEED = speed;
     Drive_Straight_Init();
   }
   
