@@ -145,7 +145,7 @@ public class MoveFunctions
     double error = leftDelta - rightDelta;
     double correctionFactor = error * ERROR_SCALING_CONST_P;
     leftDriveMotor.set(DRIVE_STRAIGHT_SPEED + correctionFactor);
-    rightDriveMotor.set(DRIVE_STRAIGHT_SPEED - correctionFactor);
+    rightDriveMotor.set(-(DRIVE_STRAIGHT_SPEED - correctionFactor));
   }
   
   private void Drive_Curve_Tick()
