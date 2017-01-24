@@ -10,18 +10,23 @@ import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 public class MoveFunctions
 {
   public static final int DRIVE_STOPPED = 0;
-  public  static final int DRIVE_STRAIGHT= 1;
+  public static final int DRIVE_STRAIGHT= 1;
   public static final int DRIVE_CURVE = 2;
   public static final int DRIVE_TRACE = 3;
   
   private Talon leftDriveMotor;
   private Talon rightDriveMotor;
-  public  Encoder leftEncoder;
+  public Encoder leftEncoder;
   public Encoder rightEncoder;
   private LowPassFilter leftDriveMotorLowPassFilter;
   private LowPassFilter rightDriveMotorLowPassFilter;
   private Joystick driverStick;
   
+  private final double ERROR_SCALING_CONST_P = 10;
+  private final double METERS_PER_COUNT = 1 / 2048;
+  private final double DRIVE_STRAIGHT_SPEED = 0.4;
+  
+  private double initialLeftCount, initialRightCount;
   
   public RobotDrive mRobotDrive; // class that handles basic drive
   public double driverRobotSpeed = 0; // velocity of robot -1 full reverse, +1 = full
@@ -64,6 +69,9 @@ public class MoveFunctions
     mRobotDrive.setInvertedMotor(MotorType.kRearLeft, true);
     mRobotDrive.setInvertedMotor(MotorType.kRearRight, true);
     mRobotDrive.setExpiration(0.1);
+    
+    initialLeftCount = leftEncoder.get() * METERS_PER_COUNT;
+    initialRightCount = rightEncoder.get() * METERS_PER_COUNT;
   }
   
   
@@ -99,7 +107,7 @@ public class MoveFunctions
     mDistanceWanted = distance;
   }//Move
 
-  public void MoveToRelativePosition(double dx,double dy,double speed)
+  public void MoveToRelativePosition(double dx, double dy, double speed)
   {
     
   } 
@@ -113,8 +121,8 @@ public class MoveFunctions
     switch(mType)
     {
       case DRIVE_STRAIGHT:
-        break;
-      case DRIVE_CURVE :
+        Drive_Straight_Tick();
+      case DRIVE_CURVE:
         break;
       case DRIVE_STOPPED:
         break;
@@ -132,7 +140,14 @@ public class MoveFunctions
   
   private void Drive_Straight_Tick()
   {
+    double leftDelta = leftEncoder.get() * METERS_PER_COUNT - initialLeftCount;
+    double rightDelta = rightEncoder.get() * METERS_PER_COUNT - initialRightCount;
+    double error = leftDelta - rightDelta;
+    double correctionFactor = error * ERROR_SCALING_CONST_P;
+    leftDriveMotor.set(DRIVE_STRAIGHT_SPEED + correctionFactor);
+    rightDriveMotor.set(DRIVE_STRAIGHT_SPEED - correctionFactor);
   }
+  
   private void Drive_Curve_Tick()
   {
     
