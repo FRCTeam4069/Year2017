@@ -170,7 +170,9 @@ public class VideoCaptureThread implements Runnable
                  // we could keep last frame sent and resend it, but calling routine could do that
   }// GetFrame
 
-  /*
+  
+  
+  /*****************************************************************************************
    * Init USB camera
    */
   private void SetupUSBCamera()
@@ -194,6 +196,7 @@ public class VideoCaptureThread implements Runnable
       }
     } // while !open
 
+    
     vcap.set(CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1);
 
     vcap.set(CV_CAP_PROP_BRIGHTNESS, 1);
@@ -206,9 +209,9 @@ public class VideoCaptureThread implements Runnable
     cameraConnected = true;
     System.out.println("Successfully connected to USB Camera Stream");
 
-  }
+  } //SetupUSBCamera
 
-  /*
+  /**************************************************************************************
    * Sets up IP camera, must pass IP address as string ex 192.168.1.44
    */
   private void SetupIPCamera(String ip)

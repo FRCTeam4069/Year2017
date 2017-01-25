@@ -71,15 +71,18 @@ public class VisionThreadNew implements Runnable
   Preferences prefs = Preferences.getInstance();
   CvSource outputStream;
 
+  public VisionThreadNew(VideoCaptureThread vidcapinstance,Thread vcap_handle)
+  {
+    vcap_thread_instance = vidcapinstance; //to access getframe
+    vcap_thread_handle = vcap_handle;  //for thread control
+  }
+  
+  
   public void run()
   {
     Mat img = new Mat();
     Mat thresholded = new Mat();
     outputStream = CameraServer.getInstance().putVideo("USB Camera 0", 640, 480);
-
-    vcap_thread_instance = new VideoCaptureThread(); // Create instance of runnable class
-    vcap_thread_handle = new Thread(vcap_thread_instance); // spawn thread to handle runnable class
-    vcap_thread_handle.start(); // Calls run() method of videoCapture class below
 
     targets.matchStart = false;
     targets.validFrame = false;

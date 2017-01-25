@@ -24,6 +24,13 @@ public class Robot extends SampleRobot
 
   long mLastDashboardUpdateTime = 0;
 
+  VideoCaptureThread video_capture_instance;
+  Thread VideoCaptureThreadHandle;
+  
+  VisionThreadNew vision_processor_instance;
+  Thread VisionProcessorThreadHandle;
+  
+  
   @Override
   public void robotInit()
   {
@@ -38,8 +45,16 @@ public class Robot extends SampleRobot
     mWinchController = new WinchUpdate();
     mMoveFunctions = new MoveFunctions(driverStick); //pass joystick
 
-  //  Thread thread = new Thread(new VisionThreadNew());
-//    thread.start();
+    video_capture_instance = new VideoCaptureThread();
+    VideoCaptureThreadHandle = new Thread(video_capture_instance);
+    VideoCaptureThreadHandle.start();
+    video_capture_instance.Enable();  //begin getting frames.
+ 
+    vision_processor_instance = new VisionThreadNew(video_capture_instance,VideoCaptureThreadHandle);  //pass in refs to video capture thread so it can grab frames
+    
+    VisionProcessorThreadHandle = new Thread(vision_processor_instance);
+    VisionProcessorThreadHandle.start();
+    
     mLastDashboardUpdateTime = System.currentTimeMillis();
   }// Robot()
 
