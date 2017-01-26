@@ -74,6 +74,7 @@ public class Robot extends SampleRobot
       mWinchController.Tick();
       mMoveController.Tick();   //Give move functions a tick (unrelated to updatedriverinputs)
       
+      double xc = vision_processor_instance.xcenter;
  
       SendDataToSmartDashboard();
 
@@ -102,11 +103,11 @@ public class Robot extends SampleRobot
     long deltat = mLastDashboardUpdateTime - System.currentTimeMillis();
     if (deltat > 200) //5 times/sec
     {
-      System.out.println("xcenter = " + VisionThread.xcenter);
+      System.out.println("xcenter = " + vision_processor_instance.xcenter);
       SmartDashboard.putNumber("LEFTENCODER", mMoveController.leftEncoder.get());
       SmartDashboard.putNumber("RIGHTENCODER", mMoveController.rightEncoder.get());
       SmartDashboard.putNumber("SHOOTERENCODER", mShooterController.GetShooterPosition());
-      SmartDashboard.putNumber("XCENTER", VisionThread.xcenter);
+      SmartDashboard.putNumber("XCENTER", vision_processor_instance.xcenter);
       SmartDashboard.putNumber("CM Traveled:", mMoveController.AverageDistanceTraveledInCM());
       mLastDashboardUpdateTime = System.currentTimeMillis();
     }

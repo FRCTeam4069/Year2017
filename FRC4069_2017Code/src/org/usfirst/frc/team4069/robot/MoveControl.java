@@ -43,17 +43,19 @@ public class MoveControl
   double mLeftEncoderOrigValue = 0;
   double mRightEncoderOrigValue = 0;
 
-  MoveStatus mType = MoveStatus.DRIVE_STOPPED;
+  private MoveStatus mCurrentCommand = MoveStatus.DRIVE_STOPPED;
+  
   double mSpeed = 0;
-  double mDistanceWanted = 0;
-  double mDirection = 0;
+  double mDistance = 0;
+  double mDirection = 0;  //-1 hard left, +1 hard right, 0 straight
+  
   double mCurTime = System.currentTimeMillis();
 
   double mCurVelocity = 0.0;
 
   private enum MoveStatus
   {
-    DRIVE_STOPPED, DRIVE_STRAIGHT, DRIVE_CURVE, DRIVE_OPERATOR_CONTROL, DRIVE_NEXT_COMMAND
+    DRIVE_STOPPED, DRIVE_STRAIGHT, DRIVE_TRACE, DRIVE_OPERATOR_CONTROL, DRIVE_NEXT_COMMAND
   }
 
   // ALL class global vars go above here!
@@ -97,12 +99,12 @@ public class MoveControl
    */
   public void Tick()
   {
-    switch (mType)
+    switch (mCurrentCommand)
     {
     case DRIVE_STRAIGHT:
       Drive_Straight_Tick();
-    case DRIVE_CURVE:
-      Drive_Curve_Tick();
+    case DRIVE_TRACE:
+      Drive_Trace_Tick();
       break;
     case DRIVE_STOPPED:
       Stop_Tick();
@@ -118,7 +120,7 @@ public class MoveControl
 
   public void Stop()
   {
-    mType = MoveStatus.DRIVE_STOPPED;
+    mCurrentCommand = MoveStatus.DRIVE_STOPPED;
     leftDriveMotor.set(0); // usually would let tick do this, but stopping is serious biz
     rightDriveMotor.set(0);
   }// Stop
@@ -145,7 +147,7 @@ public class MoveControl
 
   public void MoveStraight(double speed, double distance)
   {
-    mType = MoveStatus.DRIVE_STRAIGHT;
+    mCurrentCommand = MoveStatus.DRIVE_STRAIGHT;
     DRIVE_STRAIGHT_SPEED = speed;
     driveStrCM = distance;
     leftEncoder.reset();
@@ -161,7 +163,7 @@ public class MoveControl
     if (averageDistance >= driveStrCM)
     {
       Stop();
-      mType = MoveStatus.DRIVE_NEXT_COMMAND;
+      mCurrentCommand = MoveStatus.DRIVE_NEXT_COMMAND;
       return;
     }
 
@@ -173,9 +175,41 @@ public class MoveControl
     rightDriveMotor.set(-(DRIVE_STRAIGHT_SPEED + correctionFactor)); // -err means right ahead, add -err to right speed
   }// Drive_Straight_Tick
 
-  private void Drive_Curve_Tick()
+  
+  /**
+   * MoveTrace direction is -1 to 1, -1 means drive hard left, 1 means drive hard right
+   * @param dir -1 left, +1 right 0 straight
+   * @param distance  distance in CM to travel
+   * @param speed  base speed to travel, scaled by direction
+   */
+  public void MoveTrace(double dir,double distance,double speed)
   {
-
+    mCurrentCommand=MoveStatus.DRIVE_TRACE;
+    mSpeed = speed;
+    mDistance = distance;
+    mDirection = dir;
+    leftEncoder.reset();
+    rightEncoder.reset(); //clear encoder distances/ticks
+  }
+  
+  private void Drive_Trace_Tick()
+  {
+    if (AverageDistanceTraveledInCM() < mDistance)
+    {
+      double leftSpeed = mSpeed + (mSpeed * (-1 * mDirection));
+      double rightSpeed= mSpeed + (mSpeed * (mDirection));
+      leftDriveMotor.set(leftSpeed);
+      rightDriveMotor.set(rightSpeed);
+    }
+    else
+    {
+      Stop();
+      mCurrentCommand = MoveStatus.DRIVE_NEXT_COMMAND;
+    }
+    
   }// Drive_Curve_Tick
 
+  
+  
+  
 } // class MoveFunctions
