@@ -23,8 +23,11 @@ public class ShooterControl
   private int mEnabled = 0;
   private int mDebug = 1;
 
-  public ShooterControl()
+  private Joystick _joy;
+  
+  public ShooterControl(Joystick stk)
   {
+    _joy = stk;
     shooterCANTalon = new CANTalon(IOMapping.SHOOTER_CANBUS_PORT);
     shooterCANTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
     shooterCANTalon.reverseSensor(false);
@@ -78,7 +81,7 @@ public class ShooterControl
    * ShooterTick : Should be called with all the other update functions after inputs have been read/updated
    * IF proper button held down, will call set speed to set to wanted RPM's
    */
-  public void Tick(Joystick _joy)
+  public void Tick()
   {
     long timesincelastupdate = System.currentTimeMillis() - mlastUpdateTime;
     /* get gamepad axis */

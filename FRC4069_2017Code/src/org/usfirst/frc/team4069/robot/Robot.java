@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends SampleRobot
 {
  private ShooterControl mShooterController;   //shooter functions
- private WinchUpdate mWinchController;        //winch functions
- private MoveFunctions mMoveFunctions;        //ALL robot movement functions
+ private WinchControl mWinchController;        //winch functions
+ private MoveControl mMoveController;        //ALL robot movement functions
  
   Preferences prefs = Preferences.getInstance();
 
@@ -41,9 +41,9 @@ public class Robot extends SampleRobot
    */
   public Robot()
   {
-    mShooterController = new ShooterControl();
-    mWinchController = new WinchUpdate();
-    mMoveFunctions = new MoveFunctions(driverStick); //pass joystick
+    mShooterController = new ShooterControl(controlStick);
+    mWinchController = new WinchControl();
+    mMoveController = new MoveControl(driverStick); //pass joystick
 
     video_capture_instance = new VideoCaptureThread();
     VideoCaptureThreadHandle = new Thread(video_capture_instance);
@@ -63,17 +63,16 @@ public class Robot extends SampleRobot
   @Override
   public void operatorControl()
   {
-    mMoveFunctions.mRobotDrive.setSafetyEnabled(true);
+    mMoveController.mRobotDrive.setSafetyEnabled(true);
     SendDataToSmartDashboard();
     while (isOperatorControl() && isEnabled())
     {
       InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
-      mMoveFunctions.UpdateDriverInputs(); // update driver inputs
-      mShooterController.Tick(controlStick); // update shooter
+      mShooterController.Tick(); // update shooter
       mWinchController.Tick();
-      mMoveFunctions.Tick();   //Give move functions a tick (unrelated to updatedriverinputs)
+      mMoveController.Tick();   //Give move functions a tick (unrelated to updatedriverinputs)
       
  
       SendDataToSmartDashboard();
@@ -84,12 +83,12 @@ public class Robot extends SampleRobot
 
   public void autonomous()
   {
-    mMoveFunctions.mRobotDrive.setSafetyEnabled(false);
-    mMoveFunctions.leftEncoder.reset();
-    mMoveFunctions.rightEncoder.reset();
-    mMoveFunctions.MoveStraight(0.25, 2);
+    mMoveController.mRobotDrive.setSafetyEnabled(false);
+    mMoveController.leftEncoder.reset();
+    mMoveController.rightEncoder.reset();
+    mMoveController.MoveStraight(0.25, 2);
     while (isAutonomous() && isEnabled()) {
-      mMoveFunctions.Tick();
+      mMoveController.Tick();
     }
     
   }
@@ -101,16 +100,16 @@ public class Robot extends SampleRobot
   void SendDataToSmartDashboard()
   {
     long deltat = mLastDashboardUpdateTime - System.currentTimeMillis();
-//    if (deltat > 1000)
-//    {
+    if (deltat > 200) //5 times/sec
+    {
       System.out.println("xcenter = " + VisionThread.xcenter);
-      SmartDashboard.putNumber("LEFTENCODER", mMoveFunctions.leftEncoder.get());
-      SmartDashboard.putNumber("RIGHTENCODER", mMoveFunctions.rightEncoder.get());
+      SmartDashboard.putNumber("LEFTENCODER", mMoveController.leftEncoder.get());
+      SmartDashboard.putNumber("RIGHTENCODER", mMoveController.rightEncoder.get());
       SmartDashboard.putNumber("SHOOTERENCODER", mShooterController.GetShooterPosition());
       SmartDashboard.putNumber("XCENTER", VisionThread.xcenter);
-      SmartDashboard.putNumber("DISTANCETRAVELED", mMoveFunctions.muffins);
+      SmartDashboard.putNumber("CM Traveled:", mMoveController.AverageDistanceTraveledInCM());
       mLastDashboardUpdateTime = System.currentTimeMillis();
-  //  }
+    }
   } // SendDataToSmartDashboard
   
   
