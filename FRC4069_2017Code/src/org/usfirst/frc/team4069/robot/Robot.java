@@ -47,14 +47,17 @@ public class Robot extends SampleRobot
 
     video_capture_instance = new VideoCaptureThread();
     VideoCaptureThreadHandle = new Thread(video_capture_instance);
-    VideoCaptureThreadHandle.start();
-    video_capture_instance.Enable();  //begin getting frames.
+    //VideoCaptureThreadHandle.start();
+    //video_capture_instance.Enable();  //begin getting frames.
  
     vision_processor_instance = new VisionThreadNew(video_capture_instance,VideoCaptureThreadHandle);  //pass in refs to video capture thread so it can grab frames
     
     VisionProcessorThreadHandle = new Thread(vision_processor_instance);
-    VisionProcessorThreadHandle.start();
+    //VisionProcessorThreadHandle.start();
     
+    mMoveController.leftEncoder.reset();
+    mMoveController.rightEncoder.reset();
+    mMoveController.MoveOperatorControl();
     mLastDashboardUpdateTime = System.currentTimeMillis();
   }// Robot()
 
@@ -87,10 +90,14 @@ public class Robot extends SampleRobot
     mMoveController.mRobotDrive.setSafetyEnabled(false);
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
-    mMoveController.MoveStraight(0.25, 2);
+    //mMoveController.leftEncoder.reset();
+    //mMoveController.rightEncoder.reset();
+    //mMoveController.MoveStraight(0.25, 2);
     while (isAutonomous() && isEnabled()) {
-      mMoveController.Tick();
+      SendDataToSmartDashboard();
+  //    mMoveController.Tick();
     }
+
     
   }
   
@@ -101,8 +108,8 @@ public class Robot extends SampleRobot
   void SendDataToSmartDashboard()
   {
     long deltat = mLastDashboardUpdateTime - System.currentTimeMillis();
-    if (deltat > 200) //5 times/sec
-    {
+//    if (deltat > 200) //5 times/sec
+//    {
       System.out.println("xcenter = " + vision_processor_instance.xcenter);
       SmartDashboard.putNumber("LEFTENCODER", mMoveController.leftEncoder.get());
       SmartDashboard.putNumber("RIGHTENCODER", mMoveController.rightEncoder.get());
@@ -110,7 +117,7 @@ public class Robot extends SampleRobot
       SmartDashboard.putNumber("XCENTER", vision_processor_instance.xcenter);
       SmartDashboard.putNumber("CM Traveled:", mMoveController.AverageDistanceTraveledInCM());
       mLastDashboardUpdateTime = System.currentTimeMillis();
-    }
+  //  }
   } // SendDataToSmartDashboard
   
   

@@ -80,6 +80,8 @@ public class MoveControl
     leftEncoder.setDistancePerPulse(CM_PER_TICK); // Tell encoders how far a tick is (in meters)
     rightEncoder.setDistancePerPulse(CM_PER_TICK);
 
+    leftEncoder.setReverseDirection(true);
+    
     mRobotDrive = new RobotDrive(leftDriveMotor, rightDriveMotor);
     mRobotDrive.setInvertedMotor(MotorType.kRearLeft, true);
     mRobotDrive.setInvertedMotor(MotorType.kRearRight, true);
@@ -131,6 +133,12 @@ public class MoveControl
     rightDriveMotor.set(0);
   }
 
+  public void MoveOperatorControl()
+  {
+    mCurrentCommand = MoveStatus.DRIVE_OPERATOR_CONTROL;
+    
+  }
+  
   private void Drive_Operator_Tick()
   {
     // Combined speed of the drive motors

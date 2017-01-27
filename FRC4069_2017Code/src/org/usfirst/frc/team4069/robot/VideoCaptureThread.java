@@ -6,6 +6,7 @@ package org.usfirst.frc.team4069.robot;
 
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
 
 import edu.wpi.cscore.CvSource;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -198,14 +199,16 @@ public class VideoCaptureThread implements Runnable
 
     
     vcap.set(CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1);
+    vcap.set(Videoio.CAP_PROP_AUTO_EXPOSURE,0);
+    vcap.set(Videoio.CAP_PROP_EXPOSURE, -10);
+    
+    vcap.set(Videoio.CAP_PROP_BRIGHTNESS,1); //CV_CAP_PROP_BRIGHTNESS, 1);
 
-    vcap.set(CV_CAP_PROP_BRIGHTNESS, 1);
+    vcap.set(Videoio.CAP_PROP_CONTRAST,0); //CV_CAP_PROP_CONTRAST, 0);
 
-    vcap.set(CV_CAP_PROP_CONTRAST, 0);
+    System.out.println(vcap.get(Videoio.CAP_PROP_FRAME_WIDTH));
 
-    System.out.println(vcap.get(CV_CAP_PROP_FRAME_WIDTH));
-
-    System.out.println(vcap.get(CV_CAP_PROP_FRAME_HEIGHT));
+    System.out.println(vcap.get(Videoio.CAP_PROP_FRAME_HEIGHT));
     cameraConnected = true;
     System.out.println("Successfully connected to USB Camera Stream");
 
