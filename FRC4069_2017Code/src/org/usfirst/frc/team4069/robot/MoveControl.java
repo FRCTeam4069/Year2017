@@ -24,7 +24,7 @@ public class MoveControl
   private final double TICKS_PER_WHEEL_ROTATION = 150;
   private final double WHEEL_CIRCUMFERENCE_IN_CM = 12.566; // 12.566cm = 4" diameter 2"radius= 2 * 6.28
 
-  private final double ERROR_SCALING_CONST_P = 10;
+  private final double ERROR_SCALING_CONST_P = .0010;
   private final double CM_PER_TICK = WHEEL_CIRCUMFERENCE_IN_CM / TICKS_PER_WHEEL_ROTATION;
 
   private final double TICKS_PER_CM = TICKS_PER_WHEEL_ROTATION / WHEEL_CIRCUMFERENCE_IN_CM;
@@ -105,6 +105,7 @@ public class MoveControl
     {
     case DRIVE_STRAIGHT:
       Drive_Straight_Tick();
+      break;
     case DRIVE_TRACE:
       Drive_Trace_Tick();
       break;
@@ -150,7 +151,9 @@ public class MoveControl
 
     // Last move robot. Let the robotdrive class handle the driving aspect of
     // the robot
-    mRobotDrive.arcadeDrive(driverRobotSpeed, driverRobotTurnDirection); // move robot
+    //mRobotDrive.arcadeDrive(driverRobotSpeed, driverRobotTurnDirection); // move robot
+    leftDriveMotor.set(-0.5);
+    rightDriveMotor.set(0.5);
   }// Drive_Operator_Tick
 
   public void MoveStraight(double speed, double distance)
@@ -215,9 +218,7 @@ public class MoveControl
       mCurrentCommand = MoveStatus.DRIVE_NEXT_COMMAND;
     }
     
-  }// Drive_Curve_Tick
-
-  
+  }// Drive_Curve_Tick 
   
   
 } // class MoveFunctions

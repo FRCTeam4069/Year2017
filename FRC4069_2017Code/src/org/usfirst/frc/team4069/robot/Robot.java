@@ -90,12 +90,11 @@ public class Robot extends SampleRobot
     mMoveController.mRobotDrive.setSafetyEnabled(false);
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
-    //mMoveController.leftEncoder.reset();
-    //mMoveController.rightEncoder.reset();
-    //mMoveController.MoveStraight(0.25, 2);
-    while (isAutonomous() && isEnabled()) {
+    mMoveController.MoveStraight(0.25, 200);
+    while (isAutonomous() && isEnabled()) 
+    {
       SendDataToSmartDashboard();
-  //    mMoveController.Tick();
+      mMoveController.Tick();
     }
 
     
