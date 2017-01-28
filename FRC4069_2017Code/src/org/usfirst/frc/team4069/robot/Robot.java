@@ -29,7 +29,7 @@ public class Robot extends SampleRobot
   
   VisionThreadNew vision_processor_instance;
   Thread VisionProcessorThreadHandle;
-  
+  public int ctr=0;
   
   @Override
   public void robotInit()
@@ -47,13 +47,13 @@ public class Robot extends SampleRobot
 
     video_capture_instance = new VideoCaptureThread();
     VideoCaptureThreadHandle = new Thread(video_capture_instance);
-    //VideoCaptureThreadHandle.start();
-    //video_capture_instance.Enable();  //begin getting frames.
+    VideoCaptureThreadHandle.start();
+    video_capture_instance.Enable();  //begin getting frames.
  
     vision_processor_instance = new VisionThreadNew(video_capture_instance,VideoCaptureThreadHandle);  //pass in refs to video capture thread so it can grab frames
     
     VisionProcessorThreadHandle = new Thread(vision_processor_instance);
-    //VisionProcessorThreadHandle.start();
+    VisionProcessorThreadHandle.start();
     
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
@@ -66,7 +66,7 @@ public class Robot extends SampleRobot
   @Override
   public void operatorControl()
   {
-    mMoveController.mRobotDrive.setSafetyEnabled(true);
+    mMoveController.mRobotDrive.setSafetyEnabled(false);
     SendDataToSmartDashboard();
     while (isOperatorControl() && isEnabled())
     {
@@ -77,7 +77,7 @@ public class Robot extends SampleRobot
       mWinchController.Tick();
       mMoveController.Tick();   //Give move functions a tick (unrelated to updatedriverinputs)
       
-      double xc = vision_processor_instance.xcenter;
+      //double xc = vision_processor_instance.lastXCenter;
  
       SendDataToSmartDashboard();
 
@@ -106,17 +106,20 @@ public class Robot extends SampleRobot
    */
   void SendDataToSmartDashboard()
   {
-    long deltat = mLastDashboardUpdateTime - System.currentTimeMillis();
-//    if (deltat > 200) //5 times/sec
-//    {
-      System.out.println("xcenter = " + vision_processor_instance.xcenter);
+    ctr++;
+    ctr%=1000;
+    long deltat =  System.currentTimeMillis()-mLastDashboardUpdateTime;
+    if (deltat > 1000) //5 times/sec
+    {
       SmartDashboard.putNumber("LEFTENCODER", mMoveController.leftEncoder.get());
       SmartDashboard.putNumber("RIGHTENCODER", mMoveController.rightEncoder.get());
       SmartDashboard.putNumber("SHOOTERENCODER", mShooterController.GetShooterPosition());
-      SmartDashboard.putNumber("XCENTER", vision_processor_instance.xcenter);
+      SmartDashboard.putNumber("XCENTER", vision_processor_instance.lastXCenter);
+      SmartDashboard.putNumber("MAPPED:", vision_processor_instance.lastMapped);
       SmartDashboard.putNumber("CM Traveled:", mMoveController.AverageDistanceTraveledInCM());
+      SmartDashboard.putNumber("CTR", ctr);;
       mLastDashboardUpdateTime = System.currentTimeMillis();
-  //  }
+    }
   } // SendDataToSmartDashboard
   
   

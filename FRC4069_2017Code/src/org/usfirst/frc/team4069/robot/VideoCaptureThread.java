@@ -26,7 +26,7 @@ public class VideoCaptureThread implements Runnable
 
   public boolean cameraConnected = false;
 
-  public Mat[] FrameQueue = new Mat[4];
+  public Mat[] FrameQueue;
   public int FrameInIndex = 0;
   public int FrameOutIndex = 0;
 
@@ -35,6 +35,7 @@ public class VideoCaptureThread implements Runnable
 
   private Mat frame; // current frame being read, dont use this
 
+  int mFrameBufferDepth = 6;
   int mKeepRunning = 1;
   int mCameraConnectionType = VCT_USB;
   boolean mEnabled = true;
@@ -43,6 +44,13 @@ public class VideoCaptureThread implements Runnable
 
   public void run()
   {
+    FrameQueue = new Mat[mFrameBufferDepth];
+    for(int i=0;i<mFrameBufferDepth;i++)
+    {
+      FrameQueue[i]=new Mat();
+    }
+    InLock = new Object();
+    OutLock = new Object(); 
     InitCapture();
 
     while (mKeepRunning == 1)
@@ -53,7 +61,7 @@ public class VideoCaptureThread implements Runnable
 
   public static void main(String args[])
   {
-    (new Thread(new VideoCaptureThread())).start();
+  //  (new Thread(new VideoCaptureThread())).start();
   }// main
 
   /**
@@ -78,6 +86,10 @@ public class VideoCaptureThread implements Runnable
   private void InitCapture()
   {
     vcap = new VideoCapture();
+    if (vcap==null)
+    {
+      System.out.println("vcap is null!");
+    }
     switch (mCameraConnectionType)
     {
     case VCT_USB:
@@ -101,6 +113,7 @@ public class VideoCaptureThread implements Runnable
     {
       if (mEnabled)
       {
+        //System.out.println("About to read frame index="+FrameInIndex);
         boolean state = vcap.read(FrameQueue[FrameInIndex]); // FrameInIndex is always 'safe' to write too by definition
         if (state == false)
         {
@@ -110,7 +123,7 @@ public class VideoCaptureThread implements Runnable
         {
           int getcurin = FrameInIndex; // always safe to read...
           getcurin++; // update locally to new values
-          getcurin &= 3;
+          getcurin %= (mFrameBufferDepth);
           if (getcurin != FrameOutIndex) // if we are not bumping up against frames waiting to be read...
           {
             synchronized (InLock) // only lock writes, reading is always ok
@@ -156,10 +169,10 @@ public class VideoCaptureThread implements Runnable
   {
     if (FrameOutIndex != FrameInIndex)
     {
-      Mat frameout = FrameQueue[FrameOutIndex].clone(); // NOTE copy!
+      Mat frameout = FrameQueue[FrameOutIndex]; //.clone(); // NOTE copy!
       int frametosend = FrameOutIndex; // safe to read...
       frametosend++;
-      frametosend &= 3; // do manipulations locally
+      frametosend %= mFrameBufferDepth; // do manipulations locally
 
       synchronized (OutLock) // only lock write, reading is always safe
       {
@@ -180,11 +193,11 @@ public class VideoCaptureThread implements Runnable
   {
     int videoStreamAddress = 0;
     System.out.println("Trying to connect to Camera stream... at: " + videoStreamAddress);
-
     int count = 1;
 
     while ((!vcap.open(videoStreamAddress)) && (mKeepRunning == 1))
     {
+      
       System.out.println("Error connecting to camera stream, retrying " + count);
       count++;
       try
@@ -197,18 +210,20 @@ public class VideoCaptureThread implements Runnable
       }
     } // while !open
 
+    vcap.set(Videoio.CAP_PROP_FRAME_WIDTH,320);
+    vcap.set(Videoio.CAP_PROP_FRAME_HEIGHT, 200);
     
     vcap.set(CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1);
-    vcap.set(Videoio.CAP_PROP_AUTO_EXPOSURE,0);
+   // vcap.set(Videoio.CAP_PROP_AUTO_EXPOSURE,0);
     vcap.set(Videoio.CAP_PROP_EXPOSURE, -10);
     
-    vcap.set(Videoio.CAP_PROP_BRIGHTNESS,1); //CV_CAP_PROP_BRIGHTNESS, 1);
+    vcap.set(Videoio.CAP_PROP_BRIGHTNESS,.1); //CV_CAP_PROP_BRIGHTNESS, 1);
 
     vcap.set(Videoio.CAP_PROP_CONTRAST,0); //CV_CAP_PROP_CONTRAST, 0);
 
-    System.out.println(vcap.get(Videoio.CAP_PROP_FRAME_WIDTH));
+    System.out.println("vcap width = "+vcap.get(Videoio.CAP_PROP_FRAME_WIDTH));
 
-    System.out.println(vcap.get(Videoio.CAP_PROP_FRAME_HEIGHT));
+    System.out.println("vcap height="+vcap.get(Videoio.CAP_PROP_FRAME_HEIGHT));
     cameraConnected = true;
     System.out.println("Successfully connected to USB Camera Stream");
 

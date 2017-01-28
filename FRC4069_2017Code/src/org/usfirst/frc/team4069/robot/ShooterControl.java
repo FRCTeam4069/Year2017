@@ -49,7 +49,7 @@ public class ShooterControl
 
   public double GetShooterPosition()
   {
-    return shooterCANTalon.getPosition();
+    return shooterCANTalon.getEncVelocity(); //.getEncPosition(); //.getSpeed(); //.get(); //.getPosition();
   }
   
   public void EnableDebug()
@@ -98,11 +98,13 @@ public class ShooterControl
       /* Speed mode */
       double targetSpeed = leftYstick * 1500.0; /* 1500 RPM in either direction */
       shooterCANTalon.changeControlMode(TalonControlMode.Speed);
-      shooterCANTalon.set(targetSpeed); /* 1500 RPM in either direction */
+      System.out.println("leftystick="+leftYstick+",target speed="+targetSpeed+",getspeed="+shooterCANTalon.getSpeed());
+      shooterCANTalon.set(60); //targetSpeed); /* 1500 RPM in either direction */
 
       /* append more signals to print when in speed mode. */
       sc_debug_info.append("\terr:");
       sc_debug_info.append(shooterCANTalon.getClosedLoopError());
+      sc_debug_info.append("speed:"+shooterCANTalon.getSpeed());
       sc_debug_info.append("\ttrg:");
       sc_debug_info.append(targetSpeed);
     }
