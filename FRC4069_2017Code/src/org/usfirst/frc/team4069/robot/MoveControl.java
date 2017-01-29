@@ -233,24 +233,32 @@ public class MoveControl
   /*
    * Given a number of degrees (0-360) and speed
    * rotates robot in place that number of degrees
+   * NOTE: + degrees turns clockwise
+   *       - degrees turns anticlockwise
    */
   
   public class PivotCommand extends MoveCommand
   {
-    double mWheelDistance = 0.0;
-
+    double mDistance = 0.0;
+    double mSpeed;
+    double mDegrees=0;
     public PivotCommand(double degrees, double speed)
     {
+      mSpeed=speed;
+      mDegrees=degrees;
+      
       degrees %= 360;
       double frac = degrees / 360; // fractional amount
       double bothwheeldist = -1 * frac * mDriveBaseCircumference;
-      mWheelDistance = bothwheeldist;
+      mDistance = bothwheeldist;
       mCmd = MoveStatus.DRIVE_PIVOT;
     }
 
     @Override
     public void Init()
     {
+      leftEncoder.reset();
+      rightEncoder.reset(); //zero counts
     }
 
     @Override
@@ -258,11 +266,33 @@ public class MoveControl
     {
       
     }
+    
+    //For + degrees left wheel goes forward, right wheel goes backwards
     @Override
     public int Tick()
     {
-      return 1;
-    }
+      double leftDistance = leftEncoder.getDistance(); //get left encoder as normal distance
+      double rightDistance = rightEncoder.getDistance() * -1; //right wheel is going backwards so distance is * -1
+      
+      double averageDistance = (leftDistance + rightDistance) / 2;
+
+      if (averageDistance >= mDistance)
+      {
+        leftDriveMotor.set(0);
+        rightDriveMotor.set(0);
+        Done();
+        return 1;
+      }
+
+      double error = leftDistance - rightDistance; // if error > 0 left is ahead subtract error from left
+                                                   // if error < 0 right is ahead add -error to right
+      double correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error
+
+      
+      leftDriveMotor.set(mSpeed - correctionFactor); // +err means left ahead, subtract from left speed
+      rightDriveMotor.set(mSpeed + correctionFactor); // -err means right ahead, add -err to right speed
+      return 0; //not done yet
+    }//Tick
   }// PivotCommand
 
   /*
