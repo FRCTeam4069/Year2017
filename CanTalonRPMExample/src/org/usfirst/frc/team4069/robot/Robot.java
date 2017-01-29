@@ -36,7 +36,7 @@ public class Robot extends IterativeRobot
   {
     /* first choose the sensor */
     _talon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
-    _talon.reverseSensor(false);
+    _talon.reverseSensor(true);
     _talon.configEncoderCodesPerRev(4096); // if using FeedbackDevice.QuadEncoder
     // _talon.configPotentiometerTurns(XXX), // if using FeedbackDevice.AnalogEncoder or AnalogPot
 
@@ -46,7 +46,7 @@ public class Robot extends IterativeRobot
     /* set closed loop gains in slot0 */
     _talon.setProfile(0);
     _talon.setF(0.1097);
-    _talon.setP(0.22);
+    _talon.setP(0.1133); //22);
     _talon.setI(0);
     _talon.setD(0);
   }

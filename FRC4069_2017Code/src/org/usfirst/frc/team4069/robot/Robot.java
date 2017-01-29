@@ -68,6 +68,9 @@ public class Robot extends SampleRobot
   {
     mMoveController.mRobotDrive.setSafetyEnabled(false);
     SendDataToSmartDashboard();
+    
+    mShooterController.Enable();
+    
     while (isOperatorControl() && isEnabled())
     {
       InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
