@@ -151,9 +151,7 @@ public class MoveControl
 
     // Last move robot. Let the robotdrive class handle the driving aspect of
     // the robot
-    //mRobotDrive.arcadeDrive(driverRobotSpeed, driverRobotTurnDirection); // move robot
-    leftDriveMotor.set(-0.5);
-    rightDriveMotor.set(0.5);
+    mRobotDrive.arcadeDrive(driverRobotSpeed, driverRobotTurnDirection); // move robot
   }// Drive_Operator_Tick
 
   public void MoveStraight(double speed, double distance)
