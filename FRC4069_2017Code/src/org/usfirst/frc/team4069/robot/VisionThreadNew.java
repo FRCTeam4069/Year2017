@@ -39,7 +39,7 @@ public class VisionThreadNew implements Runnable
   public static final double AUTO_STEADY_STATE = 1.9;
 
   public static final int minR = 0, minG = 70, minB = 0;
-  public static final int maxR = 95, maxG = 255, maxB = 255; //75;
+  public static final int maxR = 95, maxG = 255, maxB = 255; // 75;
 
   public static final double minHRatio = 1.5, minVRatio = 1.5;
   public static final double maxHRatio = 6.6, maxVRatio = 8.5;
@@ -47,22 +47,10 @@ public class VisionThreadNew implements Runnable
   public static final int MAX_SIZE = 255;
   public static final Scalar RED = new Scalar(0, 0, 255), BLUE = new Scalar(255, 0, 0), GREEN = new Scalar(0, 255, 0), ORANGE = new Scalar(0, 128, 255), YELLOW = new Scalar(0, 255, 255), PINK = new Scalar(255, 0, 255), WHITE = new Scalar(255, 255, 255);
 
-  /*
-   * CMY ranges C from 52 to 17%
-   *  Magenta of 0%
-   *  Yellow of  80 to 5
-   * 
-   */
-  
-  
-  
-  
   private boolean mDebug = false;
   private boolean mShowContours = true;
 
   private Target targets = new Target();
-  private Mat frame = new Mat();
-  private Mat outputframe = new Mat();
 
   private boolean mExitThread = false;
   private boolean mProcessFrames = true;
@@ -85,29 +73,21 @@ public class VisionThreadNew implements Runnable
   Preferences prefs = Preferences.getInstance();
   CvSource outputStream;
 
-  Scalar minRange,bminRange,cminRange;
-  Scalar maxRange,bmaxRange,cmaxRange;
+  Scalar minRange, bminRange, cminRange;
+  Scalar maxRange, bmaxRange, cmaxRange;
   LowPassFilter xLowPass;
-  
 
   public VisionThreadNew(VideoCaptureThread vidcapinstance, Thread vcap_handle)
   {
     vcap_thread_instance = vidcapinstance; // to access getframe
     vcap_thread_handle = vcap_handle; // for thread control
-    
-    
-    
-    //minRange = getRGBFromCMY(.17,0,.05);  //new Scalar(minB, minG, minR); RGB = 212,255,242
-    //maxRange = getRGBFromCMY(.52,0,.80); // //new Scalar(maxB, maxG, maxR); RGB=122,255,51
-    minRange = new Scalar(240,239,70); //119); //51,70,122);
-    maxRange = new Scalar(255,255,133); //242,255,212);
-    bminRange = new Scalar(194,236,28); //31, 245, 194);
-    bmaxRange = new Scalar(204,252,32); ////32, 252, 204);
-    
-    cminRange = new Scalar(240,239,22); //51,70,122);
-    cmaxRange = new Scalar(255,255,46); //242,255,212);
 
-    
+    minRange = new Scalar(240, 239, 70); // 119); //51,70,122);
+    maxRange = new Scalar(255, 255, 133); // 242,255,212);
+    bminRange = new Scalar(194, 236, 28); // 31, 245, 194);
+    bmaxRange = new Scalar(204, 252, 32); //// 32, 252, 204);
+    cminRange = new Scalar(240, 239, 22); // 51,70,122);
+    cmaxRange = new Scalar(255, 255, 46); // 242,255,212);
   }
 
   public void run()
@@ -116,15 +96,15 @@ public class VisionThreadNew implements Runnable
     Mat lastvalidimg = null;
 
     Mat thresholded = new Mat();
-    Mat thresholdedb= new Mat();
-    Mat thresholdedc= new Mat();
+    Mat thresholdedb = new Mat();
+    Mat thresholdedc = new Mat();
     outputStream = CameraServer.getInstance().putVideo("ProcessorOutput", 640, 480);
 
     targets.matchStart = false;
     targets.validFrame = false;
     targets.hotLeftOrRight = 0;
     xLowPass = new LowPassFilter(200);
-    
+
     while ((true) && (mExitThread == false))
     {
       if (mProcessFrames)
@@ -134,21 +114,21 @@ public class VisionThreadNew implements Runnable
         if (img != null)
         {
           lastvalidimg = img;
-           Scalar minScalar = new Scalar(prefs.getDouble("minB", minB), prefs.getDouble("minG", minG), prefs.getDouble("minR", minR));
-           Scalar maxScalar = new Scalar(prefs.getDouble("maxB", maxB), prefs.getDouble("maxG", maxG), prefs.getDouble("maxR", maxR));
+          Scalar minScalar = new Scalar(prefs.getDouble("minB", minB), prefs.getDouble("minG", minG), prefs.getDouble("minR", minR));
+          Scalar maxScalar = new Scalar(prefs.getDouble("maxB", maxB), prefs.getDouble("maxG", maxG), prefs.getDouble("maxR", maxR));
           Core.inRange(img, minRange, maxRange, thresholded); // Scalar(minB, minG, minR), Scalar(maxB, maxG, maxR), thresholded);
           Core.inRange(img, bminRange, bmaxRange, thresholdedb);
           Core.inRange(img, cminRange, cmaxRange, thresholdedc);
-          
+
           Imgproc.blur(thresholded, thresholded, new Size(3, 3));
-          Imgproc.blur(thresholdedb,thresholdedb,new Size(3,3));
-          Imgproc.blur(thresholdedc,thresholdedc,new Size(3,3));
+          Imgproc.blur(thresholdedb, thresholdedb, new Size(3, 3));
+          Imgproc.blur(thresholdedc, thresholdedc, new Size(3, 3));
 
           synchronized (targets)
           {
             findTargetNew(img, thresholded);
             findTargetNew(img, thresholdedb);
-            findTargetNew(img,thresholdedc);
+            findTargetNew(img, thresholdedc);
             CalculateDist();
           } // synchronized
           // outputStream.putFrame(img);
@@ -169,15 +149,7 @@ public class VisionThreadNew implements Runnable
     } // while true
   } // run
 
-  /**
-   * Main Thread method, calls start which results in run() being called above
-   * 
-   * @param args
-   */
-  // public static void main(String args[])
-  // {
-  // (new Thread(new VisionThreadNew())).start();
-  // }
+
 
   private void CalculateDist()
   {
@@ -193,6 +165,155 @@ public class VisionThreadNew implements Runnable
   {
     return ((num - a1) / (a2 - a1)) * (b2 - b1) - b2;
   }
+
+
+
+  // ----------------------------------------------------------------
+
+  private void findTargetNew(Mat original, Mat thresholded)
+  {
+    xcenter = 0;
+    int contourMin = 6;
+    MatOfInt4 hierarchy = new MatOfInt4();
+
+    ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+
+    Imgproc.findContours(thresholded, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+    double xAverage = 0.0;
+    double yAverage = 0.0;
+    int avgCtr = 0;
+    double contMaxArea = 0.0;
+    MatOfPoint contLargestArea;
+
+    Iterator<MatOfPoint> it = contours.iterator();
+    while (it.hasNext())
+    {
+      MatOfPoint mop = (MatOfPoint) it.next();
+      double area = Imgproc.contourArea(mop);
+      if (area < 80)
+      // if (mop.size().width < contourMin && mop.size().height < contourMin)
+      {
+        it.remove();
+      }
+      else
+      {
+        xcenter += mop.get(0, 0)[0] + mop.size().width / 2; // don't add to xcenter for removed contours
+        // Rect rect = Imgproc.boundingRect(mop);
+        // double area = Imgproc.contourArea(mop);
+        if (area > contMaxArea)
+        {
+          area = contMaxArea;
+          contLargestArea = mop;
+        }
+      }
+    } // for mop
+    // Now contours is 'cleaned' of ones too small
+
+    if (contours.size() > 0)
+    {
+      xcenter /= contours.size(); // average to get x center
+      mapped = Lerp(0, 640, -1, 1, xcenter); //
+
+      lastXCenter = xcenter;
+      lastMapped = mapped;
+
+      RotatedRect[] minRect = new RotatedRect[contours.size()];
+
+      avgCtr = 0;
+      xAverage = 0.0;
+      yAverage = 0.0;
+      for (int i = 0; i < contours.size(); i++)
+      {
+        MatOfPoint2f mop2f = new MatOfPoint2f(contours.get(i).toArray());
+        minRect[i] = Imgproc.minAreaRect(mop2f);
+        double curarea = Imgproc.contourArea(contours.get(i));
+
+        double contourWeight = curarea / contMaxArea; // 0-1.0 for weight of this contour
+
+        if ((mShowContours) && (contourWeight > .5))
+        {
+          Point[] rect_points = new Point[4];
+          minRect[i].points(rect_points);
+
+          for (int j = 0; j < 4; j++)
+          {
+            Imgproc.line(original, rect_points[j], rect_points[(j + 1) % 4], BLUE, 2);
+            xAverage += rect_points[j].x;
+            yAverage += rect_points[j].y;
+            avgCtr++;
+          }
+        } // if visualize
+
+        Rect box = minRect[i].boundingRect();
+
+        Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
+        Point center2 = new Point(3 + (box.x + box.width / 2), 3 + (box.y + box.height / 2));
+        Imgproc.line(original, center, center2, YELLOW, 3);
+      } // for i <contours.size
+      xAverage /= avgCtr;
+      yAverage /= avgCtr;
+      double nx = xLowPass.calculate(xAverage);
+      Point avgpt = new Point(nx, 0); // yAverage);
+      Point avgpt2 = new Point(nx, 320); // yAverage+2); //give some size
+      Imgproc.line(original, avgpt, avgpt2, GREEN, 1);
+    } // if contours.size >0
+  }// findTargetNew
+
+  private void NullTargets()
+  {
+    targets.HorizontalAngle = 0.0;
+    targets.VerticalAngle = 0.0;
+    targets.Horizontal_W_H_Ratio = 0.0;
+    targets.Horizontal_H_W_Ratio = 0.0;
+    targets.Vertical_W_H_Ratio = 0.0;
+    targets.Vertical_H_W_Ratio = 0.0;
+    targets.targetDistance = 0.0;
+    targets.targetLeftOrRight = 0;
+    targets.lastTargerLorR = 0;
+
+    targets.HorizGoal = false;
+    targets.VertGoal = false;
+    targets.HotGoal = false;
+  } // NullTargets
+
+  /**
+   * matToImage : Convert a Mat to a png
+   * 
+   * @param mat
+   * @return
+   */
+  private BufferedImage matToImage(Mat mat)
+  {
+    MatOfByte buffer = new MatOfByte();
+    Imgcodecs.imencode(".png", mat, buffer);
+    BufferedImage image = null;
+    try
+    {
+      image = ImageIO.read(new ByteArrayInputStream(buffer.toArray()));
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+    return image;
+  } // matToImage
+
+  Scalar getRGBFromCMY(double c, double m, double y)
+  {
+    Double Red = 255 * (1 - c);
+    Double Green = 255 * (1 - m);
+    Double Blue = 255 * (1 - y);
+
+    int r = Red.intValue();
+    int g = Green.intValue();
+    int b = Blue.intValue();
+
+    Scalar rgb = new Scalar(b, g, r);
+    return rgb;
+  }
+
+
 
   private void findTarget(Mat original, Mat thresholded)
   {
@@ -351,78 +472,113 @@ public class VisionThreadNew implements Runnable
       }
     } // synchronized
   }// findTarget
+  
+  
 
-  // ----------------------------------------------------------------
-
-  private void CleanContours(ArrayList<MatOfPoint> contours)
+  private class ColourRange
   {
+    public Scalar cmin;
+    public Scalar cmax;
 
-  }
-
-  private void findTargetNew(Mat original, Mat thresholded)
-  {
-    xcenter = 0;
-    int contourMin = 6;
-    MatOfInt4 hierarchy = new MatOfInt4();
-
-    ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-
-    Imgproc.findContours(thresholded, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
-    
-
-    Iterator<MatOfPoint> it = contours.iterator();
-    double xAverage = 0.0;
-    double yAverage = 0.0;
-    int avgCtr = 0;
-    double contMaxArea=0.0;
-    MatOfPoint contLargestArea;
-    
-    while (it.hasNext())
+    public ColourRange(int minr, int ming, int minb, int maxr, int maxg, int maxb)
     {
-      MatOfPoint mop = (MatOfPoint) it.next();
-      double area = Imgproc.contourArea(mop);
-      if (area < 80)
-      //if (mop.size().width < contourMin && mop.size().height < contourMin)
+      cmin = new Scalar(minb, ming, minr);
+      cmax = new Scalar(maxb, maxg, maxr);
+    }
+  }//class ColourRange
+  
+  
+  
+  private class ColourRegions
+  {
+    double mMinAreaAllowed = 80.0;
+    public ArrayList<ColourRange> mRange;
+    public ArrayList<Mat> mThresholds;
+    private MatOfInt4 mHierarchy = new MatOfInt4();
+    public ArrayList<MatOfPoint> mContours = new ArrayList<MatOfPoint>();
+
+    public MatOfPoint mLargestContour = null;
+    public double mLargestContourArea = 0.0;
+    public double mXCenter = 0.0;
+
+    void ColourRegions()
+    {
+    }
+
+    public void addRange(int minr, int ming, int minb, int maxr, int maxg, int maxb)
+    {
+      mRange.add(new ColourRange(minr, ming, minb, maxr, maxg, maxb));
+      mThresholds.add(new Mat());
+    }
+
+    public void setMinAreaAllowed(double ma)
+    {
+      mMinAreaAllowed = ma;
+    }
+
+    // Returns number of contours
+    public int CalcAll(Mat img)
+    {
+      for (int i = 0; i < mRange.size(); i++)
       {
-        it.remove();
+        ColourRange wrange = mRange.get(i);
+        Mat wthreshold = mThresholds.get(i);
+        Core.inRange(img, wrange.cmin, wrange.cmax, wthreshold);
+        Imgproc.blur(wthreshold, wthreshold, new Size(3, 3));
+        Imgproc.findContours(wthreshold, mContours, mHierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
       }
-      else
+
+      // now clear out any contours smaller than minAreaAllowed 6x6=36 etc 9x9=81
+      mXCenter = 0.0;
+      Iterator<MatOfPoint> it = mContours.iterator();
+      while (it.hasNext())
       {
-        xcenter += mop.get(0, 0)[0] + mop.size().width / 2; // don't add to xcenter for removed contours
-        Rect rect = Imgproc.boundingRect(mop);
-        //double area = Imgproc.contourArea(mop);
-        if (area > contMaxArea)
+        MatOfPoint mop = (MatOfPoint) it.next();
+        double area = Imgproc.contourArea(mop);
+        if (area < mMinAreaAllowed)
         {
-          area=contMaxArea;
-          contLargestArea = mop;
+          it.remove();
         }
-      }
-    } // for mop
-    // Now contours is 'cleaned' of ones too small
-    
-    if (contours.size() > 0)
+        else
+        {
+          mXCenter += mop.get(0, 0)[0] + mop.size().width / 2; // don't add to xcenter for removed contours
+          if (area > mLargestContourArea)
+          {
+            mLargestContourArea = area;
+            mLargestContour = mop;
+          } // if
+        } // else
+      } // for mop
+
+      int numContours = mContours.size(); // might have gotten rid of all!
+
+      if (numContours == 0)
+        return 0;
+
+      mXCenter /= numContours; // average center
+      return numContours;
+    }// CalcAll
+
+    public void DrawAll(Mat original)
     {
-      xcenter /= contours.size();  //average to get x center
-      mapped = Lerp(0, 640, -1, 1, xcenter); //
+      double xAverage = 0.0;
+      double yAverage = 0.0;
+      int avgCtr = 0;
 
-      lastXCenter = xcenter;
-      lastMapped = mapped;
-
-      RotatedRect[] minRect = new RotatedRect[contours.size()];
+      RotatedRect[] minRect = new RotatedRect[mContours.size()];
 
       avgCtr = 0;
       xAverage = 0.0;
       yAverage = 0.0;
-      for (int i = 0; i < contours.size(); i++)
+      for (int i = 0; i < mContours.size(); i++)
       {
-        MatOfPoint2f mop2f = new MatOfPoint2f(contours.get(i).toArray());
+        MatOfPoint2f mop2f = new MatOfPoint2f(mContours.get(i).toArray());
         minRect[i] = Imgproc.minAreaRect(mop2f);
-        double curarea = Imgproc.contourArea(contours.get(i));
-        
-        double contourWeight =curarea / contMaxArea;  //0-1.0 for weight of this contour
-        
-        if ((mShowContours)&&(contourWeight > .5))
+        double curarea = Imgproc.contourArea(mContours.get(i));
+
+        double contourWeight = curarea / mLargestContourArea; // 0-1.0 for weight of this contour
+
+        if ((mShowContours) && (contourWeight > .5))
         {
           Point[] rect_points = new Point[4];
           minRect[i].points(rect_points);
@@ -439,79 +595,21 @@ public class VisionThreadNew implements Runnable
         Rect box = minRect[i].boundingRect();
 
         Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
-        Point center2 = new Point(3+(box.x + box.width / 2),3+( box.y + box.height / 2));
+        Point center2 = new Point(3 + (box.x + box.width / 2), 3 + (box.y + box.height / 2));
         Imgproc.line(original, center, center2, YELLOW, 3);
-
-        // Imgproc.line(original, new Point(320 / 2, 240 / 2), new Point(320 / 2, 240 / 2), YELLOW, 3);
       } // for i <contours.size
       xAverage /= avgCtr;
       yAverage /= avgCtr;
       double nx = xLowPass.calculate(xAverage);
-      Point avgpt = new Point(nx,0); //yAverage);
-      Point avgpt2 = new Point(nx,320); //yAverage+2); //give some size
-        Imgproc.line(original,avgpt,avgpt2,GREEN,1);
+      Point avgpt = new Point(nx, 0); // yAverage);
+      Point avgpt2 = new Point(nx, 320); // yAverage+2); //give some size
+      Imgproc.line(original, avgpt, avgpt2, GREEN, 1);
+    }// DrawAll
 
+  }// ColourRegions class
 
+}// class VisionThreadNew
 
-    } // if contours.size >0
-    else
-    { // no contours if here
-      // System.out.println("No Contours");
-    }
-  }// findTargetNew
-
-  private void NullTargets()
-  {
-    targets.HorizontalAngle = 0.0;
-    targets.VerticalAngle = 0.0;
-    targets.Horizontal_W_H_Ratio = 0.0;
-    targets.Horizontal_H_W_Ratio = 0.0;
-    targets.Vertical_W_H_Ratio = 0.0;
-    targets.Vertical_H_W_Ratio = 0.0;
-    targets.targetDistance = 0.0;
-    targets.targetLeftOrRight = 0;
-    targets.lastTargerLorR = 0;
-
-    targets.HorizGoal = false;
-    targets.VertGoal = false;
-    targets.HotGoal = false;
-  } // NullTargets
-
-  /**
-   * matToImage : Convert a Mat to a png
-   * 
-   * @param mat
-   * @return
-   */
-  private BufferedImage matToImage(Mat mat)
-  {
-    MatOfByte buffer = new MatOfByte();
-    Imgcodecs.imencode(".png", mat, buffer);
-    BufferedImage image = null;
-    try
-    {
-      image = ImageIO.read(new ByteArrayInputStream(buffer.toArray()));
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }
-    return image;
-  } // matToImage
-  
-  Scalar getRGBFromCMY(double c,double m,double y)
-  {
-    Double  Red = 255 * (1-c);
-    Double Green = 255 * (1-m);
-    Double Blue = 255 * (1-y);
-    
-    int r = Red.intValue();
-    int g = Green.intValue();
-    int b = Blue.intValue();
-        
-    Scalar rgb = new Scalar(b,g,r);
-    return rgb;
-  }
-  
-  
-}//class VisionThreadNew
+// notes:
+// check out canny call might be useful
+// http://docs.opencv.org/2.4/doc/tutorials/imgproc/shapedescriptors/find_contours/find_contours.html?highlight=findcontours
