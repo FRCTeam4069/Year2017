@@ -70,24 +70,23 @@ public class Robot extends SampleRobot
     SendDataToSmartDashboard();
     
     mShooterController.Enable();
+    mMoveController.MoveOperatorControl(); //human driving watch out!
     
     while (isOperatorControl() && isEnabled())
     {
       InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
-      mShooterController.Tick(); // update shooter
+      mShooterController.Tick();
       mWinchController.Tick();
-      mMoveController.Tick();   //Give move functions a tick (unrelated to updatedriverinputs)
+      mMoveController.Tick();   
       
-      //double xc = vision_processor_instance.lastXCenter;
- 
       SendDataToSmartDashboard();
-
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled
   } // operatorControl
-
+  
+  @Override
   public void autonomous()
   {
     mMoveController.mRobotDrive.setSafetyEnabled(false);
@@ -99,9 +98,7 @@ public class Robot extends SampleRobot
       SendDataToSmartDashboard();
       mMoveController.Tick();
     }
-
-    
-  }
+  }//autonomous
   
   
   /**
@@ -109,10 +106,8 @@ public class Robot extends SampleRobot
    */
   void SendDataToSmartDashboard()
   {
-    ctr++;
-    ctr%=1000;
     long deltat =  System.currentTimeMillis()-mLastDashboardUpdateTime;
-    if (deltat > 1000) //5 times/sec
+    if (deltat > 1000) 
     {
       SmartDashboard.putNumber("LEFTENCODER", mMoveController.leftEncoder.get());
       SmartDashboard.putNumber("RIGHTENCODER", mMoveController.rightEncoder.get());
@@ -120,7 +115,6 @@ public class Robot extends SampleRobot
       SmartDashboard.putNumber("XCENTER", vision_processor_instance.lastXCenter);
       SmartDashboard.putNumber("MAPPED:", vision_processor_instance.lastMapped);
       SmartDashboard.putNumber("CM Traveled:", mMoveController.AverageDistanceTraveledInCM());
-      SmartDashboard.putNumber("CTR", ctr);;
       mLastDashboardUpdateTime = System.currentTimeMillis();
     }
   } // SendDataToSmartDashboard
