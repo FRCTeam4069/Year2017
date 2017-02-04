@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4069.robot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Vector;
 
 import edu.wpi.first.wpilibj.Encoder;
@@ -43,18 +44,8 @@ public class MoveControl
 
   //Current command executing, and a list of commands to be executed...
   private MoveCommand mCurrentCommand = new StopCommand();
-  ArrayList<MoveCommand> mCommandList = new ArrayList<MoveCommand>();
-
-  private enum MoveStatus
-  {
-    DRIVE_STOPPED, // Stop robot
-    DRIVE_STRAIGHT, // Drive Straight, correcting for error with encoder values
-    DRIVE_TRACE, // Drive a path passed as array of Vector2's
-    DRIVE_OPERATOR_CONTROL, // Tele-operated mode, WARNING! human in control
-    DRIVE_NEXT_COMMAND, // execute next command
-    DRIVE_PIVOT // Pivot in place to new direction
-  }
-
+  ArrayList<MoveCommand> mCommandList = new ArrayList<MoveCommand>(Arrays.asList(new StraightCommand(50, 300), new TurnOneWheelCommand(25, 50, true), new StopCommand()));
+  
   /**
    * Class Constructor MoveFunctions Constructor, given the driver stick, setup motors and encoders assign low pass filters to motors
    * 
@@ -115,7 +106,7 @@ public class MoveControl
    */
   public void Tick()
   {
-    if (mCurrentCommand.Tick() == 1) //done?
+    if (mCurrentCommand.Tick() == true) //done?
     {
       DoNextCommand();
     }
@@ -176,15 +167,13 @@ public class MoveControl
  
   class MoveCommand
   {
-    MoveStatus mCmd;
 
     public MoveCommand()
     {
-      mCmd = MoveStatus.DRIVE_STOPPED; // default to stop command
     }
-    public int Tick()
+    public boolean Tick()
     {
-      return 1;
+      return true;
     }
     public void Done() {}
     public void Init() {}
@@ -205,7 +194,6 @@ public class MoveControl
     
     public OperatorControlCommand()
     {
-      mCmd = MoveStatus.DRIVE_OPERATOR_CONTROL;
     }
     @Override
     public void Init()
@@ -213,7 +201,7 @@ public class MoveControl
 
     }
     @Override
-    public int Tick()
+    public boolean Tick()
     {
       // Combined speed of the drive motors
       double combined = driverStick.getRawAxis(3) * -1 + driverStick.getAxis(AxisType.kZ);
@@ -225,7 +213,7 @@ public class MoveControl
       // Last move robot. Let the robotdrive class handle the driving aspect of
       // the robot
       mRobotDrive.arcadeDrive(mDriverRobotSpeed, mDriverRobotTurnDirection); // move robot
-      return 0;
+      return false;
     }
   }// OperatorControlCommand
 
@@ -251,7 +239,6 @@ public class MoveControl
       double frac = degrees / 360; // fractional amount
       double bothwheeldist = -1 * frac * mDriveBaseCircumference;
       mDistance = bothwheeldist;
-      mCmd = MoveStatus.DRIVE_PIVOT;
     }
 
     @Override
@@ -269,7 +256,7 @@ public class MoveControl
     
     //For + degrees left wheel goes forward, right wheel goes backwards
     @Override
-    public int Tick()
+    public boolean Tick()
     {
       double leftDistance = leftEncoder.getDistance(); //get left encoder as normal distance
       double rightDistance = rightEncoder.getDistance() * -1; //right wheel is going backwards so distance is * -1
@@ -281,7 +268,7 @@ public class MoveControl
         leftDriveMotor.set(0);
         rightDriveMotor.set(0);
         Done();
-        return 1;
+        return true;
       }
 
       double error = leftDistance - rightDistance; // if error > 0 left is ahead subtract error from left
@@ -291,7 +278,7 @@ public class MoveControl
       
       leftDriveMotor.set(mSpeed - correctionFactor); // +err means left ahead, subtract from left speed
       rightDriveMotor.set(mSpeed + correctionFactor); // -err means right ahead, add -err to right speed
-      return 0; //not done yet
+      return false; //not done yet
     }//Tick
   }// PivotCommand
 
@@ -302,7 +289,6 @@ public class MoveControl
   {
     StopCommand()
     {
-      mCmd = MoveStatus.DRIVE_STOPPED;
     }
 
     @Override
@@ -313,11 +299,11 @@ public class MoveControl
     }
 
     @Override
-    public int Tick()
+    public boolean Tick()
     {
       leftDriveMotor.set(0);
       rightDriveMotor.set(0);
-      return 1;
+      return true;
     }
   } // StopCommand
 
@@ -334,7 +320,6 @@ public class MoveControl
     {
       mSpeed = speed;
       mDistance = distance;
-      mCmd = MoveStatus.DRIVE_STRAIGHT;
     }
 
     @Override
@@ -351,7 +336,7 @@ public class MoveControl
     }
 
     @Override
-    public int Tick()
+    public boolean Tick()
     {
       double leftDistance = leftEncoder.getDistance();
       double rightDistance = rightEncoder.getDistance();
@@ -362,7 +347,7 @@ public class MoveControl
         leftDriveMotor.set(0);
         rightDriveMotor.set(0);
         Done();
-        return 1;
+        return true;
       }
 
       double error = leftDistance - rightDistance; // if error > 0 left is ahead subtract error from left
@@ -371,9 +356,48 @@ public class MoveControl
 
       leftDriveMotor.set(mSpeed - correctionFactor); // +err means left ahead, subtract from left speed
       rightDriveMotor.set(-(mSpeed + correctionFactor)); // -err means right ahead, add -err to right speed
-      return 0; //not done yet
+      return false; //not done yet
     }// Tick
   }// StraightCommand class
+  
+  /**
+   * Turn one wheel for distance at speed
+   * @author BM
+   */
+  public class TurnOneWheelCommand extends MoveCommand {
+	  double speedCMPerSec, distCM;
+	  boolean isRightWheel;
+	  
+	  public TurnOneWheelCommand(double speedCMPerSec, double distCM, boolean isRightWheel) {
+		 this.speedCMPerSec = speedCMPerSec;
+		 this.distCM = distCM;
+		 this.isRightWheel = isRightWheel;
+	  }
+	  
+	  @Override
+	  public void Init() {
+		  leftEncoder.reset();
+		  rightEncoder.reset();
+		  if (isRightWheel) {
+			  rightDriveMotor.set(speedCMPerSec);
+			  leftDriveMotor.set(0);
+		  } else {
+			  leftDriveMotor.set(speedCMPerSec);
+			  rightDriveMotor.set(0);
+		  }
+		  
+	  }
+	  
+	  @Override
+	  public boolean Tick() {
+		  double distanceTraveledByWheel;
+		  if (isRightWheel) distanceTraveledByWheel = rightEncoder.getDistance();
+		  else distanceTraveledByWheel = leftEncoder.getDistance();
+		  if (distanceTraveledByWheel >= distCM) return true;
+		  else return false;
+	  }
+  }
+  
 
   
   
@@ -391,7 +415,6 @@ public class MoveControl
     public TraceCommand(ArrayList<Vector2> path, double speed)
     {
       mPathIndex=0;
-      mCmd = MoveStatus.DRIVE_TRACE;
       mSpeed = speed;
       mPath = path;
     }
@@ -407,9 +430,9 @@ public class MoveControl
     {
     }
     @Override
-    public int Tick()
+    public boolean Tick()
     {
-      return 1;
+      return true;
     }
   }//TraceCommand
 
