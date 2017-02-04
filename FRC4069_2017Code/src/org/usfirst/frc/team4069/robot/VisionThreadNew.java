@@ -72,11 +72,13 @@ public class VisionThreadNew implements Runnable
   public static final int CV_CAP_PROP_FRAME_HEIGHT = 4;
   Preferences prefs = Preferences.getInstance();
   CvSource outputStream;
+  public ColourRegions cregions = new ColourRegions();
 
   Scalar minRange, bminRange, cminRange;
   Scalar maxRange, bmaxRange, cmaxRange;
   LowPassFilter xLowPass;
-
+  LowPassFilter yLowPass;
+  
   public VisionThreadNew(VideoCaptureThread vidcapinstance, Thread vcap_handle)
   {
     vcap_thread_instance = vidcapinstance; // to access getframe
@@ -95,15 +97,20 @@ public class VisionThreadNew implements Runnable
     Mat img = new Mat();
     Mat lastvalidimg = null;
 
-    Mat thresholded = new Mat();
-    Mat thresholdedb = new Mat();
-    Mat thresholdedc = new Mat();
+    //Mat thresholded = new Mat();
+    //Mat thresholdedb = new Mat();
+    //Mat thresholdedc = new Mat();
     outputStream = CameraServer.getInstance().putVideo("ProcessorOutput", 640, 480);
 
-    targets.matchStart = false;
-    targets.validFrame = false;
-    targets.hotLeftOrRight = 0;
+    //targets.matchStart = false;
+    //targets.validFrame = false;
+    //targets.hotLeftOrRight = 0;
     xLowPass = new LowPassFilter(200);
+    yLowPass = new LowPassFilter(200);
+    
+    cregions.addRange(70, 239, 240, 133, 255, 255);
+    cregions.addRange(28, 236, 194, 32, 252, 204);
+    cregions.addRange(22, 239, 240, 46, 255, 255);
 
     while ((true) && (mExitThread == false))
     {
@@ -113,25 +120,30 @@ public class VisionThreadNew implements Runnable
 
         if (img != null)
         {
-          lastvalidimg = img;
-          Scalar minScalar = new Scalar(prefs.getDouble("minB", minB), prefs.getDouble("minG", minG), prefs.getDouble("minR", minR));
-          Scalar maxScalar = new Scalar(prefs.getDouble("maxB", maxB), prefs.getDouble("maxG", maxG), prefs.getDouble("maxR", maxR));
-          Core.inRange(img, minRange, maxRange, thresholded); // Scalar(minB, minG, minR), Scalar(maxB, maxG, maxR), thresholded);
-          Core.inRange(img, bminRange, bmaxRange, thresholdedb);
-          Core.inRange(img, cminRange, cmaxRange, thresholdedc);
-
-          Imgproc.blur(thresholded, thresholded, new Size(3, 3));
-          Imgproc.blur(thresholdedb, thresholdedb, new Size(3, 3));
-          Imgproc.blur(thresholdedc, thresholdedc, new Size(3, 3));
-
-          synchronized (targets)
+          if (cregions.CalcAll(img) > 0)
           {
-            findTargetNew(img, thresholded);
-            findTargetNew(img, thresholdedb);
-            findTargetNew(img, thresholdedc);
-            CalculateDist();
-          } // synchronized
-          // outputStream.putFrame(img);
+            cregions.DrawAll(img);
+          }
+          lastvalidimg = img;
+
+          // Scalar minScalar = new Scalar(prefs.getDouble("minB", minB), prefs.getDouble("minG", minG), prefs.getDouble("minR", minR));
+          // Scalar maxScalar = new Scalar(prefs.getDouble("maxB", maxB), prefs.getDouble("maxG", maxG), prefs.getDouble("maxR", maxR));
+          // Core.inRange(img, minRange, maxRange, thresholded); // Scalar(minB, minG, minR), Scalar(maxB, maxG, maxR), thresholded);
+          // Core.inRange(img, bminRange, bmaxRange, thresholdedb);
+          // Core.inRange(img, cminRange, cmaxRange, thresholdedc);
+          //
+          // Imgproc.blur(thresholded, thresholded, new Size(3, 3));
+          // Imgproc.blur(thresholdedb, thresholdedb, new Size(3, 3));
+          // Imgproc.blur(thresholdedc, thresholdedc, new Size(3, 3));
+          //
+          // synchronized (targets)
+          // {
+          // findTargetNew(img, thresholded);
+          // findTargetNew(img, thresholdedb);
+          // findTargetNew(img, thresholdedc);
+          // CalculateDist();
+          // } // synchronized // outputStream.putFrame(img);
+
         } // if img!=null
         if (lastvalidimg != null)
         {
@@ -140,7 +152,7 @@ public class VisionThreadNew implements Runnable
       } // if processframes true
       try
       {
-        Thread.sleep(5);
+        Thread.sleep(50);
       }
       catch (InterruptedException e)
       {
@@ -148,8 +160,6 @@ public class VisionThreadNew implements Runnable
       }
     } // while true
   } // run
-
-
 
   private void CalculateDist()
   {
@@ -165,8 +175,6 @@ public class VisionThreadNew implements Runnable
   {
     return ((num - a1) / (a2 - a1)) * (b2 - b1) - b2;
   }
-
-
 
   // ----------------------------------------------------------------
 
@@ -255,7 +263,7 @@ public class VisionThreadNew implements Runnable
       yAverage /= avgCtr;
       double nx = xLowPass.calculate(xAverage);
       Point avgpt = new Point(nx, 0); // yAverage);
-      Point avgpt2 = new Point(nx, 320); // yAverage+2); //give some size
+      Point avgpt2 = new Point(nx, 240); // yAverage+2); //give some size
       Imgproc.line(original, avgpt, avgpt2, GREEN, 1);
     } // if contours.size >0
   }// findTargetNew
@@ -312,8 +320,6 @@ public class VisionThreadNew implements Runnable
     Scalar rgb = new Scalar(b, g, r);
     return rgb;
   }
-
-
 
   private void findTarget(Mat original, Mat thresholded)
   {
@@ -472,8 +478,6 @@ public class VisionThreadNew implements Runnable
       }
     } // synchronized
   }// findTarget
-  
-  
 
   private class ColourRange
   {
@@ -485,21 +489,20 @@ public class VisionThreadNew implements Runnable
       cmin = new Scalar(minb, ming, minr);
       cmax = new Scalar(maxb, maxg, maxr);
     }
-  }//class ColourRange
-  
-  
-  
-  private class ColourRegions
+  }// class ColourRange
+
+  public class ColourRegions
   {
     double mMinAreaAllowed = 80.0;
-    public ArrayList<ColourRange> mRange;
-    public ArrayList<Mat> mThresholds;
+    public ArrayList<ColourRange> mRange = new ArrayList<ColourRange>();
+    public ArrayList<Mat> mThresholds = new ArrayList<Mat>();
     private MatOfInt4 mHierarchy = new MatOfInt4();
     public ArrayList<MatOfPoint> mContours = new ArrayList<MatOfPoint>();
 
     public MatOfPoint mLargestContour = null;
     public double mLargestContourArea = 0.0;
     public double mXCenter = 0.0;
+    public double mXGreenLine = 0.0;
 
     void ColourRegions()
     {
@@ -519,17 +522,22 @@ public class VisionThreadNew implements Runnable
     // Returns number of contours
     public int CalcAll(Mat img)
     {
+      mContours.clear();
       for (int i = 0; i < mRange.size(); i++)
       {
         ColourRange wrange = mRange.get(i);
         Mat wthreshold = mThresholds.get(i);
         Core.inRange(img, wrange.cmin, wrange.cmax, wthreshold);
         Imgproc.blur(wthreshold, wthreshold, new Size(3, 3));
-        Imgproc.findContours(wthreshold, mContours, mHierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        ArrayList<MatOfPoint> tmpcontours = new ArrayList<MatOfPoint>();
+        Imgproc.findContours(wthreshold, tmpcontours, mHierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        mContours.addAll(tmpcontours);
       }
 
       // now clear out any contours smaller than minAreaAllowed 6x6=36 etc 9x9=81
       mXCenter = 0.0;
+      mLargestContourArea = 0.0;
+      mLargestContour = null;
       Iterator<MatOfPoint> it = mContours.iterator();
       while (it.hasNext())
       {
@@ -559,6 +567,12 @@ public class VisionThreadNew implements Runnable
       return numContours;
     }// CalcAll
 
+    /**
+     * DrawAll mContours is populated, now eliminate ones below area threshold, and draw outline of all contours which have an area greater than 50% of the largest contour Calculate a lowpass filter x coordinate
+     * 
+     * @param original
+     */
+
     public void DrawAll(Mat original)
     {
       double xAverage = 0.0;
@@ -585,25 +599,36 @@ public class VisionThreadNew implements Runnable
 
           for (int j = 0; j < 4; j++)
           {
-            Imgproc.line(original, rect_points[j], rect_points[(j + 1) % 4], BLUE, 2);
+            Imgproc.line(original, rect_points[j], rect_points[(j + 1) % 4], BLUE, 3);
             xAverage += rect_points[j].x;
             yAverage += rect_points[j].y;
             avgCtr++;
           }
         } // if visualize
 
-        Rect box = minRect[i].boundingRect();
-
-        Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
-        Point center2 = new Point(3 + (box.x + box.width / 2), 3 + (box.y + box.height / 2));
-        Imgproc.line(original, center, center2, YELLOW, 3);
+        // Rect box = minRect[i].boundingRect();
+        // Point center = new Point(box.x + box.width / 2, box.y + box.height / 2);
+        // Point center2 = new Point(3 + (box.x + box.width / 2), 3 + (box.y + box.height / 2));
+        // Imgproc.line(original, center, center2, YELLOW, 3);
       } // for i <contours.size
-      xAverage /= avgCtr;
-      yAverage /= avgCtr;
-      double nx = xLowPass.calculate(xAverage);
-      Point avgpt = new Point(nx, 0); // yAverage);
-      Point avgpt2 = new Point(nx, 320); // yAverage+2); //give some size
-      Imgproc.line(original, avgpt, avgpt2, GREEN, 1);
+      if (mContours.size() > 0)
+      {
+        xAverage /= avgCtr;
+        yAverage /= avgCtr;
+        double nx = xLowPass.calculate(xAverage);
+        Point avgpt = new Point(nx, 0); // yAverage);
+        Point avgpt2 = new Point(nx, 240); // yAverage+2); //give some size
+        mXGreenLine = nx;
+
+        Imgproc.line(original, avgpt, avgpt2, GREEN, 1);
+      }
+      else
+      {
+        Point avgpt = new Point(mXGreenLine, 0); // use last seen location
+        Point avgpt2 = new Point(mXGreenLine, 240); //
+        Imgproc.line(original, avgpt, avgpt2, RED, 1); // draw in read if not recent
+
+      }
     }// DrawAll
 
   }// ColourRegions class

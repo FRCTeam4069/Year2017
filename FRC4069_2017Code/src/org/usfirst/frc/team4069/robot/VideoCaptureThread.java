@@ -35,11 +35,11 @@ public class VideoCaptureThread implements Runnable
 
   private Mat frame; // current frame being read, dont use this
 
-  int mFrameBufferDepth = 6;
+  int mFrameBufferDepth = 2;
   int mKeepRunning = 1;
   int mCameraConnectionType = VCT_USB;
   boolean mEnabled = true;
-
+  
   private VideoCapture vcap;
 
   public void run()
@@ -136,7 +136,7 @@ public class VideoCaptureThread implements Runnable
 
         try
         {
-          Thread.sleep(5);// yeild some time 5ms == 200fps, no worries there
+          Thread.sleep(60);// yeild some time 5ms == 200fps, no worries there
         }
         catch (InterruptedException e)
         {
@@ -213,14 +213,24 @@ public class VideoCaptureThread implements Runnable
     vcap.set(Videoio.CAP_PROP_FRAME_WIDTH,320);
     vcap.set(Videoio.CAP_PROP_FRAME_HEIGHT, 200);
     
-    vcap.set(CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1);
+    if (!vcap.set(CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1))
+    {
+      System.out.println("Error exp absolute");
+    }
    // vcap.set(Videoio.CAP_PROP_AUTO_EXPOSURE,0);
-    vcap.set(Videoio.CAP_PROP_EXPOSURE, -10);
+    if (!vcap.set(Videoio.CAP_PROP_EXPOSURE, -10))
+    {
+      System.out.println("Error prop exposure");
+    }
     
-    vcap.set(Videoio.CAP_PROP_BRIGHTNESS,.1); //CV_CAP_PROP_BRIGHTNESS, 1);
-
-    vcap.set(Videoio.CAP_PROP_CONTRAST,0); //CV_CAP_PROP_CONTRAST, 0);
-
+    if (!vcap.set(Videoio.CAP_PROP_BRIGHTNESS,.1)) //.1)) //; //CV_CAP_PROP_BRIGHTNESS, 1);
+    {
+      System.out.println("Error brightness");
+    }
+    if (!vcap.set(Videoio.CAP_PROP_CONTRAST,0)) //; //CV_CAP_PROP_CONTRAST, 0);
+    {
+      System.out.println("Error contrast");
+    }
     System.out.println("vcap width = "+vcap.get(Videoio.CAP_PROP_FRAME_WIDTH));
 
     System.out.println("vcap height="+vcap.get(Videoio.CAP_PROP_FRAME_HEIGHT));
