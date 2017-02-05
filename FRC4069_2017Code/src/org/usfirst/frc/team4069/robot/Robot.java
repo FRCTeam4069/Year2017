@@ -3,6 +3,9 @@ package org.usfirst.frc.team4069.robot;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.RobotDrive;
+
+import org.usfirst.frc.team4069.robot.MoveControl.TurnOneWheelCommand;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
@@ -14,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot
 {
-  private ShooterControl mShooterController; // shooter functions
+  //private ShooterControl mShooterController; // shooter functions
   private WinchControl mWinchController; // winch functions
   private MoveControl mMoveController; // ALL robot movement functions
 
@@ -47,7 +50,7 @@ public class Robot extends SampleRobot
    */
   public Robot()
   {
-    mShooterController = new ShooterControl(controlStick);
+  //  mShooterController = new ShooterControl(controlStick);
     mWinchController = new WinchControl();
     mMoveController = new MoveControl(driverStick); // pass joystick
 
@@ -81,7 +84,7 @@ public class Robot extends SampleRobot
   {
     mMoveController.mRobotDrive.setSafetyEnabled(false);
     SendDataToSmartDashboard();
-    mShooterController.Disable();
+    //mShooterController.Enable();
     mMoveController.MoveOperatorControl(); // human driving watch out!
     
     while (isOperatorControl() && isEnabled())
@@ -106,7 +109,9 @@ public class Robot extends SampleRobot
     mMoveController.mRobotDrive.setSafetyEnabled(false);
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
-    mMoveController.MoveStraight(0.25, 200);
+    mMoveController.MoveStraight(-0.45, 100);
+    mMoveController.DoTurn();
+   
     while (isAutonomous() && isEnabled())
     {
       SendDataToSmartDashboard();
@@ -125,10 +130,17 @@ public class Robot extends SampleRobot
     {
       SmartDashboard.putNumber("LEFTENCODER", mMoveController.leftEncoder.get());
       SmartDashboard.putNumber("RIGHTENCODER", mMoveController.rightEncoder.get());
-      SmartDashboard.putNumber("SHOOTER MotorOut:", mShooterController.motorOutput);
-      SmartDashboard.putNumber("SHOOTER RPM", mShooterController.shooterCANTalon.getSpeed());
-      SmartDashboard.putNumber("SHOOTER TARGET RPM:", mShooterController.targetRPM);
-      SmartDashboard.putNumber("SHOOTER ERROR:", mShooterController.shooterCANTalon.getClosedLoopError());
+      SmartDashboard.putNumber("LEFTDISTANCE", mMoveController.leftEncoder.getDistance());
+      SmartDashboard.putNumber("RIGHTDISTANCE", mMoveController.rightEncoder.getDistance());
+      SmartDashboard.putNumber("Error", mMoveController.error);
+      SmartDashboard.putNumber("Correction:", mMoveController.correctionFactor);
+      SmartDashboard.putNumber("resultleftspeed", mMoveController.resultantleftspeed);
+      SmartDashboard.putNumber("resultantrightspeed",mMoveController.resultantrightspeed);
+      SmartDashboard.putNumber("Tickcount:", mMoveController.TickCounter);
+      //SmartDashboard.putNumber("SHOOTER MotorOut:", mShooterController.motorOutput);
+      //SmartDashboard.putNumber("SHOOTER RPM", mShooterController.shooterCANTalon.getSpeed());
+      //SmartDashboard.putNumber("SHOOTER TARGET RPM:", mShooterController.targetRPM);
+      //SmartDashboard.putNumber("SHOOTER ERROR:", mShooterController.shooterCANTalon.getClosedLoopError());
       SmartDashboard.putNumber("XCENTER", vision_processor_instance.cregions.mXGreenLine); // .lastXCenter);
       SmartDashboard.putNumber("NumContours:", vision_processor_instance.cregions.mContours.size());
       SmartDashboard.putNumber("MAPPED:", vision_processor_instance.lastMapped);
