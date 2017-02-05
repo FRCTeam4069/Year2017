@@ -31,7 +31,7 @@ import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-public class VisionThreadNew implements Runnable
+public class ThreadVisionNew implements Runnable
 {
   public static final int MIN_WIDTH = 120;
   public static final int Y_IMAGE_RES = 240;
@@ -55,7 +55,7 @@ public class VisionThreadNew implements Runnable
   private boolean mExitThread = false;
   private boolean mProcessFrames = true;
 
-  private VideoCaptureThread vcap_thread_instance;
+  private ThreadVideoCapture vcap_thread_instance;
   private Thread vcap_thread_handle;
 
   private static double xcenter = 0.0;
@@ -79,7 +79,7 @@ public class VisionThreadNew implements Runnable
   LowPassFilter xLowPass;
   LowPassFilter yLowPass;
   
-  public VisionThreadNew(VideoCaptureThread vidcapinstance, Thread vcap_handle)
+  public ThreadVisionNew(ThreadVideoCapture vidcapinstance, Thread vcap_handle)
   {
     vcap_thread_instance = vidcapinstance; // to access getframe
     vcap_thread_handle = vcap_handle; // for thread control

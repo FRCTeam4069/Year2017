@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Joystick.AxisType;
  * 
  * @author EA Create a instance of this class, then call its tick method periodically
  */
-public class ShooterControl
+public class ControlShooter
 {
   public CANTalon shooterCANTalon;
   private StringBuilder sc_debug_info = new StringBuilder();
@@ -24,7 +24,7 @@ public class ShooterControl
   
   private Joystick _joy;
 
-  public ShooterControl(Joystick stk)
+  public ControlShooter(Joystick stk)
   {
     _joy = stk;
     shooterCANTalon = new CANTalon(IOMapping.SHOOTER_CANBUS_PORT);

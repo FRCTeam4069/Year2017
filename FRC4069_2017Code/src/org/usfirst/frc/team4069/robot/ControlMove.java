@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
-import org.usfirst.frc.team4069.robot.MoveControl.TurnOneWheelCommand;
+import org.usfirst.frc.team4069.robot.ControlMove.TurnOneWheelCommand;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 
-public class MoveControl
+public class ControlMove
 {
   // Objects MoveControl interfaces with...
   public RobotDrive mRobotDrive; // class that handles basic drive
@@ -58,7 +58,7 @@ public class MoveControl
    * 
    * @param driverstk
    */
-  public MoveControl(Joystick driverstk)
+  public ControlMove(Joystick driverstk)
   {
     driverStick = driverstk;
     TickCounter = 0;

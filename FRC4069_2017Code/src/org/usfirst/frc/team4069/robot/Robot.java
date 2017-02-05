@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.RobotDrive;
 
-import org.usfirst.frc.team4069.robot.MoveControl.TurnOneWheelCommand;
+import org.usfirst.frc.team4069.robot.ControlMove.TurnOneWheelCommand;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends SampleRobot
 {
   //private ShooterControl mShooterController; // shooter functions
-  private WinchControl mWinchController; // winch functions
-  private MoveControl mMoveController; // ALL robot movement functions
+  private ControlWinch mWinchController; // winch functions
+  private ControlMove mMoveController; // ALL robot movement functions
 
   Preferences prefs = Preferences.getInstance();
 
@@ -28,13 +28,13 @@ public class Robot extends SampleRobot
 
   long mLastDashboardUpdateTime = 0;
 
-  VideoCaptureThread video_capture_instance;
+  ThreadVideoCapture video_capture_instance;
   Thread VideoCaptureThreadHandle;
 
-  VisionThreadNew vision_processor_instance;
+  ThreadVisionNew vision_processor_instance;
   Thread VisionProcessorThreadHandle;
   
-  ArduinoThread arduino_thread_instance;
+  ThreadArduino arduino_thread_instance;
   Thread arduinoThreadHandle;
   
   public int ctr = 0;
@@ -51,19 +51,19 @@ public class Robot extends SampleRobot
   public Robot()
   {
   //  mShooterController = new ShooterControl(controlStick);
-    mWinchController = new WinchControl();
-    mMoveController = new MoveControl(driverStick); // pass joystick
+    mWinchController = new ControlWinch();
+    mMoveController = new ControlMove(driverStick); // pass joystick
 
-    video_capture_instance = new VideoCaptureThread();
+    video_capture_instance = new ThreadVideoCapture();
     VideoCaptureThreadHandle = new Thread(video_capture_instance);
     // VideoCaptureThreadHandle.start();
     video_capture_instance.Enable(); // begin getting frames.
 
-    vision_processor_instance = new VisionThreadNew(video_capture_instance, VideoCaptureThreadHandle); // pass in refs to video capture thread so it can grab frames
+    vision_processor_instance = new ThreadVisionNew(video_capture_instance, VideoCaptureThreadHandle); // pass in refs to video capture thread so it can grab frames
 
     VisionProcessorThreadHandle = new Thread(vision_processor_instance);
     
-    arduino_thread_instance = new ArduinoThread();
+    arduino_thread_instance = new ThreadArduino();
     arduinoThreadHandle = new Thread(arduino_thread_instance);
     arduinoThreadHandle.start();
     

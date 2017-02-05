@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 
-public class ArduinoThread implements Runnable
+public class ThreadArduino implements Runnable
 {
   I2C mi2sdev;
   byte[] fromArduino = new byte[512];
@@ -15,7 +15,7 @@ public class ArduinoThread implements Runnable
   byte[] toSend = new byte[1];
   byte[] toGet = new byte[10];
 
-  public ArduinoThread()
+  public ThreadArduino()
   {
     mi2sdev = new I2C(I2C.Port.kMXP, 0x51); // 4);
   }

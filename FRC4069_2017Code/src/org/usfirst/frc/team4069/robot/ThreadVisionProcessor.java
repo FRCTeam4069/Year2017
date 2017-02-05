@@ -18,7 +18,7 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Preferences;
 
-public class VisionProcessor implements Runnable
+public class ThreadVisionProcessor implements Runnable
 {
   public static final int MIN_WIDTH = 120;
   public static final int Y_IMAGE_RES = 240;
@@ -42,7 +42,7 @@ public class VisionProcessor implements Runnable
   private boolean mExitThread = false;
   private boolean mProcessFrames = true;
 
-  private VideoCaptureThread vcap_thread_instance;
+  private ThreadVideoCapture vcap_thread_instance;
   private Thread vcap_thread_handle;
 
   private static double xcenter = 0.0;
@@ -66,7 +66,7 @@ public class VisionProcessor implements Runnable
   LowPassFilter xLowPass;
   LowPassFilter yLowPass;
   
-  public VisionProcessor(VideoCaptureThread vidcapinstance, Thread vcap_handle)
+  public ThreadVisionProcessor(ThreadVideoCapture vidcapinstance, Thread vcap_handle)
   {
     vcap_thread_instance = vidcapinstance; // to access getframe
     vcap_thread_handle = vcap_handle; // for thread control

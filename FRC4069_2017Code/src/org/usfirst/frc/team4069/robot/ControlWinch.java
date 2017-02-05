@@ -2,7 +2,7 @@ package org.usfirst.frc.team4069.robot;
 
 import edu.wpi.first.wpilibj.Talon;
 
-public class WinchControl
+public class ControlWinch
 {
   private Talon winchTalon;
   private StringBuilder sc_debug_info = new StringBuilder();
@@ -11,7 +11,7 @@ public class WinchControl
   private int mEnabled = 0;
   private int mDebug = 0;
 
-  public WinchControl()
+  public ControlWinch()
   {
     winchTalon = new Talon(9);
     mlastUpdateTime = System.currentTimeMillis();

@@ -12,7 +12,7 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Preferences;
 
-public class VideoCaptureThread implements Runnable
+public class ThreadVideoCapture implements Runnable
 {
   public static final int VCT_USB = 0;
   public static final int VCT_IP = 1;

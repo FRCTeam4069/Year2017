@@ -38,7 +38,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
-public class VisionThread implements Runnable
+public class ThreadVision implements Runnable
 {
   public static final int MIN_WIDTH = 120;
   public static final int Y_IMAGE_RES = 240;
@@ -151,7 +151,7 @@ public class VisionThread implements Runnable
    */
   public static void main(String args[])
   {
-    (new Thread(new VisionThread())).start();
+    (new Thread(new ThreadVision())).start();
   }
 
   private void CalculateDist()
