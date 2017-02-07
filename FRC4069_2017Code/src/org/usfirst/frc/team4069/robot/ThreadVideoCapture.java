@@ -213,17 +213,17 @@ public class ThreadVideoCapture implements Runnable
     vcap.set(Videoio.CAP_PROP_FRAME_WIDTH,320);
     vcap.set(Videoio.CAP_PROP_FRAME_HEIGHT, 200);
     
-    if (!vcap.set(CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1))
-    {
-      System.out.println("Error exp absolute");
-    }
+    //if (!vcap.set(CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1))
+    //{
+//      System.out.println("Error exp absolute");
+  //  }
    // vcap.set(Videoio.CAP_PROP_AUTO_EXPOSURE,0);
-    if (!vcap.set(Videoio.CAP_PROP_EXPOSURE, -10))
+    if (!vcap.set(Videoio.CAP_PROP_EXPOSURE, 0))
     {
       System.out.println("Error prop exposure");
     }
     
-    if (!vcap.set(Videoio.CAP_PROP_BRIGHTNESS,.1)) //.1)) //; //CV_CAP_PROP_BRIGHTNESS, 1);
+    if (!vcap.set(Videoio.CAP_PROP_BRIGHTNESS,.01)) //.1)) //; //CV_CAP_PROP_BRIGHTNESS, 1);
     {
       System.out.println("Error brightness");
     }

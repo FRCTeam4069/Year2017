@@ -37,6 +37,9 @@ public class Robot extends SampleRobot
   ThreadArduino arduino_thread_instance;
   Thread arduinoThreadHandle;
   
+  ThreadLIDAR lidar_instance;
+  Thread lidarThreadHandle;
+  
   public int ctr = 0;
 
   
@@ -54,20 +57,27 @@ public class Robot extends SampleRobot
     mWinchController = new ControlWinch();
     mMoveController = new ControlMove(driverStick); // pass joystick
 
+    lidar_instance = new ThreadLIDAR();
+    lidarThreadHandle = new Thread(lidar_instance);
+    lidarThreadHandle.start();
+    
     video_capture_instance = new ThreadVideoCapture();
     VideoCaptureThreadHandle = new Thread(video_capture_instance);
-    // VideoCaptureThreadHandle.start();
+    VideoCaptureThreadHandle.start();
     video_capture_instance.Enable(); // begin getting frames.
 
-    vision_processor_instance = new ThreadVisionNew(video_capture_instance, VideoCaptureThreadHandle); // pass in refs to video capture thread so it can grab frames
 
+    vision_processor_instance = new ThreadVisionNew(video_capture_instance, VideoCaptureThreadHandle,this); // pass in refs to video capture thread so it can grab frames
     VisionProcessorThreadHandle = new Thread(vision_processor_instance);
+    VisionProcessorThreadHandle.start();
+    
     
     arduino_thread_instance = new ThreadArduino();
     arduinoThreadHandle = new Thread(arduino_thread_instance);
     arduinoThreadHandle.start();
     
-    // VisionProcessorThreadHandle.start();
+    
+
 
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
@@ -77,13 +87,15 @@ public class Robot extends SampleRobot
 
   }// Robot()
 
+  
+  
   // ---------------------------------------------------------------------------------------------
 
   @Override
   public void operatorControl()
   {
     mMoveController.mRobotDrive.setSafetyEnabled(false);
-    SendDataToSmartDashboard();
+  //  SendDataToSmartDashboard();
     //mShooterController.Enable();
     mMoveController.MoveOperatorControl(); // human driving watch out!
     
@@ -146,6 +158,15 @@ public class Robot extends SampleRobot
       SmartDashboard.putNumber("MAPPED:", vision_processor_instance.lastMapped);
       SmartDashboard.putNumber("CM Traveled:", mMoveController.AverageDistanceTraveledInCM());
       mLastDashboardUpdateTime = System.currentTimeMillis();
+      SmartDashboard.putNumber("LAST HEADING:", arduino_thread_instance.lastHeading);
+      SmartDashboard.putNumber("LIDAR Angle:", lidar_instance.lastAngle);
+      SmartDashboard.putNumber("LIDAR SS", lidar_instance.lastSignalStrength);
+      SmartDashboard.putNumber("LIDAR distance", lidar_instance.lastDistance);
+      SmartDashboard.putNumber("LIDAR status:", lidar_instance.lastStatus);
+      SmartDashboard.putString("LIDAR LAST ERROR", lidar_instance.lastError);
+      SmartDashboard.putString("LIDARMessage:", lidar_instance.lastMessage);
+      SmartDashboard.putString("GYRO Last Error", arduino_thread_instance.lastError);
+      SmartDashboard.putString("GYRO Message", arduino_thread_instance.lastMessage);
     }
   } // SendDataToSmartDashboard
 

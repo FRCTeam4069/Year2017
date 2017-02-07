@@ -30,6 +30,19 @@ public class Vector2
   {
     return (x * v2.x) + (y * v2.y);
   }
+  
+  public Vector2 clone()
+  {
+    Vector2 v = new Vector2(x,y);
+    return v;
+  }
+  
+  
+  public void scale(double s)
+  {
+    x *= s;
+    y *= s;
+  }
 
   public double length()
   {

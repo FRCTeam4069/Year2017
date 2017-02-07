@@ -91,7 +91,7 @@ public class ThreadVisionProcessor implements Runnable
     
     cregions.addRange(70, 239, 240, 133, 255, 255);
     cregions.addRange(28, 236, 194, 32, 252, 204);
-    cregions.addRange(22, 239, 240, 46, 255, 255);
+    cregions.addRange(12, 200, 140, 46, 255, 255);
 
     while ((true) && (mExitThread == false))
     {
