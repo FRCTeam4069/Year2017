@@ -119,11 +119,11 @@ public class ThreadVisionNew implements Runnable
 
     //cregions.addRange(70, 239, 240, 133, 255, 255);
     cregions.addRange(70, 219, 168, 133, 255, 255);
-    cregions.addRange(22, 230, 168, 32, 252, 204); // 28, 236, 194, 32, 252, 204);
+    cregions.addRange(22, 230, 168, 32, 255, 204); // 28, 236, 194, 32, 252, 204);
     cregions.addRange(22, 239, 240, 46, 255, 255);
     // cregions.addRange(240, 240, 240, 255, 255, 255);
     while ((true) && (mExitThread == false))
-    {
+    {//35,255,205
       if (mProcessFrames)
       {
         img = vcap_thread_instance.GetFrame();

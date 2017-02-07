@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.RobotDrive;
 
 import org.usfirst.frc.team4069.robot.ControlMove.TurnOneWheelCommand;
 
+import com.ctre.CANTalon;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
@@ -39,6 +41,8 @@ public class Robot extends SampleRobot
   
   ThreadLIDAR lidar_instance;
   Thread lidarThreadHandle;
+  
+  CANTalon  turretCANTalon = new CANTalon(1); //IOMapping.SHOOTER_CANBUS_PORT);
   
   public int ctr = 0;
 
@@ -101,6 +105,8 @@ public class Robot extends SampleRobot
     
     while (isOperatorControl() && isEnabled())
     {
+      turretCANTalon.set(driverStick.getAxis(AxisType.kY));
+      
       InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
