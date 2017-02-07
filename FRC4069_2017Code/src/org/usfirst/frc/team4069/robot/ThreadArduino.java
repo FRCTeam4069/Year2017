@@ -14,45 +14,63 @@ public class ThreadArduino implements Runnable
   public int enabled = 1;
   byte[] toSend = new byte[1];
   byte[] toGet = new byte[10];
-
+  public double lastHeading = -1;
+  public String lastError="";
+  public String lastMessage="";
+  
   public ThreadArduino()
   {
     mi2sdev = new I2C(I2C.Port.kMXP, 0x51); // 4);
+    lastMessage="I2C Created";
   }
 
   public void run()
   {
-    byte[] buff = "hellothere\n".getBytes();
-
+    lastError="Startup...";
+    
+    int bigctr=0;
+    
     while (enabled == 1)
     {
       toSend[0] = 1;
       toGet[0] = 111;
-      System.out.println("Before:" + toGet[0]);
       mi2sdev.transaction(toSend, 1, toGet, 10);
       // toGet[12]=0;
       String rval;
       try
       {
-        rval = new String(toGet,"UTF-8");
-        System.out.println("After:" + rval); //toGet[0]+","+toGet[1]+toGet[2]+toGet[3]+toGet[4]);
+        rval = new String(toGet, "UTF-8");
+        lastMessage=rval;
+        if (rval.isEmpty() == false)
+        {
+          double head = 0.0;
+          try
+          {
+            head = Double.parseDouble(rval);
+            if (head != lastHeading)
+            {
+              lastHeading = head;
+              lastError = rval;
+              //System.out.println("Heading CHANGE:" + head + " degrees");
+            }
+          }
+          catch (Exception e)
+          {
+            //System.out.println("Exception: " + e.getMessage());
+            lastError="GyroERR("+bigctr+"):"+e.getMessage();
+            lastHeading = -1;
+          }
+        }//isempty?
+
       }
       catch (UnsupportedEncodingException e1)
       {
         // TODO Auto-generated catch block
         e1.printStackTrace();
       }
-     
-
-      /*
-       * try { if (mi2sdev.transaction(buff, buff.length, fromArduino, 11) == false) // mi2sdev.readOnly(fromArduino, 3)==false) //mi2sdev.transaction(buff, 0, fromArduino, 11)==false) { String str = fromArduino.toString(); System.out.println("From: " + str); } else {
-       * System.out.println("nothing?"); }
-       * 
-       * } catch (BufferUnderflowException be) { System.out.println("underflow?"); }
-       */
       try
       {
-        Thread.sleep(1000);
+        Thread.sleep(100);
       }
       catch (InterruptedException e)
       {
