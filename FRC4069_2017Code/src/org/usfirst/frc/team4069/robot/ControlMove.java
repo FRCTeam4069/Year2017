@@ -444,7 +444,6 @@ public class ControlMove
   {
     ArrayList<Vector2> mPath;
     double mSpeed = 0.0;
-    int mPathIndex = 0;
     int index = 0;
     double currentDegrees = 0;
     double wheelBaseWidthCM = 100;
@@ -455,7 +454,6 @@ public class ControlMove
 
     public TraceCommand(ArrayList<Vector2> path, double speed)
     {
-      mPathIndex = 0;
       mSpeed = speed;
       mPath = path;
     }
@@ -463,6 +461,7 @@ public class ControlMove
     @Override
     public boolean Tick()
     {
+    	if (index == mPath.size() - 2) return true;
     	float mDistance = 0f;
     	Vector2 a = mPath.get(index);
     	Vector2 b = mPath.get(index + 1);
