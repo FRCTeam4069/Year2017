@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Joystick;
  * the wiring easier and significantly reduces the number of magic numbers
  * floating around.
  */
-public interface IOMapping
+public class IOMapping
 {
 
   // Drive motor PWM ports
