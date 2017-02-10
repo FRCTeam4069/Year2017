@@ -223,11 +223,11 @@ public class ThreadVideoCapture implements Runnable
       System.out.println("Error prop exposure");
     }
     
-    if (!vcap.set(Videoio.CAP_PROP_BRIGHTNESS,.1)) //.1)) //; //CV_CAP_PROP_BRIGHTNESS, 1);
+    if (!vcap.set(Videoio.CAP_PROP_BRIGHTNESS,0)) //.1)) //.1)) //; //CV_CAP_PROP_BRIGHTNESS, 1);
     {
       System.out.println("Error brightness");
     }
-    if (!vcap.set(Videoio.CAP_PROP_CONTRAST,0)) //; //CV_CAP_PROP_CONTRAST, 0);
+    if (!vcap.set(Videoio.CAP_PROP_CONTRAST,-1)) //; //CV_CAP_PROP_CONTRAST, 0);
     {
       System.out.println("Error contrast");
     }

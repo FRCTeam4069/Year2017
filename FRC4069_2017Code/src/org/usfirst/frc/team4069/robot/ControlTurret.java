@@ -1,19 +1,25 @@
 package org.usfirst.frc.team4069.robot;
 
+import com.ctre.CANTalon;
+
+import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.Talon;
 
 public class ControlTurret
 {
-  private Talon turretTalon;
+  private CANTalon turretTalon;
   private StringBuilder sc_debug_info = new StringBuilder();
   private long mlastUpdateTime = 0;
   private double mWantedRPM = 3600;
   private int mEnabled = 0;
   private int mDebug = 0;
-
-  public ControlTurret()
+  private Robot mRobot;
+  private LowPassFilter lpf=new LowPassFilter(200);
+  
+  public ControlTurret(Robot robot)
   {
-    turretTalon = new Talon(8);
+    mRobot = robot;
+    turretTalon = new CANTalon(1);
     mlastUpdateTime = System.currentTimeMillis();
   } // ShooterControl init
 
@@ -31,7 +37,17 @@ public class ControlTurret
   {
     mDebug = 0;
   }
-
+  // --------------------------------------------------------------------------------------------
+  /**
+   * Linear Interpolation, given a value x2 between x0 and x1 calculate position between Y0 and Y1
+   * 
+   * @author EA
+   */
+  public double Lerp(double y0, double y1, double x0, double x1, double x2)
+  {
+    double y2 = y0 * (x2 - x1) / (x0 - x1) + y1 * (x2 - x0) / (x1 - x0);
+    return y2;
+  }
   public void Enable()
   {
     mEnabled = 1;
@@ -44,17 +60,24 @@ public class ControlTurret
 
   public void Tick()
   {
-    if (Robot.InputSystem.B_Button_Control_Stick && !Robot.InputSystem.Y_Button_Control_Stick)
+    turretTalon.set(mRobot.driverStick.getAxis(AxisType.kY));
+    double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
+    //double xpos = lpf.calculate(xxpos);
+    
+    if (xpos < 160)
     {
-      turretTalon.set(-1);
+      double spd = Lerp(.15,.01,0,160,xpos);
+      turretTalon.set(spd); //.15);
     }
-    else if (!Robot.InputSystem.B_Button_Control_Stick && Robot.InputSystem.Y_Button_Control_Stick)
+    if (xpos > 160)
     {
-      turretTalon.set(1);
+      double spd = Lerp(-.15,-.01,320,160,xpos);
+      turretTalon.set(spd);
     }
-    else
+    if ((xpos >=150)&&(xpos <=170))
     {
-      turretTalon.set(0);
+      //turretTalon.set(0);
     }
+
   }
 }

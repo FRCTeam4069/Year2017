@@ -6,9 +6,6 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.FlowControl;
 import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 
-
-
-
 public class ThreadLIDAR implements Runnable
 {
   public double lastAngle = 0.0;
@@ -33,27 +30,77 @@ public class ThreadLIDAR implements Runnable
   int[] ulastPacket = new int[32]; // will hold unsigned values for last packet
 
   byte[] lastPacket = new byte[32];
-  public LidarSpot[] history = new LidarSpot[500];
-  public int historyIndex = 0;
+
+  public LidarSpot[] history = new LidarSpot[501];
+  public int historyIndexIN = 0;
+  public int historyIndexOUT = 0;
 
   public ThreadLIDAR()
   {
-  }
+    for (int i = 0; i < history.length; i++)
+    {
+      history[i] = new LidarSpot(); // pre-create history array will synchronize on these as written/read from
+    }
+  }// ThreadLIDAR()
+
+  /**
+   * Get point from history, inited to all zeros, so 'safe' to just pull from
+   * 
+   * @return
+   */
+  public LidarSpot getHistoryPoint()
+  {
+    LidarSpot ls;
+    synchronized (history[historyIndexOUT])
+    {
+      ls = history[historyIndexOUT].clone();
+    }
+    historyIndexOUT++;
+    historyIndexOUT %= 500;
+    return ls;
+  }// getHistoryPoint
+
+  private void addPointToHistory(double az, int dist, int sigstr, int stat)
+  {
+    synchronized (history[historyIndexIN])
+    {
+      history[historyIndexIN].az = az;
+      history[historyIndexIN].dist = dist;
+      history[historyIndexIN].ss = sigstr;
+      history[historyIndexIN].stat = stat;
+    }
+    historyIndexIN++;
+    historyIndexIN %= 500;
+  }// assPointToHistory
 
   public void run()
   {
     lastError = "Startup...";
     lastMessage = "Startup...";
     connectToSerial();
-    boolean xx = true;
-    byte[] retvals = new byte[32];
-    // System.out.println("Resetting...");
-    // doRRCmd();
-    // doSleep(2000);
-    System.out.println("Done reset, setting motor speed...");
-    doMSCmd("02"); //
+    System.out.println("Sending RR Reset command...");
+    mSerpt.writeString("RR\r\n");
+    doSleep(5000);
+
+    System.out.println("Startup DX Cmd:" + doDXCmd());
     doSleep(2000);
-    System.out.println("MOTOR: " + mMSResponse);
+    System.out.println("Calling IV command...");
+    doIVCmd();
+    lastMessage = mIVResponse;
+
+    System.out.println("IVCMD:" + mIVResponse);
+
+    // System.out.println("Calling do mi command");
+    // doMICmd();
+
+    // System.out.println("MICMD:" + mMIResponse);
+
+    String o = doIDCmd();
+    System.out.println("IntialID = " + o);
+    lastMessage = mIDResponse;
+  //  doMSCmd("01"); //
+    // doSleep(2000);
+    // System.out.println("MOTOR2: " + mMSResponse);
 
     // Now loop till we get a ID which makes sense
     while (mState == 0)
@@ -66,23 +113,30 @@ public class ThreadLIDAR implements Runnable
       }
       else
       {
-        System.out.println("ID fail len=" + mIDResponse.length());
+        System.out.println("ID fail len=" + mIDResponse.length() + " val=" + mIDResponse);
+        System.out.println("Sending DX..." + doDXCmd());
+        doSleep(1500);
       }
-      doSleep(500);
+
     } // while
+    lastMessage = mIDResponse;
+    System.out.println("ID Response: " + mIDResponse);
 
     doDSCmd(); // Now trigger stream...
 
     lastMessage = mDSResponse;
-
-    // System.out.println("GOT DS HEADER: " + mDSResponse);
+    System.out.println("GOT DS HEADER: " + mDSResponse);
 
     int bigctr = 0;
+
     while (mState == 1)
     {
+      int lctr = 0;
       while (mSerpt.getBytesReceived() < 7) // Wait for 7 bytes to be in buffer
       {
+        lctr++;
         doSleep(4);
+        lastError = "Waiting for 7 - " + mSerpt.getBytesReceived() + " in queue " + lctr;
       } // while not 7 bytes waiting...
 
       lastPacket = mSerpt.read(7); // Grab 7 bytes
@@ -101,7 +155,7 @@ public class ThreadLIDAR implements Runnable
         // System.out.print("," + pval);
       }
       // System.out.println();
-
+      // System.out.println("Converted packet");
       double az = 0.0;
       int dist = 0;
       int ss = 0;
@@ -116,13 +170,9 @@ public class ThreadLIDAR implements Runnable
 
         int ang = (ulastPacket[2] << 8) + ulastPacket[1];
         az = 1.0 * ((ang >> 4) + ((ang & 15) / 16.0));
-        LidarSpot ls = new LidarSpot(az,dist,ss,stat);
-        history[historyIndex] = ls;
-        historyIndex++;
-        historyIndex %= 500;
-        
+        addPointToHistory(az, dist, ss, stat);
+
         lastMessage = "LIDAR: az:" + az + ", dist:" + dist + ",sig:" + ss + ", stat:" + stat;
-        lastError = "";
         // System.out.println("LIDAR: az:" + az + ", dist:" + dist + ",sig:" + ss + ", stat:" + stat);
         lastAngle = az;
         lastDistance = dist;
@@ -131,7 +181,6 @@ public class ThreadLIDAR implements Runnable
       }
       else
       {
-        lastError = "ERR LIDAR CHECKSUM FAIL packet " + bigctr;
         // System.out.println("ERR LIDARPACKET");
       }
 
@@ -184,35 +233,59 @@ public class ThreadLIDAR implements Runnable
    */
   String doLIDARCommand(String cmd)
   {
+    System.out.println("DOLIDARCOMMAND:.....");
     int numlf = 1;
     if ((cmd.contains("MS")) || (cmd.contains("LR")))
     {
       numlf = 2;
     }
-    System.out.println("Docmd:" + cmd + " numlf=" + numlf + " length:" + cmd.length());
-    int gotrsp = 0;
-    int numsent = mSerpt.write(cmd.getBytes(), cmd.length());
-    if (numsent != cmd.length())
-    {
-      System.out.println("Error not sent all bytes!");
-    }
-    // else
-    // System.out.println("Sent all " + numsent + " bytes");
 
-    byte[] response = new byte[32];
+    doPrint("Docmd:" + cmd + " numlf=" + numlf + " length:" + cmd.length());
+    int responseok = 0;
+    String resp = "";
 
-    gotrsp = readNonStreamingResponse(response, numlf); // -1 is timeout
-    String resp = "NoResponse";
-    try
+    while (responseok == 0)
     {
-      resp = new String(response, "UTF-8");
-    }
-    catch (UnsupportedEncodingException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    // System.out.println("LIDAR gotrsp=" + gotrsp + " Response:" + resp);
+      int gotrsp = 0;
+
+      int numsent = mSerpt.write(cmd.getBytes(), cmd.length());
+
+      if (numsent != cmd.length())
+      {
+        System.out.println("Error not sent all bytes!");
+      }
+
+      doPrint("Sent all " + numsent + " bytes for " + cmd + " command");
+
+      byte[] response = new byte[32];
+      gotrsp = readNonStreamingResponse(response, numlf); // -1 is timeout
+      resp = "NoResponseTimeout";
+      if (gotrsp == -1)
+      {
+        System.out.println("No Response Timeout");
+        // return resp; // no response timeout
+        doSleep(500);
+        doPrint("Trying Command " + cmd + " Again");
+      }
+      else
+        responseok = 1;
+      try
+      {
+        resp = new String(response, "UTF-8");
+        if (cmd.charAt(0) == resp.charAt(0) && (cmd.charAt(1) == resp.charAt(1)))
+        {
+          return resp;
+        }
+        else
+          responseok=0;  //nope, response was for wrong command!
+      }
+      catch (UnsupportedEncodingException e)
+      {
+      }
+    } // while responseok==0
+      // System.out.println("LIDAR gotrsp=" + gotrsp + " Response:" + resp);
+
+    // System.out.println("CMD "+cmd+", response:"+resp);
     return resp;
   }// doLIDARCommand
 
@@ -234,37 +307,54 @@ public class ThreadLIDAR implements Runnable
     int maxsize = tothis.length;
     int numlffnd = 0;
     // System.out.println("readnonstream response numlf = " + numlf);
-
+    // System.out.println("Readnonstream 0");
+    lastlooptime = System.currentTimeMillis();
     while ((finished == 0) && (idx < maxsize))
     {
       if (System.currentTimeMillis() - lastlooptime > 1000)
       {
+        System.out.println("ReadNonStream TIMEOUT");
         return -1;
       }
-      lastlooptime = System.currentTimeMillis();
 
       // Now LF is the termination char, except for a copule command which have TWO LF in them, sigh.
+      // System.out.println("readnonstream 1");
 
-      abyte = mSerpt.read(1);
-      if (abyte.length > 0)
+      try
       {
-        tothis[idx] = abyte[0];
-        idx++;
-        if (abyte[0] == 10)
+        if (mSerpt.getBytesReceived() > 0)
         {
-          numlffnd++;
-          // System.out.println("GOTLF num=" + numlffnd);
-          if (numlffnd == numlf)
+          abyte = mSerpt.read(1);
+          if (abyte.length > 0)
           {
-            finished = 1;
-          }
+            // System.out.println("readnonstream2");
+            tothis[idx] = abyte[0];
+            idx++;
+            if (abyte[0] == 10)
+            {
+              numlffnd++;
+              System.out.println("GOTLF num=" + numlffnd);
+              if (numlffnd == numlf)
+              {
+                finished = 1;
+              }
+              else
+              {
+                System.out.println("ADDING _");
+                tothis[idx - 1] = '_';
+              }
+            } // if LF found
+            lastlooptime = System.currentTimeMillis();
+
+          } // if abyte.len . 0
           else
-          {
-            // System.out.println("ADDING _");
-            tothis[idx - 1] = '_';
-          }
-        } // if LF found
-      } // if abyte.len . 0
+            System.out.println("failed read 1 byte len=" + abyte.length);
+        } // if bytes waiting
+      } // try
+      catch (Exception e)
+      {
+        System.out.println("Reading packet exception: " + e.getMessage());
+      }
     } // while
     return idx;
   }// readResponse
@@ -371,7 +461,9 @@ public class ThreadLIDAR implements Runnable
       try
       {
         mSerpt = new SerialPort(115200, lastUSBRetry, 8, SerialPort.Parity.kNone, SerialPort.StopBits.kOne);
+        mSerpt.disableTermination();
         success = 1;
+        System.out.println("LIDAR Connected to port " + lastUSBRetry);
       }
       catch (Exception e)
       {
@@ -392,7 +484,7 @@ public class ThreadLIDAR implements Runnable
           break;
         } // switch
         lastError = e.getMessage() + ", retrying port " + lastUSBRetry;
-        // System.out.println("SERIAL_ERR:" + e.getMessage() + ", retrying port " + lastUSBRetry);
+        System.out.println("SERIAL_ERR:" + e.getMessage() + ", retrying port " + lastUSBRetry);
         doSleep(1000);
       }
     }
@@ -419,10 +511,15 @@ public class ThreadLIDAR implements Runnable
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
   }
 
-  
+  void doPrint(String s)
+  {
+    s.replace('\n', '_');
+    s.replace('\r', '_');
+    System.out.println(s);
+  }
+
   public class LidarSpot
   {
     public double az = 0.0;
@@ -430,14 +527,31 @@ public class ThreadLIDAR implements Runnable
     public int ss = 0;
     public int stat = 0;
 
-    LidarSpot(double a,int dst,int sstr,int st)
+    LidarSpot()
     {
-      az=a;
-      dist =dst;
+      az = 0.0;
+      dist = 0;
+      ss = 0;
+      stat = 0;
+    }
+
+    LidarSpot(double a, int dst, int sstr, int st)
+    {
+      az = a;
+      dist = dst;
       ss = sstr;
       stat = st;
     }
-  } //class Lidarspot
-  
-  
+
+    public LidarSpot clone()
+    {
+      LidarSpot ls = new LidarSpot();
+      ls.az = az;
+      ls.dist = dist;
+      ls.ss = ss;
+      ls.stat = stat;
+      return ls;
+    }
+  } // class Lidarspot
+
 }// class

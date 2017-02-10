@@ -70,6 +70,9 @@ public class ThreadVisionNew implements Runnable
   public double lastXCenter = 0.0;
   public double lastMapped = 0.0;
 
+  public double arrowangle=0.0;
+  public int arrowdistance=0;
+  
   // OpenCV constants
   public static final int CV_CAP_PROP_BRIGHTNESS = 10;
   public static final int CV_CAP_PROP_CONTRAST = 11;
@@ -106,24 +109,18 @@ public class ThreadVisionNew implements Runnable
     Mat img = new Mat();
     Mat lastvalidimg = null;
 
-    // Mat thresholded = new Mat();
-    // Mat thresholdedb = new Mat();
-    // Mat thresholdedc = new Mat();
     outputStream = CameraServer.getInstance().putVideo("ProcessorOutput", 640, 480);
 
-    // targets.matchStart = false;
-    // targets.validFrame = false;
-    // targets.hotLeftOrRight = 0;
     xLowPass = new LowPassFilter(200);
     yLowPass = new LowPassFilter(200);
 
     //cregions.addRange(70, 239, 240, 133, 255, 255);
-    cregions.addRange(70, 219, 168, 133, 255, 255);
-    cregions.addRange(22, 230, 168, 32, 255, 204); // 28, 236, 194, 32, 252, 204);
+    cregions.addRange(30, 209, 81, 133, 255, 255);
+    cregions.addRange(22, 230, 101, 32, 255, 204); // 28, 236, 194, 32, 252, 204);
     cregions.addRange(22, 239, 240, 46, 255, 255);
     // cregions.addRange(240, 240, 240, 255, 255, 255);
     while ((true) && (mExitThread == false))
-    {//35,255,205
+    {
       if (mProcessFrames)
       {
         img = vcap_thread_instance.GetFrame();
@@ -133,24 +130,6 @@ public class ThreadVisionNew implements Runnable
           cregions.CalcAll(img);
           cregions.DrawAll(img);
           lastvalidimg = img;
-
-          // Scalar minScalar = new Scalar(prefs.getDouble("minB", minB), prefs.getDouble("minG", minG), prefs.getDouble("minR", minR));
-          // Scalar maxScalar = new Scalar(prefs.getDouble("maxB", maxB), prefs.getDouble("maxG", maxG), prefs.getDouble("maxR", maxR));
-          // Core.inRange(img, minRange, maxRange, thresholded); // Scalar(minB, minG, minR), Scalar(maxB, maxG, maxR), thresholded);
-          // Core.inRange(img, bminRange, bmaxRange, thresholdedb);
-          // Core.inRange(img, cminRange, cmaxRange, thresholdedc);
-          //
-          // Imgproc.blur(thresholded, thresholded, new Size(3, 3));
-          // Imgproc.blur(thresholdedb, thresholdedb, new Size(3, 3));
-          // Imgproc.blur(thresholdedc, thresholdedc, new Size(3, 3));
-          //
-          // synchronized (targets)
-          // {
-          // findTargetNew(img, thresholded);
-          // findTargetNew(img, thresholdedb);
-          // findTargetNew(img, thresholdedc);
-          // CalculateDist();
-          // } // synchronized // outputStream.putFrame(img);
 
         } // if img!=null
         if (lastvalidimg != null)
@@ -186,59 +165,6 @@ public class ThreadVisionNew implements Runnable
 
   // ----------------------------------------------------------------
 
-  private void NullTargets()
-  {
-    targets.HorizontalAngle = 0.0;
-    targets.VerticalAngle = 0.0;
-    targets.Horizontal_W_H_Ratio = 0.0;
-    targets.Horizontal_H_W_Ratio = 0.0;
-    targets.Vertical_W_H_Ratio = 0.0;
-    targets.Vertical_H_W_Ratio = 0.0;
-    targets.targetDistance = 0.0;
-    targets.targetLeftOrRight = 0;
-    targets.lastTargerLorR = 0;
-
-    targets.HorizGoal = false;
-    targets.VertGoal = false;
-    targets.HotGoal = false;
-  } // NullTargets
-
-  /**
-   * matToImage : Convert a Mat to a png
-   * 
-   * @param mat
-   * @return
-   */
-  private BufferedImage matToImage(Mat mat)
-  {
-    MatOfByte buffer = new MatOfByte();
-    Imgcodecs.imencode(".png", mat, buffer);
-    BufferedImage image = null;
-    try
-    {
-      image = ImageIO.read(new ByteArrayInputStream(buffer.toArray()));
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }
-    return image;
-  } // matToImage
-
-  Scalar getRGBFromCMY(double c, double m, double y)
-  {
-    Double Red = 255 * (1 - c);
-    Double Green = 255 * (1 - m);
-    Double Blue = 255 * (1 - y);
-
-    int r = Red.intValue();
-    int g = Green.intValue();
-    int b = Blue.intValue();
-
-    Scalar rgb = new Scalar(b, g, r);
-    return rgb;
-  }
-
   private class ColourRange
   {
     public Scalar cmin;
@@ -253,7 +179,7 @@ public class ThreadVisionNew implements Runnable
 
   public class ColourRegions
   {
-    double mMinAreaAllowed = 80.0;
+    double mMinAreaAllowed = 49.0;
     public ArrayList<ColourRange> mRange = new ArrayList<ColourRange>();
     public ArrayList<Mat> mThresholds = new ArrayList<Mat>();
     private MatOfInt4 mHierarchy = new MatOfInt4();
@@ -263,17 +189,27 @@ public class ThreadVisionNew implements Runnable
     public double mLargestContourArea = 0.0;
     public double mXCenter = 0.0;
     public double mYCenter = 0.0;
-    public double mXGreenLine = 0.0;
-    public double mYGreenLine = 0.0;
+    public double mXGreenLine = 160.0;
+    public double mYGreenLine = 120.0;
 
-    void ColourRegions()
+    ColourRegions()
     {
     }
 
+    /**
+     * Add min/max colour range for finding target.  This function can be called multiple times to add
+     * more ranges, though it costs a bit in time for each.
+     * @param minr
+     * @param ming
+     * @param minb
+     * @param maxr
+     * @param maxg
+     * @param maxb
+     */
     public void addRange(int minr, int ming, int minb, int maxr, int maxg, int maxb)
     {
-      mRange.add(new ColourRange(minr, ming, minb, maxr, maxg, maxb));
-      mThresholds.add(new Mat());
+      mRange.add(new ColourRange(minr, ming, minb, maxr, maxg, maxb)); //Store range to threashold
+      mThresholds.add(new Mat()); //each range needs a threshold Mat to store into...one for one here.
     }
 
     public void setMinAreaAllowed(double ma)
@@ -293,14 +229,16 @@ public class ThreadVisionNew implements Runnable
         Imgproc.blur(wthreshold, wthreshold, new Size(3, 3));
         ArrayList<MatOfPoint> tmpcontours = new ArrayList<MatOfPoint>();
         Imgproc.findContours(wthreshold, tmpcontours, mHierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-        mContours.addAll(tmpcontours);
+        mContours.addAll(tmpcontours); //keep all contours from all colour ranges
       }
 
       // now clear out any contours smaller than minAreaAllowed 6x6=36 etc 9x9=81
+      //Not sure this is a good idea...
       mXCenter = 0.0;
       mYCenter = 0.0;
       mLargestContourArea = 0.0;
       mLargestContour = null;
+      int numremoved=0;  //count number removed...
       Iterator<MatOfPoint> it = mContours.iterator();
       while (it.hasNext())
       {
@@ -309,15 +247,17 @@ public class ThreadVisionNew implements Runnable
         if (area < mMinAreaAllowed)
         {
           it.remove();
+          numremoved++;
         }
         else
         {
+          //Area larger than min, calc center points, keep largeest area found
           mXCenter += mop.get(0, 0)[0] + mop.size().width / 2; // don't add to xcenter for removed contours
           mYCenter += mop.get(0, 0)[0] + mop.size().height / 2;
           if (area > mLargestContourArea)
           {
-            mLargestContourArea = area;
-            mLargestContour = mop;
+            mLargestContourArea = area; //if this is the largest found so far, remember its size
+            mLargestContour = mop;      //and remember it.
           } // if
         } // else
       } // for mop
@@ -325,13 +265,22 @@ public class ThreadVisionNew implements Runnable
       int numContours = mContours.size(); // might have gotten rid of all!
 
       if (numContours == 0)
+      {
+        if (numremoved > 0)
+        {
+       //   System.out.println("CHANGE??? REMOVED ALL CONTOURS! Maybe lower min Currently:"+mMinAreaAllowed); //warn us, we may want to change min area
+        }
         return 0;
+      }
 
       mXCenter /= numContours; // average center
       mYCenter /= numContours;
       return numContours;
     }// CalcAll
 
+    
+    
+    
     /**
      * DrawAll mContours is populated, now eliminate ones below area threshold, and draw outline of all contours which have an area greater than 50% of the largest contour Calculate a lowpass filter x coordinate
      * 
@@ -418,8 +367,11 @@ public class ThreadVisionNew implements Runnable
 
       Point lastsn = new Point(50, 230);
       Imgproc.putText(original, "Target Last Heading:" + lastHeadingTargetSeen, lastsn, 0, 0.5, YELLOW);
-      DrawArrow(160, 120, System.currentTimeMillis() % 360, 16, original);
-     // DrawLIDAR(160,120,1,original);
+      DrawArrow(160,120,arrowangle,arrowdistance/4.3,original);
+      DrawLIDAR(160,120,1,original);
+  
+      Point cpt=new Point(160,120);
+      Imgproc.putText(original, ""+arrowdistance+"cm", cpt, 0,0.5, GREEN);
     }// DrawAll
 
   }// ColourRegions class
@@ -430,22 +382,42 @@ public class ThreadVisionNew implements Runnable
     LidarSpot ls = null;
     for(int i=0;i<robot.lidar_instance.history.length;i++)
     {
-      ls = robot.lidar_instance.history[i];
+      ls = robot.lidar_instance.getHistoryPoint();
+      LidarSpot ls2 = robot.lidar_instance.getHistoryPoint();
+      
       double rad = ls.az * (Math.PI / 180);
-      Vector2 vec = new Vector2(Math.cos(rad),Math.sin(rad));
+      double rad2= ls2.az * (Math.PI/180);
+      
+      Vector2 vec = new Vector2(-Math.cos(rad),Math.sin(rad));
+      Vector2 vec2= new Vector2(-Math.cos(rad2),Math.sin(rad2));
+      
       vec.scale(ls.dist/4);
+      vec2.scale(ls2.dist/4);
+      
       Point dpt = new Point(xp+vec.x,yp+vec.y);
-      Point dpt2= new Point(xp+vec.x,yp+vec.y+1);
-      Imgproc.line(original,dpt,dpt2,GREEN,1);
+      Point dpt2= new Point(xp+vec2.x,yp+vec2.y+1);
+      
+      if ((ls.az >=269.5)&&(ls.az <= 270.5))
+      {
+        arrowangle = ls.az;
+        arrowdistance=ls.dist;
+      }
+      
+      if ((ls.az > 270-5)&&(ls.az < 270+5))
+      {
+        Imgproc.line(original,dpt,dpt2,GREEN,1);
+      }
+      else
+        Imgproc.line(original,dpt,dpt2,RED,1);
     }
-  }
+  }//DrawLIDAR
   
 
   private void DrawArrow(int xp, int yp, double dir, double scale, Mat original)
   {
     double rad = dir * (Math.PI / 180);
-    double lrad = rad + 3.14159 / 4;
-    double rrad = rad - 3.14159 / 4;
+    double lrad = rad + 3.14159 / 5;
+    double rrad = rad - 3.14159 / 5;
 
     Vector2 degvec = new Vector2(Math.cos(rad), Math.sin(rad)); // get vector pointing right
     Vector2 lradv = new Vector2(Math.cos(lrad), Math.sin(lrad));
@@ -473,9 +445,9 @@ public class ThreadVisionNew implements Runnable
     double csc = scale + scale * 0.15;
     Imgproc.circle(original, start, (int) csc, BLUE);
 
-    Imgproc.line(original, start, tip, YELLOW, 1);
-    Imgproc.line(original, tip, lefthead, YELLOW, 1);
-    Imgproc.line(original, tip, righthead, YELLOW, 1);
+    Imgproc.line(original, start, tip, YELLOW, 2);
+    Imgproc.line(original, tip, lefthead, YELLOW, 2);
+    Imgproc.line(original, tip, righthead, YELLOW, 2);
 
   }
 

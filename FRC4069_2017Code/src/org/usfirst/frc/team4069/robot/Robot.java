@@ -22,7 +22,8 @@ public class Robot extends SampleRobot
   //private ShooterControl mShooterController; // shooter functions
   private ControlWinch mWinchController; // winch functions
   private ControlMove mMoveController; // ALL robot movement functions
-
+  private ControlTurret mTurretController;
+  
   Preferences prefs = Preferences.getInstance();
 
   Joystick driverStick = new Joystick(0); // set to ID 1 in DriverStation
@@ -42,8 +43,6 @@ public class Robot extends SampleRobot
   ThreadLIDAR lidar_instance;
   Thread lidarThreadHandle;
   
-  CANTalon  turretCANTalon = new CANTalon(1); //IOMapping.SHOOTER_CANBUS_PORT);
-  
   public int ctr = 0;
 
   
@@ -60,7 +59,8 @@ public class Robot extends SampleRobot
   //  mShooterController = new ShooterControl(controlStick);
     mWinchController = new ControlWinch();
     mMoveController = new ControlMove(driverStick); // pass joystick
-
+    mTurretController = new ControlTurret(this);
+    
     lidar_instance = new ThreadLIDAR();
     lidarThreadHandle = new Thread(lidar_instance);
     lidarThreadHandle.start();
@@ -79,16 +79,14 @@ public class Robot extends SampleRobot
     arduino_thread_instance = new ThreadArduino();
     arduinoThreadHandle = new Thread(arduino_thread_instance);
     arduinoThreadHandle.start();
-    
-    
-
 
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
     mMoveController.MoveOperatorControl();
+    
+    
+    
     mLastDashboardUpdateTime = System.currentTimeMillis();
-
-
   }// Robot()
 
   
@@ -105,7 +103,7 @@ public class Robot extends SampleRobot
     
     while (isOperatorControl() && isEnabled())
     {
-      turretCANTalon.set(driverStick.getAxis(AxisType.kY));
+   //   turretCANTalon.set(driverStick.getAxis(AxisType.kY));
       
       InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
 
@@ -134,6 +132,7 @@ public class Robot extends SampleRobot
     {
       SendDataToSmartDashboard();
       mMoveController.Tick();
+      mTurretController.Tick();
       
     }
   }// autonomous
