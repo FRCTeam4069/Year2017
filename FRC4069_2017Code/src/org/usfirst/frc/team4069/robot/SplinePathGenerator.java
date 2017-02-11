@@ -14,7 +14,6 @@ public class SplinePathGenerator
 
   public static void main(String[] args)
   {
-    // TODO Auto-generated method stub
     List<Double> xl = new ArrayList<Double>();
     List<Double> yl = new ArrayList<Double>();
 

@@ -176,25 +176,18 @@ public class ControlMove
   // CLASS MoveCommand and all Move related Command Classes Derived from it.
   //
 
-  class MoveCommand
+  abstract class MoveCommand
   {
 
     public MoveCommand()
     {
     }
 
-    public boolean Tick()
-    {
-      return true;
-    }
+    public abstract boolean Tick();
+    
+    public abstract void Done();
 
-    public void Done()
-    {
-    }
-
-    public void Init()
-    {
-    }
+    public abstract void Init();
   }// class MoveCommand
 
   /**
@@ -210,6 +203,7 @@ public class ControlMove
 
     public OperatorControlCommand()
     {
+    	
     }
 
     @Override
@@ -232,6 +226,11 @@ public class ControlMove
       // the robot
       mRobotDrive.arcadeDrive(mDriverRobotSpeed, mDriverRobotTurnDirection); // move robot
       return false;
+    }
+    
+    @Override
+    public void Done() 
+    {
     }
   }// OperatorControlCommand
 
@@ -318,6 +317,11 @@ public class ControlMove
       leftDriveMotor.set(0);
       rightDriveMotor.set(0);
       return true;
+    }
+    
+    @Override
+    public void Done()
+    {
     }
   } // StopCommand
 
@@ -431,6 +435,12 @@ public class ControlMove
         return true;
       else
         return false;
+    }
+    
+    @Override
+    public void Done()
+    {
+    
     }
   }
 
