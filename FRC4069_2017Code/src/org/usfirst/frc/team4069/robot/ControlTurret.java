@@ -66,12 +66,12 @@ public class ControlTurret
     
     if (xpos < 160)
     {
-      double spd = Lerp(.15,.01,0,160,xpos);
+      double spd = Lerp(.45,.01,0,160,xpos);
       turretTalon.set(spd); //.15);
     }
     if (xpos > 160)
     {
-      double spd = Lerp(-.15,-.01,320,160,xpos);
+      double spd = Lerp(-.45,-.01,320,160,xpos);
       turretTalon.set(spd);
     }
     if ((xpos >=150)&&(xpos <=170))

@@ -115,7 +115,7 @@ public class ThreadVisionNew implements Runnable
     yLowPass = new LowPassFilter(200);
 
     //cregions.addRange(70, 239, 240, 133, 255, 255);
-    cregions.addRange(30, 209, 81, 133, 255, 255);
+    cregions.addRange(30, 198, 81, 133, 255, 255);
     cregions.addRange(22, 230, 101, 32, 255, 204); // 28, 236, 194, 32, 252, 204);
     cregions.addRange(22, 239, 240, 46, 255, 255);
     // cregions.addRange(240, 240, 240, 255, 255, 255);

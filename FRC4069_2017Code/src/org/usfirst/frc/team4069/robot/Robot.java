@@ -56,7 +56,7 @@ public class Robot extends SampleRobot
    */
   public Robot()
   {
-  //  mShooterController = new ShooterControl(controlStick);
+    //mShooterController = new ShooterControl(controlStick);
     mWinchController = new ControlWinch();
     mMoveController = new ControlMove(driverStick); // pass joystick
     mTurretController = new ControlTurret(this);
@@ -100,17 +100,20 @@ public class Robot extends SampleRobot
   //  SendDataToSmartDashboard();
     //mShooterController.Enable();
     mMoveController.MoveOperatorControl(); // human driving watch out!
+    CANTalon turretCANTalon = new CANTalon(1);
+    CANTalon shootCANTalon = new CANTalon(0);
     
     while (isOperatorControl() && isEnabled())
     {
-   //   turretCANTalon.set(driverStick.getAxis(AxisType.kY));
+      turretCANTalon.set(driverStick.getAxis(AxisType.kY));
+      shootCANTalon.set(driverStick.getAxis(AxisType.kX));
       
       InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
-      //mShooterController.Tick();
-      mWinchController.Tick();
-      mMoveController.Tick();
+     // mShooterController.Tick();
+     // mWinchController.Tick();
+     // mMoveController.Tick();
 
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
@@ -131,7 +134,7 @@ public class Robot extends SampleRobot
     while (isAutonomous() && isEnabled())
     {
       SendDataToSmartDashboard();
-      mMoveController.Tick();
+      //mMoveController.Tick();
       mTurretController.Tick();
       
     }
