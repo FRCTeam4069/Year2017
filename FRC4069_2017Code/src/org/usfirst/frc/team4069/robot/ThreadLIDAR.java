@@ -24,6 +24,8 @@ public class ThreadLIDAR implements Runnable
   public String mIDResponse = "";
   public String lastError = "";
   public String lastMessage = "";
+  
+  public boolean instructedToUpdate = false;
 
   int mState = 0;
 
@@ -55,17 +57,21 @@ public class ThreadLIDAR implements Runnable
     {
       ls = history[historyIndexOUT].clone();
     }
-    historyIndexOUT++;
+    if (historyIndexIN >= historyIndexOUT - 1) {
+    	return history[historyIndexOUT];
+    } else {
+    	historyIndexOUT++;
+    }
     historyIndexOUT %= 500;
     return ls;
   }// getHistoryPoint
 
-  private void addPointToHistory(double az, int dist, int sigstr, int stat)
+  private void addPointToHistory(double angle, int distance, int sigstr, int stat)
   {
     synchronized (history[historyIndexIN])
     {
-      history[historyIndexIN].az = az;
-      history[historyIndexIN].dist = dist;
+      history[historyIndexIN].az = angle;
+      history[historyIndexIN].dist = distance;
       history[historyIndexIN].ss = sigstr;
       history[historyIndexIN].stat = stat;
     }
@@ -156,7 +162,7 @@ public class ThreadLIDAR implements Runnable
       }
       // System.out.println();
       // System.out.println("Converted packet");
-      double az = 0.0;
+      double angle = 0.0;
       int dist = 0;
       int ss = 0;
       ;
@@ -169,12 +175,12 @@ public class ThreadLIDAR implements Runnable
         ss = ulastPacket[5];
 
         int ang = (ulastPacket[2] << 8) + ulastPacket[1];
-        az = 1.0 * ((ang >> 4) + ((ang & 15) / 16.0));
-        addPointToHistory(az, dist, ss, stat);
+        angle = 1.0 * ((ang >> 4) + ((ang & 15) / 16.0));
+        addPointToHistory(angle, dist, ss, stat);
 
-        lastMessage = "LIDAR: az:" + az + ", dist:" + dist + ",sig:" + ss + ", stat:" + stat;
+        lastMessage = "LIDAR: az:" + angle + ", dist:" + dist + ",sig:" + ss + ", stat:" + stat;
         // System.out.println("LIDAR: az:" + az + ", dist:" + dist + ",sig:" + ss + ", stat:" + stat);
-        lastAngle = az;
+        lastAngle = angle;
         lastDistance = dist;
         lastSignalStrength = ss;
         lastStatus = stat;
