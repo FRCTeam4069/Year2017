@@ -1,0 +1,53 @@
+Fix lidar range guesstimate...pay attention to readings as they come in, if they are 
+between 265 and 275 degrees find the lowest range and store that as the range
+to target.
+270 degrees 'should' be about center of the camera, we should try to find a 
+way to 'verify' this, or just use the range above and look for closest.
+
+
+Fix Lidar rendering.  Currently the Lidar just pours out data in the form
+Angle,Distance(int),SignalStrength(byte)
+
+As these values come in, they are stored by ThreadLIDAR's addPointToHistory
+function into a 500 point array.
+
+The ThreadVisionNew's DrawAll function calls ThreadLidar's getHistoryPoint() over 
+and over and draws a line from the first call to the second call...
+Since these points come in sequentially as it scans it draws a good approximation
+of the walls around the robot.
+Currently there are 2 known errors in rendering, first when the reading part
+crosses the point where new entries are added, it draws a 'artifact', 
+Second, there is a 'echo' effect as the turret rotates, drawing 'old' readings
+To solve this, we should pay attention to the Status byte which is read
+When bit 1 of this byte is set, it indicates a 'new scan' has started.
+We should reset the storage index used by addPointToHistory to begin
+recording the new data on seeing a 'new scan'  We should also not allow
+getHistoryPoint to read past points which have come in since the new scan.
+
+
+Turret Rotation Encoder tracking.
+We need to zero and keep track of the turrets current encoders rotation values
+and prevent it from 'tearing itself apart' by rotation more than an allowed value.
+We need to add a limit switch to a location on the Turret and 'zero' the
+turret at startup each time.
+
+Shooter RPM PID loop issue(s)
+The shooter currently 'overshoots' the RPM's on startup as the RPM's are at
+zero, so it over compensates and blows past the wanted RPMs and slowly returns to 
+the wanted RPM.  We need to read the docs on CANTalon's PID routines to see how to 
+fix this, or write our own PID routine.
+
+
+Gyroscope working
+The Gyroscope's Arduino code does not report in reliably, this is probably a 
+conflict with the interrupt routine on the Arduino attempting to read values
+which are in the middle of being updated by the main thread.
+Getting the interrupt to only read and report on 'clean' data would help.
+
+Gyroscope also needs to 'zero' on startup and attempt to track the location
+of the target at all times, using both the turrets known encoder rotation and
+the rotation of the robot since startup, giving a arrow indicator onscreen
+showing the direction to the target for the driver.
+
+
+

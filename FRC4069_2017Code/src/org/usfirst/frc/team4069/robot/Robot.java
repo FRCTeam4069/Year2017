@@ -34,7 +34,7 @@ public class Robot extends SampleRobot
   ThreadVideoCapture video_capture_instance;
   Thread VideoCaptureThreadHandle;
 
-  ThreadVisionNew vision_processor_instance;
+  ThreadVisionProcessor vision_processor_instance;
   Thread VisionProcessorThreadHandle;
   
   ThreadArduino arduino_thread_instance;
@@ -71,7 +71,7 @@ public class Robot extends SampleRobot
     video_capture_instance.Enable(); // begin getting frames.
 
 
-    vision_processor_instance = new ThreadVisionNew(video_capture_instance, VideoCaptureThreadHandle,this); // pass in refs to video capture thread so it can grab frames
+    vision_processor_instance = new ThreadVisionProcessor(video_capture_instance, VideoCaptureThreadHandle,this); // pass in refs to video capture thread so it can grab frames
     VisionProcessorThreadHandle = new Thread(vision_processor_instance);
     VisionProcessorThreadHandle.start();
     
@@ -114,7 +114,7 @@ public class Robot extends SampleRobot
      // mShooterController.Tick();
      // mWinchController.Tick();
      // mMoveController.Tick();
-
+      mTurretController.Tick();
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled
