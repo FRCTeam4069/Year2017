@@ -62,9 +62,9 @@ public class ThreadLIDAR implements Runnable
     }
     if (historyIndexIN >= historyIndexOUT - 1) {
     	return history[historyIndexOUT];
-    } else {
-    	historyIndexOUT++;
     }
+    historyIndexOUT++;
+    
     historyIndexOUT %= 500;
     return ls;
   }// getHistoryPoint
