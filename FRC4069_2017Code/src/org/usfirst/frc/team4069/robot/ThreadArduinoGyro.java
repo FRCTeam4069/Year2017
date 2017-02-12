@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
 
-public class ThreadArduino implements Runnable
+public class ThreadArduinoGyro implements Runnable
 {
   I2C mi2sdev;
   byte[] fromArduino = new byte[512];
@@ -18,7 +18,7 @@ public class ThreadArduino implements Runnable
   public String lastError="";
   public String lastMessage="";
   
-  public ThreadArduino()
+  public ThreadArduinoGyro()
   {
     mi2sdev = new I2C(I2C.Port.kMXP, 0x51); // 4);
     lastMessage="I2C Created";

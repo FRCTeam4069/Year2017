@@ -37,7 +37,7 @@ public class Robot extends SampleRobot
   ThreadVisionProcessor vision_processor_instance;
   Thread VisionProcessorThreadHandle;
   
-  ThreadArduino arduino_thread_instance;
+  ThreadArduinoGyro arduino_thread_instance;
   Thread arduinoThreadHandle;
   
   ThreadLIDAR lidar_instance;
@@ -76,7 +76,7 @@ public class Robot extends SampleRobot
     VisionProcessorThreadHandle.start();
     
     
-    arduino_thread_instance = new ThreadArduino();
+    arduino_thread_instance = new ThreadArduinoGyro();
     arduinoThreadHandle = new Thread(arduino_thread_instance);
     arduinoThreadHandle.start();
 
