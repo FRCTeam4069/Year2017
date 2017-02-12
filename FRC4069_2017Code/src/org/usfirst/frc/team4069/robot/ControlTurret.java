@@ -15,8 +15,8 @@ public class ControlTurret
   private int mEnabled = 0;
   private int mDebug = 0;
   private Robot mRobot;
-  private LowPassFilter lpf=new LowPassFilter(200);
-  
+  private LowPassFilter lpf = new LowPassFilter(200);
+
   public ControlTurret(Robot robot)
   {
     mRobot = robot;
@@ -41,6 +41,7 @@ public class ControlTurret
   {
     mDebug = 0;
   }
+
   // --------------------------------------------------------------------------------------------
   /**
    * Linear Interpolation, given a value x2 between x0 and x1 calculate position between Y0 and Y1
@@ -52,6 +53,7 @@ public class ControlTurret
     double y2 = y0 * (x2 - x1) / (x0 - x1) + y1 * (x2 - x0) / (x1 - x0);
     return y2;
   }
+
   public void Enable()
   {
     mEnabled = 1;
@@ -61,26 +63,31 @@ public class ControlTurret
   {
     mEnabled = 0;
   }
-
+  
+//TODO Add safety checks for cantalons encoder position so we don't destroy wiring by doing 360's
+//Init with limit switch sensor to properly 'zero' out encoder 
   public void Tick()
   {
     turretTalon.set(mRobot.driverStick.getAxis(AxisType.kY));
     double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
-    
-    if (xpos < 160)
+    if (mEnabled > 0)
     {
-      double spd = Lerp(.25,.1,0,160,xpos);
-      turretTalon.set(spd); //.15);
-    }
-    if (xpos > 160)
-    {
-      double spd = Lerp(-.25,-.1,320,160,xpos);
-      turretTalon.set(spd);
-    }
-    if ((xpos >=150)&&(xpos <=170))
-    {
-      //turretTalon.set(0);
-    }
-
-  }
+      if (xpos < 160)
+      {
+        double spd = Lerp(.25, .1, 0, 160, xpos);
+        turretTalon.set(spd); // .15);
+      }
+      if (xpos > 160)
+      {
+        double spd = Lerp(-.25, -.1, 320, 160, xpos);
+        turretTalon.set(spd);
+      }
+      if ((xpos >= 150) && (xpos <= 170))
+      {
+        // turretTalon.set(0);
+      }
+    }//if enabled
+    else
+      turretTalon.set(0); //stop movement if not enabled
+  } //Tick()
 }
