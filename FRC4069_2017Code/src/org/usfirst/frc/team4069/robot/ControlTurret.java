@@ -66,16 +66,15 @@ public class ControlTurret
   {
     turretTalon.set(mRobot.driverStick.getAxis(AxisType.kY));
     double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
-    //double xpos = lpf.calculate(xxpos);
     
     if (xpos < 160)
     {
-      double spd = Lerp(.25,.01,0,160,xpos);
+      double spd = Lerp(.25,.1,0,160,xpos);
       turretTalon.set(spd); //.15);
     }
     if (xpos > 160)
     {
-      double spd = Lerp(-.25,-.01,320,160,xpos);
+      double spd = Lerp(-.25,-.1,320,160,xpos);
       turretTalon.set(spd);
     }
     if ((xpos >=150)&&(xpos <=170))
