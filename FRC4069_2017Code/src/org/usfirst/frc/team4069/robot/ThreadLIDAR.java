@@ -60,9 +60,6 @@ public class ThreadLIDAR implements Runnable
     {
       ls = history[historyIndexOUT].clone();
     }
-    if (historyIndexIN >= historyIndexOUT - 1) {
-    	return history[historyIndexOUT];
-    }
     historyIndexOUT++;
     
     historyIndexOUT %= 500;
