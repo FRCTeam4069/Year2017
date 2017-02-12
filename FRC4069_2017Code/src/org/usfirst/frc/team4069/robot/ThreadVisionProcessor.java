@@ -405,12 +405,6 @@ public class ThreadVisionProcessor implements Runnable
       Point dpt = new Point(xp+vec.x,yp+vec.y);     //Line needs Points so make points
       Point dpt2= new Point(xp+vec2.x,yp+vec2.y+1);
       
-      if ((ls.az >=269.5)&&(ls.az <= 270.5))    //If between camera angle, store angle and distance value
-      {
-        arrowangle = ls.az;
-        arrowdistance=ls.dist;
-      }
-      
       if ((ls.az > 270-5)&&(ls.az < 270+5))  //If near camera's vision, draw in green
       {
         Imgproc.line(original,dpt,dpt2,GREEN,1);
@@ -418,6 +412,11 @@ public class ThreadVisionProcessor implements Runnable
       else
         Imgproc.line(original,dpt,dpt2,RED,1); //if 'off' cameras site, draw in red
     }
+    
+    // set arrow angle and distance to the closest lidar spot to the camera with 265 <= angle <= 275
+    arrowangle = mRobot.lidar_instance.closestToCamera.az;
+    arrowdistance = mRobot.lidar_instance.closestToCamera.dist;
+    
   }//DrawLIDAR
   
 

@@ -8,6 +8,7 @@ import org.usfirst.frc.team4069.robot.ControlMove.TurnOneWheelCommand;
 
 import com.ctre.CANTalon;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
@@ -45,6 +46,7 @@ public class Robot extends SampleRobot
   
   public int ctr = 0;
 
+  private DigitalInput turretLimitSwitch;
   
   @Override
   public void robotInit()
@@ -56,6 +58,9 @@ public class Robot extends SampleRobot
    */
   public Robot()
   {
+	  
+	  turretLimitSwitch = new DigitalInput(8);
+	  
     //mShooterController = new ShooterControl(controlStick);
     mWinchController = new ControlWinch();
     mMoveController = new ControlMove(driverStick); // pass joystick
@@ -108,7 +113,7 @@ public class Robot extends SampleRobot
       turretCANTalon.set(driverStick.getAxis(AxisType.kY));
       shootCANTalon.set(driverStick.getAxis(AxisType.kX));
       
-      InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
+      InputSystem.ReadAllInput(driverStick, controlStick, turretLimitSwitch); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
      // mShooterController.Tick();
@@ -148,6 +153,8 @@ public class Robot extends SampleRobot
     long deltat = System.currentTimeMillis() - mLastDashboardUpdateTime;
     if (deltat > 1000)
     {
+    	SmartDashboard.putBoolean("TURRETLIMITSWITCH", turretLimitSwitch.get());
+    	SmartDashboard.putNumber("TURRETENCODER", mTurretController.GetShooterPosition());
       SmartDashboard.putNumber("LEFTENCODER", mMoveController.leftEncoder.get());
       SmartDashboard.putNumber("RIGHTENCODER", mMoveController.rightEncoder.get());
       SmartDashboard.putNumber("LEFTDISTANCE", mMoveController.leftEncoder.getDistance());
@@ -230,9 +237,13 @@ public class Robot extends SampleRobot
     public static boolean B_Button_Driver_Stick_Prev = false;
     public static boolean RB_Button_Driver_Stick = false; //
     public static boolean RB_Button_Driver_Stick_Prev = false;
+    
+    public static boolean Turret_Limit_Switch = false;
 
-    public static void ReadAllInput(Joystick driverstk, Joystick controlstk)
+    public static void ReadAllInput(Joystick driverstk, Joystick controlstk, DigitalInput turretLimit)
     {
+    	Turret_Limit_Switch = turretLimit.get();
+    	
       Y_Button_Control_Stick = controlstk.getRawButton(IOMapping.CONTROL_Y_BUTTON);
       A_Button_Control_Stick = controlstk.getRawButton(IOMapping.CONTROL_A_BUTTON);
       X_Button_Control_Stick_Prev = X_Button_Control_Stick;
