@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4069.robot;
 
 import com.ctre.CANTalon;
+import com.ctre.CANTalon.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.Talon;
@@ -20,6 +21,9 @@ public class ControlTurret
   {
     mRobot = robot;
     turretTalon = new CANTalon(1);
+    turretTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+    turretTalon.reverseSensor(false);
+    turretTalon.configEncoderCodesPerRev(4096); // Magnetic encoder ticks per revolution
     mlastUpdateTime = System.currentTimeMillis();
   } // ShooterControl init
 
