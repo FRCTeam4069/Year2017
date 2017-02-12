@@ -180,8 +180,6 @@ public class ThreadLIDAR implements Runnable
         int ang = (ulastPacket[2] << 8) + ulastPacket[1];
         angle = 1.0 * ((ang >> 4) + ((ang & 15) / 16.0));
         addPointToHistory(angle, dist, ss, stat);
-        angle = 1.0 * ((ang >> 4) + ((ang & 15) / 16.0));
-        addPointToHistory(angle, dist, ss, stat);
         
         // set distance from target to closest lidar point in front of camera
         if(angle >= 265 && angle <= 275){
