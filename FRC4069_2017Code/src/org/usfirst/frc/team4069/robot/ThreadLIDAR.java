@@ -31,6 +31,9 @@ public class ThreadLIDAR implements Runnable
 
   byte[] lastPacket = new byte[32];
 
+  public LidarSpot closestToCamera = new LidarSpot();
+  private boolean shouldResetClosestToCamera = true;
+  
   public LidarSpot[] history = new LidarSpot[501];
   public int historyIndexIN = 0;
   public int historyIndexOUT = 0;
@@ -171,6 +174,20 @@ public class ThreadLIDAR implements Runnable
         int ang = (ulastPacket[2] << 8) + ulastPacket[1];
         az = 1.0 * ((ang >> 4) + ((ang & 15) / 16.0));
         addPointToHistory(az, dist, ss, stat);
+        
+        // set distance from target to closest lidar point in front of camera
+        if(az >= 265 && az <= 275){
+        	if(dist < closestToCamera.dist || shouldResetClosestToCamera){
+        		closestToCamera.az = az;
+        		closestToCamera.dist = dist;
+        		closestToCamera.ss = ss;
+        		closestToCamera.stat = stat;
+        		shouldResetClosestToCamera = false;
+        	}
+        }
+        else{
+        	shouldResetClosestToCamera = true;
+        }
 
         lastMessage = "LIDAR: az:" + az + ", dist:" + dist + ",sig:" + ss + ", stat:" + stat;
         // System.out.println("LIDAR: az:" + az + ", dist:" + dist + ",sig:" + ss + ", stat:" + stat);

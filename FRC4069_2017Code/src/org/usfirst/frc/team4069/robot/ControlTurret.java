@@ -16,6 +16,8 @@ public class ControlTurret
   private int mDebug = 0;
   private Robot mRobot;
   private LowPassFilter lpf = new LowPassFilter(200);
+  
+  private boolean turretEncoderZeroed = false;
 
   public ControlTurret(Robot robot)
   {
@@ -68,26 +70,42 @@ public class ControlTurret
 //Init with limit switch sensor to properly 'zero' out encoder 
   public void Tick()
   {
-    turretTalon.set(mRobot.driverStick.getAxis(AxisType.kY));
-    double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
-    if (mEnabled > 0)
-    {
-      if (xpos < 160)
-      {
-        double spd = Lerp(.25, .1, 0, 160, xpos);
-        turretTalon.set(spd); // .15);
-      }
-      if (xpos > 160)
-      {
-        double spd = Lerp(-.25, -.1, 320, 160, xpos);
-        turretTalon.set(spd);
-      }
-      if ((xpos >= 150) && (xpos <= 170))
-      {
-        // turretTalon.set(0);
-      }
-    }//if enabled
-    else
-      turretTalon.set(0); //stop movement if not enabled
-  } //Tick()
+	if(turretEncoderZeroed){
+		if(Robot.InputSystem.Turret_Limit_Switch){
+			turretTalon.set(0);
+		}
+		else{
+		    turretTalon.set(mRobot.driverStick.getAxis(AxisType.kY));
+		    double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
+		    /*if (mEnabled > 0)
+		    {
+		      if (xpos < 160)
+		      {
+		        double spd = Lerp(.25, .1, 0, 160, xpos);
+		        turretTalon.set(spd); // .15);
+		      }
+		      if (xpos > 160)
+		      {
+		        double spd = Lerp(-.25, -.1, 320, 160, xpos);
+		        turretTalon.set(spd);
+		      }
+		      if ((xpos >= 150) && (xpos <= 170))
+		      {
+		        // turretTalon.set(0);
+		      }
+		    }//if enabled
+		    else
+		      turretTalon.set(0); //stop movement if not enabled*/
+		}
+	  } //Tick()
+	  else{
+		  if(!Robot.InputSystem.Turret_Limit_Switch){
+			  turretTalon.set(0.3);
+		  }
+		  else{
+			  turretTalon.set(0);
+			  turretTalon.reset();
+		  }
+	  }
+  }
 }
