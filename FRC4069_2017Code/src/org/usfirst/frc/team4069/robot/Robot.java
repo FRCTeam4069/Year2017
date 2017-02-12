@@ -110,7 +110,7 @@ public class Robot extends SampleRobot
     
     while (isOperatorControl() && isEnabled())
     {
-      turretCANTalon.set(driverStick.getAxis(AxisType.kY));
+      //turretCANTalon.set(driverStick.getAxis(AxisType.kY));
       shootCANTalon.set(driverStick.getAxis(AxisType.kX));
       
       InputSystem.ReadAllInput(driverStick, controlStick, turretLimitSwitch); // Read all sensor/input devices

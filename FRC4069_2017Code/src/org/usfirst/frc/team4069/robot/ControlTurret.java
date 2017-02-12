@@ -17,15 +17,15 @@ public class ControlTurret
   private Robot mRobot;
   private LowPassFilter lpf = new LowPassFilter(200);
   
-  private boolean turretEncoderZeroed = false;
+  private boolean turretEncoderZeroed = true;
 
   public ControlTurret(Robot robot)
   {
     mRobot = robot;
     turretTalon = new CANTalon(1);
-    turretTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
-    turretTalon.reverseSensor(false);
-    turretTalon.configEncoderCodesPerRev(4096); // Magnetic encoder ticks per revolution
+    //turretTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+    //turretTalon.reverseSensor(false);
+    //turretTalon.configEncoderCodesPerRev(4096); // Magnetic encoder ticks per revolution
     mlastUpdateTime = System.currentTimeMillis();
   } // ShooterControl init
 

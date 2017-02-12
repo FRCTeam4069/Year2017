@@ -36,15 +36,19 @@ public class ThreadLIDAR implements Runnable
   public LidarSpot closestToCamera = new LidarSpot();
   private boolean shouldResetClosestToCamera = true;
   
+  private Object lock = new Object();
+  
+  private LidarSpot[] writeBuffer = new LidarSpot[501];
   public LidarSpot[] history = new LidarSpot[501];
   public int historyIndexIN = 0;
   public int historyIndexOUT = 0;
 
   public ThreadLIDAR()
   {
-    for (int i = 0; i < history.length; i++)
+    for (int i = 0; i < writeBuffer.length; i++)
     {
-      history[i] = new LidarSpot(); // pre-create history array will synchronize on these as written/read from
+    	history[i] = new LidarSpot();
+      writeBuffer[i] = new LidarSpot(); // pre-create history array will synchronize on these as written/read from
     }
   }// ThreadLIDAR()
 
@@ -55,30 +59,43 @@ public class ThreadLIDAR implements Runnable
    */
   public LidarSpot getHistoryPoint()
   {
-    LidarSpot ls;
-    synchronized (history[historyIndexOUT])
-    {
-      ls = history[historyIndexOUT].clone();
-    }
-    historyIndexOUT++;
-    
-    historyIndexOUT %= 500;
-    return ls;
+	  synchronized(lock){
+	    LidarSpot ls;
+	    synchronized (history[historyIndexOUT])
+	    {
+	      ls = history[historyIndexOUT].clone();
+	    }
+	    historyIndexOUT++;
+	    
+	    historyIndexOUT %= 500;
+	    return ls;
+	  }
   }// getHistoryPoint
 
   private void addPointToHistory(double angle, int distance, int sigstr, int stat)
   {
-    synchronized (history[historyIndexIN])
-    {
-      history[historyIndexIN].az = angle;
-      history[historyIndexIN].dist = distance;
-      history[historyIndexIN].ss = sigstr;
-      history[historyIndexIN].stat = stat;
-    }
-    historyIndexIN++;
-    historyIndexIN %= 500;
+	  synchronized(lock){
+	    synchronized (history[historyIndexIN])
+	    {
+	      writeBuffer[historyIndexIN].az = angle;
+	      writeBuffer[historyIndexIN].dist = distance;
+	      writeBuffer[historyIndexIN].ss = sigstr;
+	      writeBuffer[historyIndexIN].stat = stat;
+	    }
+	    historyIndexIN++;
+	    if(historyIndexIN >= 500){
+	    	swapBuffers();
+	    }
+	    historyIndexIN %= 500;
+	  }
   }// assPointToHistory
 
+  private void swapBuffers(){
+	  LidarSpot[] temp = history;
+	  history = writeBuffer;
+	  writeBuffer = temp;
+  }
+  
   public void run()
   {
     lastError = "Startup...";
