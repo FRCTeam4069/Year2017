@@ -35,24 +35,15 @@ import org.opencv.imgproc.Imgproc;
 
 public class ThreadVisionProcessor implements Runnable
 {
-  public static final int MIN_WIDTH = 120;
-  public static final int Y_IMAGE_RES = 240;
-  public static final double VIEW_ANGLE = 34.8665269;
-  public static final double AUTO_STEADY_STATE = 1.9;
+  public static final Scalar RED = new Scalar(0, 0, 255);
+  public static final Scalar BLUE = new Scalar(255, 0, 0);
+  public static final Scalar GREEN = new Scalar(0, 255, 0);
+  public static final Scalar ORANGE = new Scalar(0, 128, 255);
+  public static final Scalar YELLOW = new Scalar(0, 255, 255);
+  public static final Scalar PINK = new Scalar(255, 0, 255);
+  public static final Scalar WHITE = new Scalar(255, 255, 255);
 
-  public static final int minR = 0, minG = 70, minB = 0;
-  public static final int maxR = 95, maxG = 255, maxB = 255; // 75;
-
-  public static final double minHRatio = 1.5, minVRatio = 1.5;
-  public static final double maxHRatio = 6.6, maxVRatio = 8.5;
-
-  public static final int MAX_SIZE = 255;
-  public static final Scalar RED = new Scalar(0, 0, 255), BLUE = new Scalar(255, 0, 0), GREEN = new Scalar(0, 255, 0), ORANGE = new Scalar(0, 128, 255), YELLOW = new Scalar(0, 255, 255), PINK = new Scalar(255, 0, 255), WHITE = new Scalar(255, 255, 255);
-
-  private boolean mDebug = false;
   private boolean mShowContours = true;
-
- // private Target targets = new Target();
 
   private boolean mExitThread = false;
   private boolean mProcessFrames = true;
@@ -60,10 +51,6 @@ public class ThreadVisionProcessor implements Runnable
   private ThreadVideoCapture vcap_thread_instance;
   private Thread vcap_thread_handle;
 
-  private static double xcenter = 0.0;
-  private static double ycenter = 0.0;
-
-  private double mapped = 0.0;
   public double lastHeadingTargetSeen = 0.0;
 
   public double lastYCenter = 0.0;
@@ -79,20 +66,23 @@ public class ThreadVisionProcessor implements Runnable
   public static final int CV_CAP_PROP_EXPOSURE_ABSOLUTE = 39;
   public static final int CV_CAP_PROP_FRAME_WIDTH = 3;
   public static final int CV_CAP_PROP_FRAME_HEIGHT = 4;
+  
   Preferences prefs = Preferences.getInstance();
-  CvSource outputStream;
-  public ColourRegions cregions = new ColourRegions();
+  
+  private CvSource outputStream;  //where to send images for display on driver station's smart dashboard
+  
+  public ColourRegions cregions = new ColourRegions();  //really only 1 of these it does most everything
 
-  Robot robot;
+  private Robot mRobot;
 
-  LowPassFilter xLowPass;
-  LowPassFilter yLowPass;
+  private LowPassFilter xLowPass;
+  private LowPassFilter yLowPass;
 
   public ThreadVisionProcessor(ThreadVideoCapture vidcapinstance, Thread vcap_handle, Robot irobot)
   {
     vcap_thread_instance = vidcapinstance; // to access getframe
     vcap_thread_handle = vcap_handle; // for thread control
-    robot = irobot;
+    mRobot = irobot;
   }
 
   public void run()
@@ -100,7 +90,7 @@ public class ThreadVisionProcessor implements Runnable
     Mat img = new Mat();
     Mat lastvalidimg = null;
 
-    outputStream = CameraServer.getInstance().putVideo("ProcessorOutput", 640, 480);
+    outputStream = CameraServer.getInstance().putVideo("ProcessorOutput", 640, 480); //ProcessorOutput is name smart dashboard on driverstation will use to display this image
 
     xLowPass = new LowPassFilter(50);
     yLowPass = new LowPassFilter(50);
@@ -140,6 +130,11 @@ public class ThreadVisionProcessor implements Runnable
     } // while true
   } // run
 
+  
+  
+  
+  
+  
   /*private void CalculateDist()
   {
     double targetHeight = 32;
@@ -175,7 +170,12 @@ public class ThreadVisionProcessor implements Runnable
 
   
   
-  
+  /**
+   * Really theres only 1 of these, there COULD be more...its the main workhorse of the visionprocessor
+   * Its CalcAll and DrawAll methods find targets, draw them and send the image out
+   * @author user
+   *
+   */
   public class ColourRegions
   {
     double mMinAreaAllowed = 49.0;
@@ -287,6 +287,9 @@ public class ThreadVisionProcessor implements Runnable
       int avgCtr = 0;
       RotatedRect[] minRect = new RotatedRect[mContours.size()];
 
+      
+      //Go through all contours and throw out any smaller than 50% of largest contour, 
+      //calc center point of all contours whic survive 50% test
       avgCtr = 0;
       xAverage = 0.0;
       yAverage = 0.0;
@@ -296,14 +299,14 @@ public class ThreadVisionProcessor implements Runnable
         minRect[i] = Imgproc.minAreaRect(mop2f);
         double curarea = Imgproc.contourArea(mContours.get(i));
 
-        double contourWeight = curarea / mLargestContourArea; // 0-1.0 for weight of this contour
+        double contourWeight = curarea / mLargestContourArea; // 0-1.0 for weight of this contour mLargest comes from CalcAll
 
-        if ((mShowContours) && (contourWeight > .5))
+        if ((mShowContours) && (contourWeight > .5))  //Contour must be bigger than 50% of our largest contour to be kept
         {
           Point[] rect_points = new Point[4];
           minRect[i].points(rect_points);
 
-          for (int j = 0; j < 4; j++)
+          for (int j = 0; j < 4; j++) //Draw contour in blue, sum x,y points
           {
             Imgproc.line(original, rect_points[j], rect_points[(j + 1) % 4], BLUE, 3);
             xAverage += rect_points[j].x;
@@ -317,29 +320,36 @@ public class ThreadVisionProcessor implements Runnable
         // Point center2 = new Point(3 + (box.x + box.width / 2), 3 + (box.y + box.height / 2));
         // Imgproc.line(original, center, center2, YELLOW, 3);
       } // for i <contours.size
-      if (mContours.size() > 0)
+      
+      //If contours survived culling in calc...
+      
+      if ((mContours.size() > 0)&&(avgCtr>0))  //avgCtr must be > 1 or div by zero error
       {
-        xAverage /= avgCtr;
+        xAverage /= avgCtr;  //get center of all contours
         yAverage /= avgCtr;
-        double nx = xLowPass.calculate(xAverage);
+        
+        double nx = xLowPass.calculate(xAverage); //low pass filter them, prevents 'jumpy' crosshairs
         double ny = yLowPass.calculate(yAverage);
 
-        Point avgpt = new Point(nx, 0); // yAverage);
+        Point avgpt = new Point(nx, 0);     //crosshairs span screen
         Point avgpt2 = new Point(nx, 230); // yAverage+2); //give some size
 
         Point ypt = new Point(0, ny);
         Point ypt1 = new Point(320, ny);
 
-        mXGreenLine = nx;
+        mXGreenLine = nx;     //Store lowpass values for other threads to 'see' (note unsafe updates here might want to lock if x,y seem wrong a lot)
         mYGreenLine = ny;
+        
         Point center = new Point(nx, ny);
         Imgproc.line(original, avgpt, avgpt2, GREEN, 1);
         Imgproc.line(original, ypt, ypt1, GREEN, 1);
-        double head = robot.arduino_thread_instance.lastHeading;
+        
+        //Now read last heading from gyro (arduino) thread
+        double head = mRobot.arduino_thread_instance.lastHeading;
         if (head != -1.0)
-          lastHeadingTargetSeen = robot.arduino_thread_instance.lastHeading;
+          lastHeadingTargetSeen = mRobot.arduino_thread_instance.lastHeading;
       }
-      else
+      else //no target/contours meet criteria, draw some history to maybe help player
       {
         Point avgpt = new Point(mXGreenLine, 0); // use last seen location
         Point avgpt2 = new Point(mXGreenLine, 230); //
@@ -347,13 +357,14 @@ public class ThreadVisionProcessor implements Runnable
         Point ypt = new Point(0, mYGreenLine);
         Point ypt1 = new Point(320, mYGreenLine);
         Imgproc.line(original, ypt, ypt1, RED, 1);
-
       }
+      
       Point centerbtm = new Point(0, 20);
-      double head = robot.arduino_thread_instance.lastHeading;
+      
+      double head = mRobot.arduino_thread_instance.lastHeading;
       if (head != -1.0)
       {
-        Imgproc.putText(original, "HEADING:" + robot.arduino_thread_instance.lastHeading, centerbtm, 0, 0.5, GREEN);
+        Imgproc.putText(original, "HEADING:" + mRobot.arduino_thread_instance.lastHeading, centerbtm, 0, 0.5, GREEN);
       }
       else
         Imgproc.putText(original, "HEADING:Err No Lock", centerbtm, 0, 0.5, RED);
@@ -377,10 +388,10 @@ public class ThreadVisionProcessor implements Runnable
   private void DrawLIDAR(int xp,int yp,double scale,Mat original)
   {
     LidarSpot ls = null;
-    for(int i=0;i<robot.lidar_instance.history.length;i++)
+    for(int i=0;i<mRobot.lidar_instance.history.length;i++)
     {
-      ls = robot.lidar_instance.getHistoryPoint();            //Pull 1st point
-      LidarSpot ls2 = robot.lidar_instance.getHistoryPoint(); //Pull 2nd point (lidar rotates so this point should connect to point above)
+      ls = mRobot.lidar_instance.getHistoryPoint();            //Pull 1st point
+      LidarSpot ls2 = mRobot.lidar_instance.getHistoryPoint(); //Pull 2nd point (lidar rotates so this point should connect to point above)
       
       double rad = ls.az * (Math.PI / 180); //convert ugly angles to normal radians
       double rad2= ls2.az * (Math.PI/180);
