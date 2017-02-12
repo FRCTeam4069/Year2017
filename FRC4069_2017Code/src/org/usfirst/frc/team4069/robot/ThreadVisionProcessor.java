@@ -85,8 +85,6 @@ public class ThreadVisionProcessor implements Runnable
 
   Robot robot;
 
-  Scalar minRange, bminRange, cminRange;
-  Scalar maxRange, bmaxRange, cmaxRange;
   LowPassFilter xLowPass;
   LowPassFilter yLowPass;
 
@@ -95,13 +93,6 @@ public class ThreadVisionProcessor implements Runnable
     vcap_thread_instance = vidcapinstance; // to access getframe
     vcap_thread_handle = vcap_handle; // for thread control
     robot = irobot;
-
-    minRange = new Scalar(240, 239, 70); // 119); //51,70,122);
-    maxRange = new Scalar(255, 255, 133); // 242,255,212);
-    bminRange = new Scalar(194, 236, 28); // 31, 245, 194);
-    bmaxRange = new Scalar(204, 252, 32); //// 32, 252, 204);
-    cminRange = new Scalar(240, 239, 22); // 51,70,122);
-    cmaxRange = new Scalar(255, 255, 46); // 242,255,212);
   }
 
   public void run()
@@ -114,22 +105,23 @@ public class ThreadVisionProcessor implements Runnable
     xLowPass = new LowPassFilter(50);
     yLowPass = new LowPassFilter(50);
 
-    //cregions.addRange(70, 239, 240, 133, 255, 255);
-    cregions.addRange(21, 178, 81, 133, 255, 255);
+    //Adding regions increases processing time.
+    //Range is from minR,minG,minB to maxR,maxG,maxB
+    cregions.addRange(21, 178, 81, 133, 255, 255); //RGB(21,178,81) to RGB(133,255,255)
     cregions.addRange(22, 230, 101, 32, 255, 204); // 28, 236, 194, 32, 252, 204);
     cregions.addRange(22, 239, 240, 46, 255, 255);
-    // cregions.addRange(240, 240, 240, 255, 255, 255);
+
     while ((true) && (mExitThread == false))
     {
       if (mProcessFrames)
       {
-        img = vcap_thread_instance.GetFrame();
+        img = vcap_thread_instance.GetFrame(); //pull frame from ThreadVideoCapture.java safely
 
         if (img != null)
         {
-          cregions.CalcAll(img);
-          cregions.DrawAll(img);
-          lastvalidimg = img;
+          cregions.CalcAll(img); //look for stuff, calc things
+          cregions.DrawAll(img); //draw stuff based on the calc things
+          lastvalidimg = img;   //save to send out incase we get a null from capturethread, stops pink empty frames showing up
 
         } // if img!=null
         if (lastvalidimg != null)
@@ -164,7 +156,11 @@ public class ThreadVisionProcessor implements Runnable
   }
 
   // ----------------------------------------------------------------
-
+  /**
+   * ColurRange : simply stores a min RGB and maxRGB value
+   * @author EA
+   *
+   */
   private class ColourRange
   {
     public Scalar cmin;
@@ -177,6 +173,9 @@ public class ThreadVisionProcessor implements Runnable
     }
   }// class ColourRange
 
+  
+  
+  
   public class ColourRegions
   {
     double mMinAreaAllowed = 49.0;
@@ -199,12 +198,6 @@ public class ThreadVisionProcessor implements Runnable
     /**
      * Add min/max colour range for finding target.  This function can be called multiple times to add
      * more ranges, though it costs a bit in time for each.
-     * @param minr
-     * @param ming
-     * @param minb
-     * @param maxr
-     * @param maxg
-     * @param maxb
      */
     public void addRange(int minr, int ming, int minb, int maxr, int maxg, int maxb)
     {
@@ -373,85 +366,89 @@ public class ThreadVisionProcessor implements Runnable
       Point cpt=new Point(160,120);
       Imgproc.putText(original, ""+arrowdistance+"cm", cpt, 0,0.5, GREEN);
     }// DrawAll
-
   }// ColourRegions class
   
+
+  //Given a center x,y a scale and a image Mat to draw on, pulls history points from the lidar thread and
+  //draws them on the Mat  
+  //NOTE This needs to be fixed, it draws artifacts where the lidarthread enters points and gethistorypoint pulls them
+  //Not dangerous, but ugly artifacts
   
   private void DrawLIDAR(int xp,int yp,double scale,Mat original)
   {
     LidarSpot ls = null;
     for(int i=0;i<robot.lidar_instance.history.length;i++)
     {
-      ls = robot.lidar_instance.getHistoryPoint();
-      LidarSpot ls2 = robot.lidar_instance.getHistoryPoint();
+      ls = robot.lidar_instance.getHistoryPoint();            //Pull 1st point
+      LidarSpot ls2 = robot.lidar_instance.getHistoryPoint(); //Pull 2nd point (lidar rotates so this point should connect to point above)
       
-      double rad = ls.az * (Math.PI / 180);
+      double rad = ls.az * (Math.PI / 180); //convert ugly angles to normal radians
       double rad2= ls2.az * (Math.PI/180);
       
-      Vector2 vec = new Vector2(-Math.cos(rad),Math.sin(rad));
+      Vector2 vec = new Vector2(-Math.cos(rad),Math.sin(rad));  //and get some nice vectors
       Vector2 vec2= new Vector2(-Math.cos(rad2),Math.sin(rad2));
       
-      vec.scale(ls.dist/4);
-      vec2.scale(ls2.dist/4);
+      vec.scale(ls.dist/4); //scale down, lidar can do 40 meters!  4000cm, thats BIG scale to screen sizeish
+      vec2.scale(ls2.dist/4);  //NOTE: May need to change /4 to like /8 in big rooms
       
-      Point dpt = new Point(xp+vec.x,yp+vec.y);
+      Point dpt = new Point(xp+vec.x,yp+vec.y);     //Line needs Points so make points
       Point dpt2= new Point(xp+vec2.x,yp+vec2.y+1);
       
-      if ((ls.az >=269.5)&&(ls.az <= 270.5))
+      if ((ls.az >=269.5)&&(ls.az <= 270.5))    //If between camera angle, store angle and distance value
       {
         arrowangle = ls.az;
         arrowdistance=ls.dist;
       }
       
-      if ((ls.az > 270-5)&&(ls.az < 270+5))
+      if ((ls.az > 270-5)&&(ls.az < 270+5))  //If near camera's vision, draw in green
       {
         Imgproc.line(original,dpt,dpt2,GREEN,1);
       }
       else
-        Imgproc.line(original,dpt,dpt2,RED,1);
+        Imgproc.line(original,dpt,dpt2,RED,1); //if 'off' cameras site, draw in red
     }
   }//DrawLIDAR
   
 
+  //Simple draw arrow routine, given point for tail, a direction, a size (scale) and a Mat to draw on.
+  //
   private void DrawArrow(int xp, int yp, double dir, double scale, Mat original)
   {
     double rad = dir * (Math.PI / 180);
-    double lrad = rad + 3.14159 / 5;
-    double rrad = rad - 3.14159 / 5;
+    double lrad = rad + 3.14159 / 5; //left arrow head
+    double rrad = rad - 3.14159 / 5; //right arrow head point
 
     Vector2 degvec = new Vector2(Math.cos(rad), Math.sin(rad)); // get vector pointing right
     Vector2 lradv = new Vector2(Math.cos(lrad), Math.sin(lrad));
     Vector2 rradv = new Vector2(Math.cos(rrad), Math.sin(rrad));
-    lradv.scale(scale / 4);
-    rradv.scale(scale / 4);
-    ;
-    degvec.scale(scale);
-    Vector2 vtip = new Vector2(xp, yp);
-    vtip.add(degvec);
+    
+    lradv.scale(scale / 4); //scale up head left bit (1/4th vector length)
+    rradv.scale(scale / 4); //scale up head right bit same size
+    degvec.scale(scale);  //main vector body is passed in size
+    
+    
+    Vector2 vtip = new Vector2(xp, yp);  //first we are the base point of arrow...
+    vtip.add(degvec);                    //NOW we are the tip
 
-    Vector2 lbit = vtip.clone();
-    lbit.sub(lradv);
-    ;
+    Vector2 lbit = vtip.clone();  //clone tip point and...
+    lbit.sub(lradv);              //offset to the left head point
 
-    Vector2 rbit = vtip.clone();
-    rbit.sub(rradv);
-    ;
+    Vector2 rbit = vtip.clone();  //clone the tip point and...
+    rbit.sub(rradv);              //offset to the right head point
 
-    Point start = new Point(xp, yp);
-    Point tip = new Point(vtip.x, vtip.y);
-    Point lefthead = new Point(lbit.x, lbit.y);
-    Point righthead = new Point(rbit.x, rbit.y);
+    Point start = new Point(xp, yp);        //Now we draw, but draw needs Point's so get base of arrow
+    Point tip = new Point(vtip.x, vtip.y);      //Tip of arrow
+    Point lefthead = new Point(lbit.x, lbit.y);  //left head bit
+    Point righthead = new Point(rbit.x, rbit.y);  //right head bit
 
-    double csc = scale + scale * 0.15;
-    Imgproc.circle(original, start, (int) csc, BLUE);
+//    double csc = scale + scale * 0.15;
+//    Imgproc.circle(original, start, (int) csc, BLUE);
 
-    Imgproc.line(original, start, tip, YELLOW, 2);
-    Imgproc.line(original, tip, lefthead, YELLOW, 2);
-    Imgproc.line(original, tip, righthead, YELLOW, 2);
+    Imgproc.line(original, start, tip, YELLOW, 2);   //draw main arrow body
+    Imgproc.line(original, tip, lefthead, YELLOW, 2);  //draw left bit
+    Imgproc.line(original, tip, righthead, YELLOW, 2); //draw right bit 2 pixels wide
 
-  }
-
-
+  } //DrawArrow
 }// class VisionThreadNew
 
 // notes:
