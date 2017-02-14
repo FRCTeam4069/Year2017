@@ -46,7 +46,7 @@ public class Robot extends IterativeRobot
     /* set closed loop gains in slot0 */
     _talon.setProfile(0);
     _talon.setF(0.1097);
-    _talon.setP(0.22);
+    _talon.setP(0.11); //22);
     _talon.setI(0);
     _talon.setD(0);
   }
@@ -68,15 +68,15 @@ public class Robot extends IterativeRobot
     if (_joy.getRawButton(1))
     {
       /* Speed mode */
-      double targetSpeed = 250;//leftYstick * 1500.0; /* 1500 RPM in either direction */
+      double targetSpeed = leftYstick * 1500.0; /* 1500 RPM in either direction */
       _talon.changeControlMode(TalonControlMode.Speed);
       _talon.set(targetSpeed); /* 1500 RPM in either direction */
 
       /* append more signals to print when in speed mode. */
-      //_sb.append("\terr:");
-      //_sb.append(_talon.getClosedLoopError());
-      //_sb.append("\ttrg:");
-      //_sb.append(targetSpeed);
+      _sb.append("\terr:");
+      _sb.append(_talon.getClosedLoopError());
+      _sb.append("\ttrg:");
+      _sb.append(targetSpeed);
     }
     if (_joy.getRawButton(2))
     {
@@ -102,18 +102,18 @@ public class Robot extends IterativeRobot
 
     }
     else
-    if ((_joy.getRawButton(5))||(_joy.getRawButton(6)))
+  //  if ((_joy.getRawButton(5))||(_joy.getRawButton(6)))
     {
-      _talon.set(0);
+      //_talon.set(0);
       /* Percent voltage mode */
-      //_talon.changeControlMode(TalonControlMode.PercentVbus);
-      //_talon.set(leftYstick);
+      _talon.changeControlMode(TalonControlMode.PercentVbus);
+      _talon.set(leftYstick);
     }
 
     if (++_loops >= 10)
     {
       _loops = 0;
-      //System.out.println(_sb.toString());
+      System.out.println(_sb.toString());
     }
     _sb.setLength(0);
   }

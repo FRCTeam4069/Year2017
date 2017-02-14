@@ -41,9 +41,9 @@ public class ControlShooter
     // set closed loop gains in slot 0
     shooterCANTalon.setProfile(0);
     shooterCANTalon.setF(0.1097);
-    shooterCANTalon.setP(0.11);
+    shooterCANTalon.setP(0.15);
     shooterCANTalon.setI(0);
-    shooterCANTalon.setD(0);
+    shooterCANTalon.setD(0.05);
     shooterCANTalon.changeControlMode(TalonControlMode.Speed);
     mlastUpdateTime = System.currentTimeMillis();
   } // ShooterControl init
@@ -64,19 +64,19 @@ public class ControlShooter
 
     if (_joy.getRawButton(IOMapping.CONTROL_A_BUTTON))
     {
-      targetRPM = 1700;
+      targetRPM = 1800; //1300;
     }
     if (_joy.getRawButton(IOMapping.CONTROL_B_BUTTON))
     {
-      targetRPM = 1800; //best spot 2800rpm output when set to this
+      targetRPM = 1900; //best spot 2800rpm output when set to this
     }
     else if (_joy.getRawButton(IOMapping.CONTROL_X_BUTTON))
     {
-      targetRPM = 1900;
+      targetRPM = 2000;
     }
     else if (_joy.getRawButton(IOMapping.CONTROL_Y_BUTTON))
     {
-      targetRPM = 2000;  //actual 2797rpm???
+      targetRPM = 2100;  //actual 2797rpm???
     }
     if ((_joy.getRawButton(5)) || (_joy.getRawButton(6)))
     {

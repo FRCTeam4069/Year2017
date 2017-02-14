@@ -118,7 +118,7 @@ public class Robot extends SampleRobot
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
       mShooterController.Tick();
      // mWinchController.Tick();
-     // mMoveController.Tick();
+      mMoveController.Tick();
       //mTurretController.Tick();
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
