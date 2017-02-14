@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot
 {
-  //private ShooterControl mShooterController; // shooter functions
+  private ControlShooter mShooterController; // shooter functions
   private ControlWinch mWinchController; // winch functions
   private ControlMove mMoveController; // ALL robot movement functions
   private ControlTurret mTurretController;
@@ -61,7 +61,7 @@ public class Robot extends SampleRobot
 	  
 	  turretLimitSwitch = new DigitalInput(8);
 	  
-    //mShooterController = new ShooterControl(controlStick);
+    mShooterController = new ControlShooter(controlStick);
     mWinchController = new ControlWinch();
     mMoveController = new ControlMove(driverStick); // pass joystick
     mTurretController = new ControlTurret(this);
@@ -103,23 +103,23 @@ public class Robot extends SampleRobot
   {
     mMoveController.mRobotDrive.setSafetyEnabled(false);
   //  SendDataToSmartDashboard();
-    //mShooterController.Enable();
+    mShooterController.Enable();
     mMoveController.MoveOperatorControl(); // human driving watch out!
-    CANTalon turretCANTalon = new CANTalon(1);
-    CANTalon shootCANTalon = new CANTalon(0);
-    
+    //CANTalon turretCANTalon = new CANTalon(1);
+    //CANTalon shootCANTalon = new CANTalon(0);
+    mTurretController.Enable();
     while (isOperatorControl() && isEnabled())
     {
       //turretCANTalon.set(driverStick.getAxis(AxisType.kY));
-      shootCANTalon.set(driverStick.getAxis(AxisType.kX));
+      //shootCANTalon.set(driverStick.getAxis(AxisType.kX));
       
-      InputSystem.ReadAllInput(driverStick, controlStick, turretLimitSwitch); // Read all sensor/input devices
+      //InputSystem.ReadAllInput(driverStick, controlStick, turretLimitSwitch); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
-     // mShooterController.Tick();
+      mShooterController.Tick();
      // mWinchController.Tick();
      // mMoveController.Tick();
-      mTurretController.Tick();
+      //mTurretController.Tick();
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled
@@ -164,10 +164,10 @@ public class Robot extends SampleRobot
       SmartDashboard.putNumber("resultleftspeed", mMoveController.resultantleftspeed);
       SmartDashboard.putNumber("resultantrightspeed",mMoveController.resultantrightspeed);
       SmartDashboard.putNumber("Tickcount:", mMoveController.TickCounter);
-      //SmartDashboard.putNumber("SHOOTER MotorOut:", mShooterController.motorOutput);
-      //SmartDashboard.putNumber("SHOOTER RPM", mShooterController.shooterCANTalon.getSpeed());
-      //SmartDashboard.putNumber("SHOOTER TARGET RPM:", mShooterController.targetRPM);
-      //SmartDashboard.putNumber("SHOOTER ERROR:", mShooterController.shooterCANTalon.getClosedLoopError());
+      SmartDashboard.putNumber("SHOOTER MotorOut:", mShooterController.motorOutput);
+      SmartDashboard.putNumber("SHOOTER RPM", mShooterController.shooterCANTalon.getSpeed());
+      SmartDashboard.putNumber("SHOOTER TARGET RPM:", mShooterController.targetRPM);
+      SmartDashboard.putNumber("SHOOTER ERROR:", mShooterController.shooterCANTalon.getClosedLoopError());
       SmartDashboard.putNumber("XCENTER", vision_processor_instance.cregions.mXGreenLine); // .lastXCenter);
       SmartDashboard.putNumber("NumContours:", vision_processor_instance.cregions.mContours.size());
       SmartDashboard.putNumber("MAPPED:", vision_processor_instance.lastMapped);

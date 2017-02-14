@@ -21,7 +21,7 @@ public class ControlShooter
   private int mDebug = 1;
   public double motorOutput=0.0;
   public double targetRPM=0.0;
-  
+  public LowPassFilter lpf = new LowPassFilter(1000);
   private Joystick _joy;
 
   public ControlShooter(Joystick stk)
@@ -41,7 +41,7 @@ public class ControlShooter
     // set closed loop gains in slot 0
     shooterCANTalon.setProfile(0);
     shooterCANTalon.setF(0.1097);
-    shooterCANTalon.setP(0.22);
+    shooterCANTalon.setP(0.11);
     shooterCANTalon.setI(0);
     shooterCANTalon.setD(0);
     shooterCANTalon.changeControlMode(TalonControlMode.Speed);
@@ -64,19 +64,19 @@ public class ControlShooter
 
     if (_joy.getRawButton(IOMapping.CONTROL_A_BUTTON))
     {
-      targetRPM = 250;
+      targetRPM = 1700;
     }
     if (_joy.getRawButton(IOMapping.CONTROL_B_BUTTON))
     {
-      targetRPM = 275;
+      targetRPM = 1800; //best spot 2800rpm output when set to this
     }
     else if (_joy.getRawButton(IOMapping.CONTROL_X_BUTTON))
     {
-      targetRPM = 300;
+      targetRPM = 1900;
     }
     else if (_joy.getRawButton(IOMapping.CONTROL_Y_BUTTON))
     {
-      targetRPM = 350;
+      targetRPM = 2000;  //actual 2797rpm???
     }
     if ((_joy.getRawButton(5)) || (_joy.getRawButton(6)))
     {
@@ -87,14 +87,14 @@ public class ControlShooter
     if (targetRPM != 0.0)
     {
       shooterCANTalon.changeControlMode(TalonControlMode.Speed);
-      shooterCANTalon.set(targetRPM); //
+      shooterCANTalon.set(lpf.calculate(targetRPM)); //
     }
     else
     {
       /* Percent voltage mode using joystick */
-      double leftYstick = _joy.getAxis(AxisType.kY);
-      shooterCANTalon.changeControlMode(TalonControlMode.PercentVbus);
-      shooterCANTalon.set(leftYstick);
+     // double leftYstick = _joy.getAxis(AxisType.kY);
+     // shooterCANTalon.changeControlMode(TalonControlMode.PercentVbus);
+     // shooterCANTalon.set(leftYstick);
     }
   }// ShooterTick
   

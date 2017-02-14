@@ -15,17 +15,17 @@ public class ControlTurret
   private int mEnabled = 0;
   private int mDebug = 0;
   private Robot mRobot;
-  private LowPassFilter lpf = new LowPassFilter(200);
-  
+  private LowPassFilter lpf = new LowPassFilter(100);
+
   private boolean turretEncoderZeroed = true;
 
   public ControlTurret(Robot robot)
   {
     mRobot = robot;
     turretTalon = new CANTalon(1);
-    //turretTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
-    //turretTalon.reverseSensor(false);
-    //turretTalon.configEncoderCodesPerRev(4096); // Magnetic encoder ticks per revolution
+    // turretTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+    // turretTalon.reverseSensor(false);
+    // turretTalon.configEncoderCodesPerRev(4096); // Magnetic encoder ticks per revolution
     mlastUpdateTime = System.currentTimeMillis();
   } // ShooterControl init
 
@@ -65,47 +65,61 @@ public class ControlTurret
   {
     mEnabled = 0;
   }
-  
-//TODO Add safety checks for cantalons encoder position so we don't destroy wiring by doing 360's
-//Init with limit switch sensor to properly 'zero' out encoder 
+
+  // TODO Add safety checks for cantalons encoder position so we don't destroy wiring by doing 360's
+  // Init with limit switch sensor to properly 'zero' out encoder
   public void Tick()
   {
-	if(turretEncoderZeroed){
-		if(Robot.InputSystem.Turret_Limit_Switch){
-			turretTalon.set(0);
-		}
-		else{
-		    turretTalon.set(mRobot.driverStick.getAxis(AxisType.kY));
-		    double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
-		    /*if (mEnabled > 0)
-		    {
-		      if (xpos < 160)
-		      {
-		        double spd = Lerp(.25, .1, 0, 160, xpos);
-		        turretTalon.set(spd); // .15);
-		      }
-		      if (xpos > 160)
-		      {
-		        double spd = Lerp(-.25, -.1, 320, 160, xpos);
-		        turretTalon.set(spd);
-		      }
-		      if ((xpos >= 150) && (xpos <= 170))
-		      {
-		        // turretTalon.set(0);
-		      }
-		    }//if enabled
-		    else
-		      turretTalon.set(0); //stop movement if not enabled*/
-		}
-	  } //Tick()
-	  else{
-		  if(!Robot.InputSystem.Turret_Limit_Switch){
-			  turretTalon.set(0.3);
-		  }
-		  else{
-			  turretTalon.set(0);
-			  turretTalon.reset();
-		  }
-	  }
-  }
-}
+    //return;
+    /*if (turretEncoderZeroed)
+    {
+      if (Robot.InputSystem.Turret_Limit_Switch)
+      {
+        turretTalon.set(0);
+      }
+      else
+      {*/
+        double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
+        turretTalon.set(mRobot.driverStick.getAxis(AxisType.kY));
+        //if (mEnabled > 0)
+//        {
+          if (xpos < 160)
+          {
+            double spd = Lerp(.25, .025, 0, 160, xpos);
+            turretTalon.set(spd); // .15);
+          }
+          if (xpos > 160)
+          {
+            double spd = Lerp(-.25, -.025, 320, 160, xpos);
+            turretTalon.set(spd);
+          }
+          if ((xpos >= 150) && (xpos <= 170))
+          {
+            // turretTalon.set(0);
+          }
+  //      }
+        //else
+        ///{
+          //turretTalon.set(0); // if not enabled, set turret speed to zero
+        //}
+      //} // if limit switch NOT hit
+    //} // if turret zeroed
+//    else
+    //{ // here if turret is not yet zeroed, must zero first
+//      if (Robot.InputSystem.Turret_Limit_Switch == false) // if limit NOT pressed
+      //{
+//        turretTalon.set(0.015); // crawl toward limit switch
+      //}
+      //else
+      //{
+//        turretTalon.set(0);
+        //while (Robot.InputSystem.Turret_Limit_Switch == true)
+//        {
+//          turretTalon.set(-0.01); // go until off limit switch
+//        }
+//        turretTalon.set(0); // turn off talon
+//        turretTalon.reset(); // reset encoder ticks
+      //}
+    //} // else turret not yet zeroed
+  } //Tick()
+}//class ControlTurret

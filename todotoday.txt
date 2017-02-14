@@ -1,0 +1,13 @@
+1. Check encoders on robot, make sure they are plugged in left-left right-right
+1.5 Get autonomous straight/turn working at startup
+2. Add limit switch to Turret to zero its encoder
+3. get Turret code to use new limit switch and track encoder safety limit
+4. Test shooter RPM code, make sure can change RPMs with buttons on controller
+5. Try taking shot in autonomous
+
+
+Get autonomous drive straight/turn working well.
+
+See if we can get targeting to line up and take a shot afterwards
+
+
