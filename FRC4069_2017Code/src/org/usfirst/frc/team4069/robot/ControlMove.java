@@ -104,6 +104,7 @@ public class ControlMove
     if (mCommandList.size() == 0) // when no commands left, stop.
     {
       Stop();
+      mCurrentCommand = null;
       return -1; // return -1 in the case where no commands were available
     }
     MoveCommand mc = mCommandList.get(0); // Trigger next command on next Tick()
@@ -114,6 +115,15 @@ public class ControlMove
     return mCommandList.size();
   }// doNextCommand
 
+  
+  public int isControlMoveFinished()
+  {
+    if ((mCommandList.size()==0)&&(mCurrentCommand==null))
+      return 1;
+    else
+      return 0;
+  } 
+  
   /**
    * Call proper tick() routine for mCurrentCommand
    */

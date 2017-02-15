@@ -20,10 +20,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot
 {
-  private ControlShooter mShooterController; // shooter functions
-  private ControlWinch mWinchController; // winch functions
-  private ControlMove mMoveController; // ALL robot movement functions
-  private ControlTurret mTurretController;
+  public ControlShooter mShooterController; // shooter functions
+  public ControlWinch mWinchController; // winch functions
+  public ControlMove mMoveController; // ALL robot movement functions
+  public ControlTurret mTurretController;
+  
+  private Control_MoveAimShoot mMoveAimShoot;
   
   Preferences prefs = Preferences.getInstance();
 
@@ -130,6 +132,11 @@ public class Robot extends SampleRobot
   @Override
   public void autonomous()
   {
+    mMoveAimShoot = new Control_MoveAimShoot(this);
+    
+    mTurretController.Disable();
+    mShooterController.Disable();  //control_moveaimshoot will sequence these
+    
     mMoveController.mRobotDrive.setSafetyEnabled(false);
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
@@ -139,9 +146,12 @@ public class Robot extends SampleRobot
     while (isAutonomous() && isEnabled())
     {
       SendDataToSmartDashboard();
-      //mMoveController.Tick();
+      mMoveController.Tick();
       mTurretController.Tick();
+      mShooterController.Tick();
       
+      
+      mMoveAimShoot.Tick();  //master sequencer of the above, it will enable/disable them as needed
     }
   }// autonomous
 

@@ -66,6 +66,16 @@ public class ControlTurret
     mEnabled = 0;
   }
 
+  
+  public int isTurretTargeted()
+  {
+    double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
+    if ((xpos>=155)&&(xpos <= 175))
+      return 1;
+    else 
+      return 0;
+  }
+  
   // TODO Add safety checks for cantalons encoder position so we don't destroy wiring by doing 360's
   // Init with limit switch sensor to properly 'zero' out encoder
   public void Tick()
@@ -93,7 +103,7 @@ public class ControlTurret
             double spd = Lerp(-.25, -.025, 320, 160, xpos);
             turretTalon.set(spd);
           }
-          if ((xpos >= 150) && (xpos <= 170))
+          if ((xpos >= 155) && (xpos <= 165))
           {
             // turretTalon.set(0);
           }
