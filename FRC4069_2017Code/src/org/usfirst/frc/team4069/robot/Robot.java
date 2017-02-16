@@ -121,7 +121,7 @@ public class Robot extends SampleRobot
       mShooterController.Tick();
      // mWinchController.Tick();
       mMoveController.Tick();
-      //mTurretController.Tick();
+      mTurretController.Tick();
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled
@@ -140,7 +140,7 @@ public class Robot extends SampleRobot
     mMoveController.mRobotDrive.setSafetyEnabled(false);
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
-    mMoveController.MoveStraight(-0.45, 100);
+    mMoveController.MoveStraight(-0.45, 90);
     mMoveController.DoTurn();
    
     while (isAutonomous() && isEnabled())

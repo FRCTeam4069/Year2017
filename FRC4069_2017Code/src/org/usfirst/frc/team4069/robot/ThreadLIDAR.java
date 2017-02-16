@@ -24,7 +24,7 @@ public class ThreadLIDAR implements Runnable
   public String mIDResponse = "";
   public String lastError = "";
   public String lastMessage = "";
-  
+
   public boolean instructedToUpdate = false;
 
   int mState = 0;
@@ -35,9 +35,9 @@ public class ThreadLIDAR implements Runnable
 
   public LidarSpot closestToCamera = new LidarSpot();
   private boolean shouldResetClosestToCamera = true;
-  
+
   private Object lock = new Object();
-  
+
   private LidarSpot[] writeBuffer = new LidarSpot[501];
   public LidarSpot[] history = new LidarSpot[501];
   public int historyIndexIN = 0;
@@ -47,7 +47,7 @@ public class ThreadLIDAR implements Runnable
   {
     for (int i = 0; i < writeBuffer.length; i++)
     {
-    	history[i] = new LidarSpot();
+      history[i] = new LidarSpot();
       writeBuffer[i] = new LidarSpot(); // pre-create history array will synchronize on these as written/read from
     }
   }// ThreadLIDAR()
@@ -59,43 +59,47 @@ public class ThreadLIDAR implements Runnable
    */
   public LidarSpot getHistoryPoint()
   {
-	  synchronized(lock){
-	    LidarSpot ls;
-	    synchronized (history[historyIndexOUT])
-	    {
-	      ls = history[historyIndexOUT].clone();
-	    }
-	    historyIndexOUT++;
-	    
-	    historyIndexOUT %= 500;
-	    return ls;
-	  }
+    synchronized (lock)
+    {
+      LidarSpot ls;
+      synchronized (history[historyIndexOUT])
+      {
+        ls = history[historyIndexOUT].clone();
+      }
+      historyIndexOUT++;
+
+      historyIndexOUT %= 500;
+      return ls;
+    }
   }// getHistoryPoint
 
   private void addPointToHistory(double angle, int distance, int sigstr, int stat)
   {
-	  synchronized(lock){
-	    synchronized (history[historyIndexIN])
-	    {
-	      writeBuffer[historyIndexIN].az = angle;
-	      writeBuffer[historyIndexIN].dist = distance;
-	      writeBuffer[historyIndexIN].ss = sigstr;
-	      writeBuffer[historyIndexIN].stat = stat;
-	    }
-	    historyIndexIN++;
-	    if(historyIndexIN >= 500){
-	    	swapBuffers();
-	    }
-	    historyIndexIN %= 500;
-	  }
+    synchronized (lock)
+    {
+      synchronized (history[historyIndexIN])
+      {
+        writeBuffer[historyIndexIN].az = angle;
+        writeBuffer[historyIndexIN].dist = distance;
+        writeBuffer[historyIndexIN].ss = sigstr;
+        writeBuffer[historyIndexIN].stat = stat;
+      }
+      historyIndexIN++;
+      if (historyIndexIN >= 500)
+      {
+        swapBuffers();
+      }
+      historyIndexIN %= 500;
+    }
   }// assPointToHistory
 
-  private void swapBuffers(){
-	  LidarSpot[] temp = history;
-	  history = writeBuffer;
-	  writeBuffer = temp;
+  private void swapBuffers()
+  {
+    LidarSpot[] temp = history;
+    history = writeBuffer;
+    writeBuffer = temp;
   }
-  
+
   public void run()
   {
     lastError = "Startup...";
@@ -105,8 +109,8 @@ public class ThreadLIDAR implements Runnable
     mSerpt.writeString("RR\r\n");
     doSleep(5000);
 
-    System.out.println("Startup DX Cmd:" + doDXCmd());
-    doSleep(2000);
+    //System.out.println("Startup DX Cmd:" + doDXCmd());
+    //doSleep(2000);
     System.out.println("Calling IV command...");
     doIVCmd();
     lastMessage = mIVResponse;
@@ -121,7 +125,7 @@ public class ThreadLIDAR implements Runnable
     String o = doIDCmd();
     System.out.println("IntialID = " + o);
     lastMessage = mIDResponse;
-  //  doMSCmd("01"); //
+    // doMSCmd("01"); //
     // doSleep(2000);
     // System.out.println("MOTOR2: " + mMSResponse);
 
@@ -182,7 +186,7 @@ public class ThreadLIDAR implements Runnable
       double angle = 0.0;
       int dist = 0;
       int ss = 0;
-      
+
       int stat = 0;
 
       if (checkDSChecksum(ulastPacket) == 1) // double azimuth, int distance, int signalstrength, int status)
@@ -194,19 +198,22 @@ public class ThreadLIDAR implements Runnable
         int ang = (ulastPacket[2] << 8) + ulastPacket[1];
         angle = 1.0 * ((ang >> 4) + ((ang & 15) / 16.0));
         addPointToHistory(angle, dist, ss, stat);
-        
+
         // set distance from target to closest lidar point in front of camera
-        if(angle >= 265 && angle <= 275){
-        	if(dist < closestToCamera.dist || shouldResetClosestToCamera){
-        		closestToCamera.az = angle;
-        		closestToCamera.dist = dist;
-        		closestToCamera.ss = ss;
-        		closestToCamera.stat = stat;
-        		shouldResetClosestToCamera = false;
-        	}
+        if (angle >= 265 && angle <= 275)
+        {
+          if (dist < closestToCamera.dist || shouldResetClosestToCamera)
+          {
+            closestToCamera.az = angle;
+            closestToCamera.dist = dist;
+            closestToCamera.ss = ss;
+            closestToCamera.stat = stat;
+            shouldResetClosestToCamera = false;
+          }
         }
-        else{
-        	shouldResetClosestToCamera = true;
+        else
+        {
+          shouldResetClosestToCamera = true;
         }
 
         lastMessage = "LIDAR: az:" + angle + ", dist:" + dist + ",sig:" + ss + ", stat:" + stat;
@@ -232,9 +239,9 @@ public class ThreadLIDAR implements Runnable
 
     if (mState == 99) // exit?
     {
-      doDXCmd();
-      mSerpt.reset();
-      mSerpt.free();
+    //  doDXCmd();
+//      mSerpt.reset();
+  //    mSerpt.free();
     }
   }// run
 
@@ -314,7 +321,7 @@ public class ThreadLIDAR implements Runnable
           return resp;
         }
         else
-          responseok=0;  //nope, response was for wrong command!
+          responseok = 0; // nope, response was for wrong command!
       }
       catch (UnsupportedEncodingException e)
       {

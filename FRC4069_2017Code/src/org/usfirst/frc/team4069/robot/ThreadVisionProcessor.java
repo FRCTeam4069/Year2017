@@ -190,6 +190,7 @@ public class ThreadVisionProcessor implements Runnable
     public double mYCenter = 0.0;
     public double mXGreenLine = 160.0;
     public double mYGreenLine = 120.0;
+    public int mTargetVisible=0;
 
     ColourRegions()
     {
@@ -325,6 +326,7 @@ public class ThreadVisionProcessor implements Runnable
       
       if ((mContours.size() > 0)&&(avgCtr>0))  //avgCtr must be > 1 or div by zero error
       {
+        mTargetVisible=1;
         xAverage /= avgCtr;  //get center of all contours
         yAverage /= avgCtr;
         
@@ -351,6 +353,7 @@ public class ThreadVisionProcessor implements Runnable
       }
       else //no target/contours meet criteria, draw some history to maybe help player
       {
+        mTargetVisible=0;
         Point avgpt = new Point(mXGreenLine, 0); // use last seen location
         Point avgpt2 = new Point(mXGreenLine, 230); //
         Imgproc.line(original, avgpt, avgpt2, RED, 1); // draw in read if not recent
@@ -371,8 +374,13 @@ public class ThreadVisionProcessor implements Runnable
 
       Point lastsn = new Point(50, 230);
       Imgproc.putText(original, "Target Last Heading:" + lastHeadingTargetSeen, lastsn, 0, 0.5, YELLOW);
-      DrawArrow(160,120,arrowangle,arrowdistance/4.3,original);
+     
       DrawLIDAR(160,120,1,original);
+      // set arrow angle and distance to the closest lidar spot to the camera with 265 <= angle <= 275
+      arrowangle = mRobot.lidar_instance.closestToCamera.az;
+      arrowdistance = mRobot.lidar_instance.closestToCamera.dist;
+
+      DrawArrow(160,120,arrowangle,arrowdistance/6,original);
   
       Point cpt=new Point(160,120);
       Imgproc.putText(original, ""+arrowdistance+"cm", cpt, 0,0.5, GREEN);
@@ -399,8 +407,8 @@ public class ThreadVisionProcessor implements Runnable
       Vector2 vec = new Vector2(-Math.cos(rad),Math.sin(rad));  //and get some nice vectors
       Vector2 vec2= new Vector2(-Math.cos(rad2),Math.sin(rad2));
       
-      vec.scale(ls.dist/4); //scale down, lidar can do 40 meters!  4000cm, thats BIG scale to screen sizeish
-      vec2.scale(ls2.dist/4);  //NOTE: May need to change /4 to like /8 in big rooms
+      vec.scale(ls.dist/6); //scale down, lidar can do 40 meters!  4000cm, thats BIG scale to screen sizeish
+      vec2.scale(ls2.dist/6);  //NOTE: May need to change /4 to like /8 in big rooms
       
       Point dpt = new Point(xp+vec.x,yp+vec.y);     //Line needs Points so make points
       Point dpt2= new Point(xp+vec2.x,yp+vec2.y+1);
@@ -412,11 +420,6 @@ public class ThreadVisionProcessor implements Runnable
       else
         Imgproc.line(original,dpt,dpt2,RED,1); //if 'off' cameras site, draw in red
     }
-    
-    // set arrow angle and distance to the closest lidar spot to the camera with 265 <= angle <= 275
-    arrowangle = mRobot.lidar_instance.closestToCamera.az;
-    arrowdistance = mRobot.lidar_instance.closestToCamera.dist;
-    
   }//DrawLIDAR
   
 

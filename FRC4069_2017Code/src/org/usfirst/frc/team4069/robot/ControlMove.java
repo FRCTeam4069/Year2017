@@ -30,15 +30,15 @@ public class ControlMove
 
   // Hard coded values from robot/encoder geometry
   private final double TICKS_PER_ENCODER_ROTATION = 256;
-  
+
   private final double TICKS_PER_WHEEL_ROTATION = 150;
-  
+
   private final double WHEEL_CIRCUMFERENCE_IN_CM = 12.566; // 12.566cm = 4" diameter 2"radius= 2 * 6.28
   private final double ERROR_SCALING_CONST_P = .400;
   private final double CM_PER_TICK = WHEEL_CIRCUMFERENCE_IN_CM / TICKS_PER_WHEEL_ROTATION;
-  
+
   private final double TICKS_PER_CM = TICKS_PER_WHEEL_ROTATION / WHEEL_CIRCUMFERENCE_IN_CM;
-  
+
   public double error = 0.0;
   public double correctionFactor = 0.0;
   public double resultantleftspeed = 0.0;
@@ -51,7 +51,7 @@ public class ControlMove
 
   // Current command executing, and a list of commands to be executed...
   private MoveCommand mCurrentCommand = new StopCommand();
-  ArrayList<MoveCommand> mCommandList = new ArrayList<MoveCommand>(); //Arrays.asList(new TurnOneWheelCommand(.25, 50, false), new StopCommand()));
+  ArrayList<MoveCommand> mCommandList = new ArrayList<MoveCommand>(); // Arrays.asList(new TurnOneWheelCommand(.25, 50, false), new StopCommand()));
 
   /**
    * Class Constructor MoveFunctions Constructor, given the driver stick, setup motors and encoders assign low pass filters to motors
@@ -76,14 +76,14 @@ public class ControlMove
     rightEncoder.setDistancePerPulse(CM_PER_TICK);
 
     leftEncoder.setReverseDirection(true);
-    
+
     mRobotDrive = new RobotDrive(leftDriveMotor, rightDriveMotor);
     mRobotDrive.setInvertedMotor(MotorType.kRearLeft, true);
     mRobotDrive.setInvertedMotor(MotorType.kRearRight, false);
     mRobotDrive.setExpiration(0.1);
     error = 0.0;
     correctionFactor = 0.0;
-    
+
   } // MoveFunctions constructor
 
   public double AverageDistanceTraveledInCM()
@@ -115,15 +115,14 @@ public class ControlMove
     return mCommandList.size();
   }// doNextCommand
 
-  
   public int isControlMoveFinished()
   {
-    if ((mCommandList.size()==0)&&(mCurrentCommand==null))
+    if ((mCommandList.size() == 0) && (mCurrentCommand == null))
       return 1;
     else
       return 0;
-  } 
-  
+  }
+
   /**
    * Call proper tick() routine for mCurrentCommand
    */
@@ -180,8 +179,7 @@ public class ControlMove
   {
     mCommandList.add(new TurnOneWheelCommand(.55, 50, false));
   }
-  
-  
+
   // ----------------------------------------------------------------------------------------
   // CLASS MoveCommand and all Move related Command Classes Derived from it.
   //
@@ -194,7 +192,7 @@ public class ControlMove
     }
 
     public abstract boolean Tick();
-    
+
     public abstract void Done();
 
     public abstract void Init();
@@ -206,6 +204,7 @@ public class ControlMove
    * @author EA
    *
    */
+
   public class OperatorControlCommand extends MoveCommand
   {
     double mDriverRobotSpeed = 0.0;
@@ -213,7 +212,7 @@ public class ControlMove
 
     public OperatorControlCommand()
     {
-    	
+
     }
 
     @Override
@@ -237,9 +236,9 @@ public class ControlMove
       mRobotDrive.arcadeDrive(mDriverRobotSpeed, mDriverRobotTurnDirection); // move robot
       return false;
     }
-    
+
     @Override
-    public void Done() 
+    public void Done()
     {
     }
   }// OperatorControlCommand
@@ -328,7 +327,7 @@ public class ControlMove
       rightDriveMotor.set(0);
       return true;
     }
-    
+
     @Override
     public void Done()
     {
@@ -446,11 +445,11 @@ public class ControlMove
       else
         return false;
     }
-    
+
     @Override
     public void Done()
     {
-    
+
     }
   }
 
@@ -477,84 +476,91 @@ public class ControlMove
       mSpeed = speed;
       mPath = path;
     }
-    
+
     @Override
     public boolean Tick()
     {
-    	if (index == mPath.size() - 2) return true;
-    	float mDistance = 0f;
-    	Vector2 a = mPath.get(index);
-    	Vector2 b = mPath.get(index + 1);
-    	double degrees = Math.toDegrees(Math.atan2(b.y - a.y, b.x - a.x));
-    	if (doneDriving && !rotationMode) {
-    		rotationMode = true;
-    		doneDriving = false;
-    		double rot = degrees %= 360;
-    	    double frac = rot / 360; // fractional amount
-    	    index++;
-    	    mDistance = (float) (-1 * frac * mDriveBaseCircumference);
-    	} else if (Math.abs(currentDegrees - degrees) < 4) {
-    		if (rotationMode) {
-    			driveDist = Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
-    			rotationMode = false;
-    		}
-    	}
-    		
-    		rotationMode = false; 
-    	
-    	if (rotationMode) {
-    	  double leftDistance = leftEncoder.getDistance(); // get left encoder as normal distance
-		  double rightDistance = rightEncoder.getDistance() * -1; // right wheel is going backwards so distance is * -1
-		
-		  double averageDistance = (leftDistance + rightDistance) / 2;
-		
-		  if (averageDistance >= mDistance)
-		  {
-		    leftDriveMotor.set(0);
-		    rightDriveMotor.set(0);
-		    currentDegrees = degrees;
-		  }
-		
-		  error = leftDistance - rightDistance; // if error > 0 left is ahead subtract error from left
-		                        // if error < 0 right is ahead add -error to right
-		  correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error
-		
-		  leftDriveMotor.set(mSpeed - correctionFactor); // +err means left ahead, subtract from left speed
-		  rightDriveMotor.set(mSpeed + correctionFactor); // -err means right ahead, add -err to right speed
-    	} else {
-    		// MOVE MODE
-    		double leftDistance = leftEncoder.getDistance();
-    	      double rightDistance = rightEncoder.getDistance();
-    	      double averageDistance = (leftDistance + rightDistance) / 2;
+      if (index == mPath.size() - 2)
+        return true;
+      float mDistance = 0f;
+      Vector2 a = mPath.get(index);
+      Vector2 b = mPath.get(index + 1);
+      double degrees = Math.toDegrees(Math.atan2(b.y - a.y, b.x - a.x));
+      if (doneDriving && !rotationMode)
+      {
+        rotationMode = true;
+        doneDriving = false;
+        double rot = degrees %= 360;
+        double frac = rot / 360; // fractional amount
+        index++;
+        mDistance = (float) (-1 * frac * mDriveBaseCircumference);
+      }
+      else if (Math.abs(currentDegrees - degrees) < 4)
+      {
+        if (rotationMode)
+        {
+          driveDist = Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+          rotationMode = false;
+        }
+      }
 
-    	      if (Math.abs(averageDistance) >= driveDist)
-    	      {
-    	        leftDriveMotor.set(0);
-    	        rightDriveMotor.set(0);
-    	        doneDriving = true;
-    	      }
-    	      TickCounter++;
-    	      error = leftDistance - rightDistance; // if error > 0 left is ahead subtract error from left
-    	                                            // if error < 0 right is ahead add -error to right
-    	      correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error
+      rotationMode = false;
 
-    	      resultantleftspeed = mSpeed - correctionFactor;
-    	      resultantrightspeed = mSpeed + correctionFactor;
-    	      if (resultantleftspeed > 1.0)
-    	        resultantleftspeed = 1.0;
-    	      if (resultantrightspeed > 1.0)
-    	        resultantrightspeed = 1.0;
-    	      if (resultantleftspeed < -1.0)
-    	        resultantleftspeed = -1.0;
-    	      if (resultantrightspeed < -1.0)
-    	        resultantrightspeed = -1.0;
+      if (rotationMode)
+      {
+        double leftDistance = leftEncoder.getDistance(); // get left encoder as normal distance
+        double rightDistance = rightEncoder.getDistance() * -1; // right wheel is going backwards so distance is * -1
 
-    	      leftDriveMotor.set(resultantleftspeed); // +err means left ahead, subtract from left speed
-    	      rightDriveMotor.set(resultantrightspeed); // -err means right ahead, add -err to right speed
-    	}
-    	return false;
+        double averageDistance = (leftDistance + rightDistance) / 2;
+
+        if (averageDistance >= mDistance)
+        {
+          leftDriveMotor.set(0);
+          rightDriveMotor.set(0);
+          currentDegrees = degrees;
+        }
+
+        error = leftDistance - rightDistance; // if error > 0 left is ahead subtract error from left
+        // if error < 0 right is ahead add -error to right
+        correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error
+
+        leftDriveMotor.set(mSpeed - correctionFactor); // +err means left ahead, subtract from left speed
+        rightDriveMotor.set(mSpeed + correctionFactor); // -err means right ahead, add -err to right speed
+      }
+      else
+      {
+        // MOVE MODE
+        double leftDistance = leftEncoder.getDistance();
+        double rightDistance = rightEncoder.getDistance();
+        double averageDistance = (leftDistance + rightDistance) / 2;
+
+        if (Math.abs(averageDistance) >= driveDist)
+        {
+          leftDriveMotor.set(0);
+          rightDriveMotor.set(0);
+          doneDriving = true;
+        }
+        TickCounter++;
+        error = leftDistance - rightDistance; // if error > 0 left is ahead subtract error from left
+                                              // if error < 0 right is ahead add -error to right
+        correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error
+
+        resultantleftspeed = mSpeed - correctionFactor;
+        resultantrightspeed = mSpeed + correctionFactor;
+        if (resultantleftspeed > 1.0)
+          resultantleftspeed = 1.0;
+        if (resultantrightspeed > 1.0)
+          resultantrightspeed = 1.0;
+        if (resultantleftspeed < -1.0)
+          resultantleftspeed = -1.0;
+        if (resultantrightspeed < -1.0)
+          resultantrightspeed = -1.0;
+
+        leftDriveMotor.set(resultantleftspeed); // +err means left ahead, subtract from left speed
+        rightDriveMotor.set(resultantrightspeed); // -err means right ahead, add -err to right speed
+      }
+      return false;
     }
-    
 
     @Override
     public void Init()

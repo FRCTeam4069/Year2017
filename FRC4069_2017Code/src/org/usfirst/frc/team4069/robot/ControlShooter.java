@@ -20,7 +20,7 @@ public class ControlShooter
   public double targetRPM = 0.0;
   public LowPassFilter lpf = new LowPassFilter(1000);
   private Joystick _joy;
-  private int mTesting=0;
+  private int mTesting=1;
   
   public ControlShooter(Joystick stk)
   {
@@ -40,8 +40,8 @@ public class ControlShooter
     shooterCANTalon.setProfile(0);
     shooterCANTalon.setF(0.1097);
     shooterCANTalon.setP(0.15);
-    shooterCANTalon.setI(0.0015);
-    shooterCANTalon.setD(1.5); //0.05);
+    shooterCANTalon.setI(0);
+    shooterCANTalon.setD(0); //0.05);
     shooterCANTalon.changeControlMode(TalonControlMode.Speed);
   } // ShooterControl init
 
