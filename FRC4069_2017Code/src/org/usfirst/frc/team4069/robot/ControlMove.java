@@ -128,7 +128,8 @@ public class ControlMove
    */
   public void Tick()
   {
-    if (mCurrentCommand.Tick() == true) // done?
+    
+    if ((mCurrentCommand==null)||(mCurrentCommand.Tick() == true)) // done?
     {
       DoNextCommand();
     }
@@ -177,7 +178,7 @@ public class ControlMove
 
   public void DoTurn()
   {
-    mCommandList.add(new TurnOneWheelCommand(.55, 50, false));
+    mCommandList.add(new TurnOneWheelCommand(.80, 15, false));
   }
 
   // ----------------------------------------------------------------------------------------

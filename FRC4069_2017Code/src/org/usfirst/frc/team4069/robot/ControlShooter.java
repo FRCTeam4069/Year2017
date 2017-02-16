@@ -20,7 +20,7 @@ public class ControlShooter
   public double targetRPM = 0.0;
   public LowPassFilter lpf = new LowPassFilter(1000);
   private Joystick _joy;
-  private int mTesting=1;
+  private int mTesting=0;
   
   public ControlShooter(Joystick stk)
   {

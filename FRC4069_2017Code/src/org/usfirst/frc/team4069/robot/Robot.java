@@ -140,9 +140,10 @@ public class Robot extends SampleRobot
     mMoveController.mRobotDrive.setSafetyEnabled(false);
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
-    mMoveController.MoveStraight(-0.45, 90);
+    mMoveController.MoveStraight(-0.45, 115);
     mMoveController.DoTurn();
-   
+    mShooterController.setRPMWanted(1800);
+    mShooterController.Enable();
     while (isAutonomous() && isEnabled())
     {
       SendDataToSmartDashboard();
