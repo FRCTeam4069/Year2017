@@ -171,9 +171,7 @@ public class ControlMove
    */
   public void MoveStraight(double speed, double distance)
   {
-    StraightCommand strcmd = new StraightCommand(speed, distance);
-    strcmd.Init();
-    mCurrentCommand = strcmd;
+    mCommandList.add(new StraightCommand(speed, distance));
   }
 
   public void DoTurn()
@@ -181,6 +179,10 @@ public class ControlMove
     mCommandList.add(new TurnOneWheelCommand(.80, 15, false));
   }
 
+  public void Delay(int milliseconds){
+	  mCommandList.add(new DelayCommand(milliseconds));
+  }
+  
   // ----------------------------------------------------------------------------------------
   // CLASS MoveCommand and all Move related Command Classes Derived from it.
   //
@@ -244,6 +246,41 @@ public class ControlMove
     }
   }// OperatorControlCommand
 
+  public class DelayCommand extends MoveCommand
+  {
+	  
+	  private int milliseconds;
+	  
+	  private long startTime;
+	  
+    public DelayCommand(int milliseconds)
+    {
+    	this.milliseconds = milliseconds;
+    }
+
+    @Override
+    public void Init()
+    {
+    	startTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public void Done()
+    {
+
+    }
+
+    // For + degrees left wheel goes forward, right wheel goes backwards
+    @Override
+    public boolean Tick()
+    {
+      if((int)(System.currentTimeMillis() - startTime) >= milliseconds){
+    	  return true;
+      }
+      return false;
+    }// Tick
+  }// PivotCommand
+  
   /*
    * Given a number of degrees (0-360) and speed rotates robot in place that number of degrees NOTE: + degrees turns clockwise - degrees turns anticlockwise
    */
