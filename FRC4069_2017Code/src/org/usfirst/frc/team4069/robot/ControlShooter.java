@@ -21,6 +21,7 @@ public class ControlShooter
   public LowPassFilter lpf = new LowPassFilter(1000);
   private Joystick _joy;
   private int mTesting=0;
+  public boolean runFeed = false;
   
   public ControlShooter(Joystick stk)
   {

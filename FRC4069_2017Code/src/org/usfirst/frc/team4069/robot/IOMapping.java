@@ -17,6 +17,7 @@ public class IOMapping
 
   public static final int SHOOTER_CANBUS_PORT = 0;
   public static final int TURRET_CANBUS_PORT = 1;
+  public static final int FEED_PWM_PORT = 10;
   
   // Shooter PWM port
   public static final int SHOOTER_PWM_PORT = 5;
