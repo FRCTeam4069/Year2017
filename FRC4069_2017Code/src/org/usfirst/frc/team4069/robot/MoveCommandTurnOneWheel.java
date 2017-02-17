@@ -9,9 +9,9 @@ public class MoveCommandTurnOneWheel extends MoveCommand
   public MoveCommandTurnOneWheel(ControlMove ctrlmove,double speedCMPerSec, double dist, boolean isRightWheel)
   {
     mControlMove = ctrlmove;
-    speedCMPerSec = speedCMPerSec;
+    this.speedCMPerSec = speedCMPerSec;
     distCM = dist;
-    isRightWheel = isRightWheel;
+    this.isRightWheel = isRightWheel;
   }
 
   @Override

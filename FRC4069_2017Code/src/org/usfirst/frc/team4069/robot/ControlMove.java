@@ -154,7 +154,7 @@ public class ControlMove
 
   public void addDoTurnCMD()
   {
-    mCommandList.add(new MoveCommandTurnOneWheel(this,.80, 15, false));
+    mCommandList.add(new MoveCommandTurnOneWheel(this,.80, 20, false));
   }
 
   public void addDelayCMD(int milliseconds)
