@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.RobotDrive;
 
-import org.usfirst.frc.team4069.robot.ControlMove.TurnOneWheelCommand;
 
 import com.ctre.CANTalon;
 
@@ -143,8 +142,8 @@ public class Robot extends SampleRobot
     mShooterController.setRPMWanted(1800);
     mShooterController.Enable();
     //mMoveController.Delay(1);
-    mMoveController.MoveStraight(-0.45, 115);
-    mMoveController.DoTurn();
+    mMoveController.addMoveStraightCMD(-0.45, 115);
+    mMoveController.addDoTurnCMD();
     while (isAutonomous() && isEnabled())
     {
       SendDataToSmartDashboard();
@@ -153,7 +152,7 @@ public class Robot extends SampleRobot
       mShooterController.Tick();
       
       
-      mMoveAimShoot.Tick();  //master sequencer of the above, it will enable/disable them as needed
+    //  mMoveAimShoot.Tick();  //master sequencer of the above, it will enable/disable them as needed
     }
   }// autonomous
 
@@ -171,11 +170,6 @@ public class Robot extends SampleRobot
       SmartDashboard.putNumber("RIGHTENCODER", mMoveController.rightEncoder.get());
       SmartDashboard.putNumber("LEFTDISTANCE", mMoveController.leftEncoder.getDistance());
       SmartDashboard.putNumber("RIGHTDISTANCE", mMoveController.rightEncoder.getDistance());
-      SmartDashboard.putNumber("Error", mMoveController.error);
-      SmartDashboard.putNumber("Correction:", mMoveController.correctionFactor);
-      SmartDashboard.putNumber("resultleftspeed", mMoveController.resultantleftspeed);
-      SmartDashboard.putNumber("resultantrightspeed",mMoveController.resultantrightspeed);
-      SmartDashboard.putNumber("Tickcount:", mMoveController.TickCounter);
       SmartDashboard.putNumber("SHOOTER MotorOut:", mShooterController.motorOutput);
       SmartDashboard.putNumber("SHOOTER RPM", mShooterController.shooterCANTalon.getSpeed());
       SmartDashboard.putNumber("SHOOTER TARGET RPM:", mShooterController.targetRPM);

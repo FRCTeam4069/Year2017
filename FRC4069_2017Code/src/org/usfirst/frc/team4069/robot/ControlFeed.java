@@ -5,17 +5,15 @@ import edu.wpi.first.wpilibj.Talon;
 public class ControlFeed
 {
   private Talon feedTalon;
-  private StringBuilder sc_debug_info = new StringBuilder();
-  private long mlastUpdateTime = 0;
-  private double mWantedRPM = 3600;
   private int mEnabled = 0;
   private int mDebug = 0;
   private Robot mRobot;
-
+  private double mFeedSpeed=0.25;
+  
+  
   public ControlFeed(Robot robot)
   {
     feedTalon = new Talon(IOMapping.FEED_PWM_PORT);
-    mlastUpdateTime = System.currentTimeMillis();
     mRobot = robot;
   }
 
@@ -32,17 +30,24 @@ public class ControlFeed
   public void Enable()
   {
     mEnabled = 1;
+    feedTalon.set(mFeedSpeed);
   }
 
   public void Disable()
   {
     mEnabled = 0;
+    feedTalon.set(0);
   }
 
+  public void setFeedSpeed(double fs)
+  {
+    mFeedSpeed = fs;
+    if (mEnabled==1) //if enabled, change right away
+    {
+      feedTalon.set(mFeedSpeed);
+    }
+  }
   public void Tick()
   {
-    if (mRobot.mShooterController.runFeed) {
-      feedTalon.set(1);
-    }
   }
 }
