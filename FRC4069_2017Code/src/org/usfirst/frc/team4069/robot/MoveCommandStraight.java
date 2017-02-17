@@ -36,6 +36,7 @@ public class MoveCommandStraight extends MoveCommand
   @Override
   public boolean Tick()
   {
+    System.out.println("Move Command straight tick");
     double leftDistance =  mControlMove.leftEncoder.getDistance();
     double rightDistance =  mControlMove.rightEncoder.getDistance();
     double averageDistance = (leftDistance + rightDistance) / 2;

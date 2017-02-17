@@ -30,6 +30,7 @@ public class MoveCommandDelay extends MoveCommand
   @Override
   public boolean Tick()
   {
+    System.out.println("Delay tick");
     if((int)(System.currentTimeMillis() - startTime) >= milliseconds){
       return true;
     }

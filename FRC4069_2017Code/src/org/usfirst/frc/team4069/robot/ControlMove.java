@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 
-public class ControlMove
+public class ControlMove 
 {
   // Objects MoveControl interfaces with...
   public RobotDrive mRobotDrive; // class that handles basic drive
@@ -91,8 +91,10 @@ public class ControlMove
    */
   public int DoNextCommand()
   {
+    System.out.println("DoNextCommand....");
     if (mCommandList.size() == 0) // when no commands left, stop.
     {
+      System.out.println("Commandlist empty, adding stop command");
       addStopCMD();
       mCurrentCommand = null;
       return -1; // return -1 in the case where no commands were available
@@ -101,7 +103,7 @@ public class ControlMove
     mCommandList.remove(0);
     mc.Init();
     mCurrentCommand = mc;
-
+    System.out.println("DoNextcommand returning with "+mCommandList.size());
     return mCommandList.size();
   }// doNextCommand
 
@@ -120,8 +122,10 @@ public class ControlMove
 
   public void Tick()
   {
+    System.out.println("MainTick list = "+mCommandList.size()+" mcurrentcommand="+mCurrentCommand);
     if ((mCurrentCommand == null) || (mCurrentCommand.Tick() == true)) // done?
     {
+      System.out.println("About to donextcommand num="+mCommandList.size());
       DoNextCommand();
     }
   }// Tick

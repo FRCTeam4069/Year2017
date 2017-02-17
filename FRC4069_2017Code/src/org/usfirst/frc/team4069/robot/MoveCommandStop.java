@@ -19,6 +19,7 @@ public class MoveCommandStop extends MoveCommand
   @Override
   public boolean Tick()
   {
+    System.out.println("move stop tick");
     mControlMove.leftDriveMotor.set(0);
     mControlMove.rightDriveMotor.set(0);
     return true;

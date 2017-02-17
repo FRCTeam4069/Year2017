@@ -88,7 +88,6 @@ public class Robot extends SampleRobot
 
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
-    mMoveController.MoveOperatorControl();
     
     
     
@@ -109,6 +108,7 @@ public class Robot extends SampleRobot
     //CANTalon turretCANTalon = new CANTalon(1);
     //CANTalon shootCANTalon = new CANTalon(0);
     mTurretController.Enable();
+    
     while (isOperatorControl() && isEnabled())
     {
       //turretCANTalon.set(driverStick.getAxis(AxisType.kY));
@@ -141,17 +141,17 @@ public class Robot extends SampleRobot
     mMoveController.rightEncoder.reset();
     mShooterController.setRPMWanted(1800);
     mShooterController.Enable();
-    //mMoveController.Delay(1);
+    mMoveController.addDelayCMD(5000);
     mMoveController.addMoveStraightCMD(-0.45, 115);
     mMoveController.addDoTurnCMD();
+    
+    System.out.println("About to enter auto loop");
     while (isAutonomous() && isEnabled())
     {
       SendDataToSmartDashboard();
       mMoveController.Tick();
       mTurretController.Tick();
       mShooterController.Tick();
-      
-      
     //  mMoveAimShoot.Tick();  //master sequencer of the above, it will enable/disable them as needed
     }
   }// autonomous

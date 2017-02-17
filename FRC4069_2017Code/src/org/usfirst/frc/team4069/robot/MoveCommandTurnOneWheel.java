@@ -6,11 +6,11 @@ public class MoveCommandTurnOneWheel extends MoveCommand
   boolean isRightWheel;
   private ControlMove mControlMove;
   
-  public MoveCommandTurnOneWheel(ControlMove ctrlmove,double speedCMPerSec, double distCM, boolean isRightWheel)
+  public MoveCommandTurnOneWheel(ControlMove ctrlmove,double speedCMPerSec, double dist, boolean isRightWheel)
   {
     mControlMove = ctrlmove;
     speedCMPerSec = speedCMPerSec;
-    distCM = distCM;
+    distCM = dist;
     isRightWheel = isRightWheel;
   }
 
@@ -35,6 +35,7 @@ public class MoveCommandTurnOneWheel extends MoveCommand
   @Override
   public boolean Tick()
   {
+    System.out.println("Turnonewheel tick");
     double distanceTraveledByWheel;
     if (isRightWheel)
       distanceTraveledByWheel = mControlMove.rightEncoder.getDistance();
