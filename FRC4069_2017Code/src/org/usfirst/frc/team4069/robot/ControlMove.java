@@ -68,8 +68,6 @@ public class ControlMove
     leftEncoder.setReverseDirection(true);
 
     mRobotDrive = new RobotDrive(leftDriveMotor, rightDriveMotor);
-    mRobotDrive.setInvertedMotor(MotorType.kRearLeft, true);
-    mRobotDrive.setInvertedMotor(MotorType.kRearRight, false);
     mRobotDrive.setExpiration(0.1);
   } // MoveFunctions constructor
 
@@ -91,7 +89,7 @@ public class ControlMove
    */
   public int DoNextCommand()
   {
-    System.out.println("DoNextCommand....");
+    //System.out.println("DoNextCommand....");
     if (mCommandList.size() == 0) // when no commands left, stop.
     {
       System.out.println("Commandlist empty, adding stop command");
@@ -103,7 +101,7 @@ public class ControlMove
     mCommandList.remove(0);
     mc.Init();
     mCurrentCommand = mc;
-    System.out.println("DoNextcommand returning with "+mCommandList.size());
+    //System.out.println("DoNextcommand returning with "+mCommandList.size());
     return mCommandList.size();
   }// doNextCommand
 
@@ -122,10 +120,10 @@ public class ControlMove
 
   public void Tick()
   {
-    System.out.println("MainTick list = "+mCommandList.size()+" mcurrentcommand="+mCurrentCommand);
+    //System.out.println("MainTick list = "+mCommandList.size()+" mcurrentcommand="+mCurrentCommand);
     if ((mCurrentCommand == null) || (mCurrentCommand.Tick() == true)) // done?
     {
-      System.out.println("About to donextcommand num="+mCommandList.size());
+      //System.out.println("About to donextcommand num="+mCommandList.size());
       DoNextCommand();
     }
   }// Tick
