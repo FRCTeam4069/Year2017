@@ -21,10 +21,23 @@ public class ControlTurret
   private int mDebug = 0;
   private Robot mRobot;
   private LowPassFilter lpf = new LowPassFilter(100);
+  
+  public static final int turretEncoderMax = -14100;
+  
+  public static final int turretEncoderMin = -39;
+  
+  public static final int turretEncoderMidpoint = -6153;
 
+  private int targetEncoderPosition;
+  
+  private double maxTargetPositionSpeed = 0.35;
+  
+  private boolean shouldUseTargetPosition = false;
+  
   private boolean turretLimitSwitchEnabled;
   
   private boolean turretEncoderZeroed = false;
+  private double turretEncoderPosition;
 
   public ControlTurret(Robot robot)
   {
@@ -76,6 +89,11 @@ public class ControlTurret
   {
     mEnabled = 0;
   }
+  
+  public void setTargetEncoderPosition(int targetEncoderPosition){
+	  this.targetEncoderPosition = targetEncoderPosition;
+	  shouldUseTargetPosition = true;
+  }
 
   public int isTurretTargeted()
   {
@@ -90,15 +108,49 @@ public class ControlTurret
   // Init with limit switch sensor to properly 'zero' out encoder
   public void Tick()
   {
+	  if(Robot.InputSystem.A_Button_Control_Stick){
+		  setTargetEncoderPosition(turretEncoderMidpoint);
+	  }
+	  
     // return;
 	  
 	  turretLimitSwitchEnabled = turretLimitSwitch.get();
 	  
+	  turretEncoderPosition = turretTalon.getPosition();
+	  
     if (turretEncoderZeroed) {
-    	if (turretLimitSwitchEnabled) {
-    		turretTalon.set(0);
-    	}else{
-    		turretTalon.set(mRobot.controlStick.getAxis(AxisType.kY));
+    	double maxSpeed = 0.5;
+    	double motorValue = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed;
+    	if((motorValue > 0 && turretEncoderPosition < turretEncoderMidpoint) || (motorValue < 0 && turretEncoderPosition > turretEncoderMidpoint)){
+    		motorValue *= Lerp(1, 0, 0, turretEncoderMin - turretEncoderMidpoint, Math.abs(turretEncoderPosition - turretEncoderMidpoint));
+    	}
+    	if(Math.abs(motorValue) > 0.1){
+    		shouldUseTargetPosition = false;
+    	}
+    	if(shouldUseTargetPosition){
+    		double error = (turretEncoderPosition - targetEncoderPosition) / 2000;
+    		System.out.println("Error: " + error);
+    		motorValue = error > 0 ? Math.min(maxTargetPositionSpeed, error) : Math.max(-maxTargetPositionSpeed, error);
+    	}
+    	motorValue = lpf.calculate(motorValue);
+    	if (turretEncoderPosition >= turretEncoderMin || turretLimitSwitchEnabled) {
+    		if(motorValue > 0){
+    			turretTalon.set(motorValue);
+    		}
+    		else{
+    			turretTalon.set(0);
+    		}
+    	}
+    	else if(turretEncoderPosition <= turretEncoderMax){
+    		if(motorValue < 0){
+    			turretTalon.set(motorValue);
+    		}
+    		else{
+    			turretTalon.set(0);
+    		}
+    	}
+    	else{
+    		turretTalon.set(motorValue);
     	}
     }
     else
@@ -115,7 +167,7 @@ public class ControlTurret
     			turretLimitSwitchEnabled = turretLimitSwitch.get();
     		}
     		turretTalon.set(0); // turn off talon
-    		turretTalon.reset(); // reset encoder ticks
+    		turretTalon.setEncPosition(0); // reset encoder ticks
     		turretEncoderZeroed = true;
     	}
     } // else turret not yet zeroed
