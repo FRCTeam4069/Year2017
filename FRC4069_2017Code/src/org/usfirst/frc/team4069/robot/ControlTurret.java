@@ -39,6 +39,8 @@ public class ControlTurret
   private boolean turretEncoderZeroed = false;
   private double turretEncoderPosition;
 
+  private boolean autoTargetingEnabled = true;
+  
   public ControlTurret(Robot robot)
   {
     mRobot = robot;
@@ -103,11 +105,43 @@ public class ControlTurret
     else
       return 0;
   }
+  
+  /**
+   * Returns motor value for auto targeting
+   * @return
+   */
+  private double handleAutoTargeting(){
+	  double spd = 0;
+	  if (mRobot.vision_processor_instance.cregions.mTargetVisible == 1)
+	    {
+	      double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
+
+	      // if (mEnabled > 0)
+	      // {
+	      if (xpos < 160)
+	      {
+	        spd = Lerp(.25, .025, 0, 160, xpos);
+	      }
+	      if (xpos > 160)
+	      {
+	        spd = Lerp(-.25, -.025, 320, 160, xpos);
+	      }
+	      if ((xpos >= 155) && (xpos <= 165))
+	      {
+	        // turretTalon.set(0);
+	      }
+	    }
+	  return spd;
+  }
 
   // TODO Add safety checks for cantalons encoder position so we don't destroy wiring by doing 360's
   // Init with limit switch sensor to properly 'zero' out encoder
   public void Tick()
   {
+	  if(Robot.InputSystem.Start_Button_Control_Stick){
+		  autoTargetingEnabled = !autoTargetingEnabled;
+	  }
+	  
 	  if(Robot.InputSystem.A_Button_Control_Stick){
 		  setTargetEncoderPosition(turretEncoderMidpoint);
 	  }
@@ -120,19 +154,26 @@ public class ControlTurret
 	  
     if (turretEncoderZeroed) {
     	double maxSpeed = 0.5;
-    	double motorValue = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed;
-    	if((motorValue > 0 && turretEncoderPosition < turretEncoderMidpoint) || (motorValue < 0 && turretEncoderPosition > turretEncoderMidpoint)){
-    		motorValue *= Lerp(1, 0, 0, turretEncoderMin - turretEncoderMidpoint, Math.abs(turretEncoderPosition - turretEncoderMidpoint));
+    	double motorValue = 0;
+    	if(autoTargetingEnabled){
+    		motorValue = handleAutoTargeting();
     	}
-    	if(Math.abs(motorValue) > 0.1){
-    		shouldUseTargetPosition = false;
-    	}
-    	if(shouldUseTargetPosition){
+    	else if(shouldUseTargetPosition){
     		double error = (turretEncoderPosition - targetEncoderPosition) / 2000;
     		System.out.println("Error: " + error);
     		motorValue = error > 0 ? Math.min(maxTargetPositionSpeed, error) : Math.max(-maxTargetPositionSpeed, error);
+    		motorValue = lpf.calculate(motorValue);
     	}
-    	motorValue = lpf.calculate(motorValue);
+    	else{
+        	motorValue = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed;
+        	if((motorValue > 0 && turretEncoderPosition < turretEncoderMidpoint) || (motorValue < 0 && turretEncoderPosition > turretEncoderMidpoint)){
+        		motorValue *= Lerp(1, 0, 0, turretEncoderMin - turretEncoderMidpoint, Math.abs(turretEncoderPosition - turretEncoderMidpoint));
+        	}
+        	if(Math.abs(motorValue) > 0.1){
+        		shouldUseTargetPosition = false;
+        	}
+        	motorValue = lpf.calculate(motorValue);
+    	}
     	if (turretEncoderPosition >= turretEncoderMin || turretLimitSwitchEnabled) {
     		if(motorValue > 0){
     			turretTalon.set(motorValue);
@@ -171,31 +212,5 @@ public class ControlTurret
     		turretEncoderZeroed = true;
     	}
     } // else turret not yet zeroed
-    
-    /*if (mRobot.vision_processor_instance.cregions.mTargetVisible == 1)
-    {
-      double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
-
-      // if (mEnabled > 0)
-      // {
-      if (xpos < 160)
-      {
-        double spd = Lerp(.25, .025, 0, 160, xpos);
-        turretTalon.set(spd); // .15);
-      }
-      if (xpos > 160)
-      {
-        double spd = Lerp(-.25, -.025, 320, 160, xpos);
-        turretTalon.set(spd);
-      }
-      if ((xpos >= 155) && (xpos <= 165))
-      {
-        // turretTalon.set(0);
-      }
-    }
-    else
-    {
-      turretTalon.set(mRobot.controlStick.getAxis(AxisType.kY)); //
-    }*/
   } // Tick()
 }// class ControlTurret
