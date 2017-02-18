@@ -22,7 +22,10 @@ public class Robot extends SampleRobot
   public ControlWinch mWinchController; // winch functions
   public ControlMove mMoveController; // ALL robot movement functions
   public ControlTurret mTurretController;
-
+  public ControlIntake mIntakeController;
+  public ControlElevator mElevatorController;
+  
+  
   private Control_MoveAimShoot mMoveAimShoot;
 
   Preferences prefs = Preferences.getInstance();
@@ -62,7 +65,10 @@ public class Robot extends SampleRobot
     mWinchController = new ControlWinch();
     mMoveController = new ControlMove(driverStick); // pass joystick
     mTurretController = new ControlTurret(this);
-
+    mIntakeController = new ControlIntake();
+    mElevatorController = new ControlElevator();
+    
+    
     lidar_instance = new ThreadLIDAR();
     lidarThreadHandle = new Thread(lidar_instance);
     lidarThreadHandle.start();

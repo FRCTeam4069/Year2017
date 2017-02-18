@@ -10,46 +10,22 @@ import edu.wpi.first.wpilibj.Joystick;
  */
 public class IOMapping
 {
-
   // Drive motor PWM ports
   public static final int LEFT_DRIVE_MOTOR_PWM_PORT = 0;
   public static final int RIGHT_DRIVE_MOTOR_PWM_PORT = 1;
 
   public static final int SHOOTER_CANBUS_PORT = 0;
   public static final int TURRET_CANBUS_PORT = 1;
-  public static final int FEED_PWM_PORT = 10;
+
+  public static final int WINCH_PWN_PORT = 9;
+  public static final int INTAKE_FRONT_PWM_PORT = 8;
+  public static final int INTAKE_BACK_PWM_PORT = 7;
+  public static final int ELEVATOR_PWM_PORT = 6;
   
-  // Shooter PWM port
-  public static final int SHOOTER_PWM_PORT = 5;
-
-  // Roller wheels PWM port
-  public static final int ROLLERWHEELS_PWM_PORT = 6;
-
-  // Intake PWM port
-  public static final int INTAKE_PWM_PORT = 4;
-
+  public static final int FEED_PWM_PORT = 10;
   
   public static final int TURRET_LIMIT_SWITCH = 8;
   
-  // Shooter encoder digital IO ports
-  public static final int SHOOTER_ENCODER_DIO_1 = 4;
-  public static final int SHOOTER_ENCODER_DIO_2 = 5;
-
-  // Intake sensor digital IO
-  public static final int INTAKE_SENSOR_DIO = 8;
-
-  // Ready to shoot sensor digital IO
-  public static final int READY_TO_SHOOT_DIO = 6;
-
-  // Arm digital IO
-  public static final int ARM_DIO = 7;
-
-  // Compressor port
-  public static final int COMPRESSOR_PORT = 0;
-
-  // Compressor digital IO
-  public static final int COMPRESSOR_DIO = 9;
-
   /**
    * Left encoder Digital I/O ports.
    */
