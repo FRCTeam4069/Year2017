@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.RobotDrive;
 
-
 import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -23,9 +22,9 @@ public class Robot extends SampleRobot
   public ControlWinch mWinchController; // winch functions
   public ControlMove mMoveController; // ALL robot movement functions
   public ControlTurret mTurretController;
-  
+
   private Control_MoveAimShoot mMoveAimShoot;
-  
+
   Preferences prefs = Preferences.getInstance();
 
   Joystick driverStick = new Joystick(0); // set to ID 1 in DriverStation
@@ -38,17 +37,15 @@ public class Robot extends SampleRobot
 
   ThreadVisionProcessor vision_processor_instance;
   Thread VisionProcessorThreadHandle;
-  
+
   ThreadArduinoGyro arduino_thread_instance;
   Thread arduinoThreadHandle;
-  
+
   ThreadLIDAR lidar_instance;
   Thread lidarThreadHandle;
-  
+
   public int ctr = 0;
 
-  private DigitalInput turretLimitSwitch;
-  
   @Override
   public void robotInit()
   {
@@ -59,66 +56,54 @@ public class Robot extends SampleRobot
    */
   public Robot()
   {
-	  
-	  turretLimitSwitch = new DigitalInput(8);
-	  
+    Log.mDebug = 1; // Enable logging output
+
     mShooterController = new ControlShooter(controlStick);
     mWinchController = new ControlWinch();
     mMoveController = new ControlMove(driverStick); // pass joystick
     mTurretController = new ControlTurret(this);
-    
+
     lidar_instance = new ThreadLIDAR();
     lidarThreadHandle = new Thread(lidar_instance);
     lidarThreadHandle.start();
-    
+
     video_capture_instance = new ThreadVideoCapture();
     VideoCaptureThreadHandle = new Thread(video_capture_instance);
     VideoCaptureThreadHandle.start();
     video_capture_instance.Enable(); // begin getting frames.
 
-
-    vision_processor_instance = new ThreadVisionProcessor(video_capture_instance, VideoCaptureThreadHandle,this); // pass in refs to video capture thread so it can grab frames
+    vision_processor_instance = new ThreadVisionProcessor(video_capture_instance, VideoCaptureThreadHandle, this); // pass in refs to video capture thread so it can grab frames
     VisionProcessorThreadHandle = new Thread(vision_processor_instance);
     VisionProcessorThreadHandle.start();
-    
-    
+
     arduino_thread_instance = new ThreadArduinoGyro();
     arduinoThreadHandle = new Thread(arduino_thread_instance);
     arduinoThreadHandle.start();
 
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
-    
-    
-    
+
     mLastDashboardUpdateTime = System.currentTimeMillis();
   }// Robot()
 
-  
-  
   // ---------------------------------------------------------------------------------------------
-
+  // OPERATORCONTROL :
+  //
   @Override
   public void operatorControl()
   {
     mMoveController.mRobotDrive.setSafetyEnabled(false);
-  //  SendDataToSmartDashboard();
     mShooterController.Enable();
     mMoveController.MoveOperatorControl(); // human driving watch out!
-    //CANTalon turretCANTalon = new CANTalon(1);
-    //CANTalon shootCANTalon = new CANTalon(0);
     mTurretController.Enable();
-    
+
     while (isOperatorControl() && isEnabled())
     {
-      //turretCANTalon.set(driverStick.getAxis(AxisType.kY));
-      //shootCANTalon.set(driverStick.getAxis(AxisType.kX));
-      
-      //InputSystem.ReadAllInput(driverStick, controlStick, turretLimitSwitch); // Read all sensor/input devices
+      InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
       mShooterController.Tick();
-     // mWinchController.Tick();
+      // mWinchController.Tick();
       mMoveController.Tick();
       mTurretController.Tick();
       SendDataToSmartDashboard();
@@ -126,16 +111,16 @@ public class Robot extends SampleRobot
     } // while isEnabled
   } // operatorControl
 
-  
-  
+  // AUTONOMOUS AUTONOMOUS AUTONOMOUS
+
   @Override
   public void autonomous()
   {
     mMoveAimShoot = new Control_MoveAimShoot(this);
-    
+
     mTurretController.Disable();
-    mShooterController.Disable();  //control_moveaimshoot will sequence these
-    
+    mShooterController.Disable(); // control_moveaimshoot will sequence these
+
     mMoveController.mRobotDrive.setSafetyEnabled(false);
     mMoveController.leftEncoder.reset();
     mMoveController.rightEncoder.reset();
@@ -144,15 +129,14 @@ public class Robot extends SampleRobot
     mMoveController.addDelayCMD(5000);
     mMoveController.addMoveStraightCMD(-0.45, 115);
     mMoveController.addDoTurnCMD();
-    
-    System.out.println("About to enter auto loop");
+
     while (isAutonomous() && isEnabled())
     {
       SendDataToSmartDashboard();
       mMoveController.Tick();
       mTurretController.Tick();
       mShooterController.Tick();
-    //  mMoveAimShoot.Tick();  //master sequencer of the above, it will enable/disable them as needed
+      // mMoveAimShoot.Tick(); //master sequencer of the above, it will enable/disable them as needed
     }
   }// autonomous
 
@@ -164,8 +148,8 @@ public class Robot extends SampleRobot
     long deltat = System.currentTimeMillis() - mLastDashboardUpdateTime;
     if (deltat > 1000)
     {
-    	SmartDashboard.putBoolean("TURRETLIMITSWITCH", turretLimitSwitch.get());
-    	SmartDashboard.putNumber("TURRETENCODER", mTurretController.GetShooterPosition());
+      SmartDashboard.putBoolean("TURRETLIMITSWITCH", mTurretController.turretLimitSwitch.get());
+      SmartDashboard.putNumber("TURRETENCODER", mTurretController.GetShooterPosition());
       SmartDashboard.putNumber("LEFTENCODER", mMoveController.leftEncoder.get());
       SmartDashboard.putNumber("RIGHTENCODER", mMoveController.rightEncoder.get());
       SmartDashboard.putNumber("LEFTDISTANCE", mMoveController.leftEncoder.getDistance());
@@ -243,13 +227,11 @@ public class Robot extends SampleRobot
     public static boolean B_Button_Driver_Stick_Prev = false;
     public static boolean RB_Button_Driver_Stick = false; //
     public static boolean RB_Button_Driver_Stick_Prev = false;
-    
+
     public static boolean Turret_Limit_Switch = false;
 
-    public static void ReadAllInput(Joystick driverstk, Joystick controlstk, DigitalInput turretLimit)
+    public static void ReadAllInput(Joystick driverstk, Joystick controlstk)
     {
-    	Turret_Limit_Switch = turretLimit.get();
-    	
       Y_Button_Control_Stick = controlstk.getRawButton(IOMapping.CONTROL_Y_BUTTON);
       A_Button_Control_Stick = controlstk.getRawButton(IOMapping.CONTROL_A_BUTTON);
       X_Button_Control_Stick_Prev = X_Button_Control_Stick;

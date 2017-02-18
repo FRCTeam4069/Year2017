@@ -28,6 +28,9 @@ public class IOMapping
   // Intake PWM port
   public static final int INTAKE_PWM_PORT = 4;
 
+  
+  public static final int TURRET_LIMIT_SWITCH = 8;
+  
   // Shooter encoder digital IO ports
   public static final int SHOOTER_ENCODER_DIO_1 = 4;
   public static final int SHOOTER_ENCODER_DIO_2 = 5;
@@ -79,4 +82,9 @@ public class IOMapping
   public static final int CONTROL_B_BUTTON = 2;
   public static final int CONTROL_RB_BUTTON = 6;
 
+  
+  
+  
+  
+  
 }

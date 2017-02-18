@@ -4,11 +4,16 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.Joystick.AxisType;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Talon;
 
 public class ControlTurret
 {
   private CANTalon turretTalon;
+  public DigitalInput turretLimitSwitch;
+  
+  
+  
   private StringBuilder sc_debug_info = new StringBuilder();
   private long mlastUpdateTime = 0;
   private double mWantedRPM = 3600;
@@ -17,12 +22,18 @@ public class ControlTurret
   private Robot mRobot;
   private LowPassFilter lpf = new LowPassFilter(100);
 
+  
+  
   private boolean turretEncoderZeroed = true;
 
   public ControlTurret(Robot robot)
   {
     mRobot = robot;
-    turretTalon = new CANTalon(1);
+    turretTalon = new CANTalon(IOMapping.TURRET_CANBUS_PORT);
+    turretLimitSwitch = new DigitalInput(IOMapping.TURRET_LIMIT_SWITCH);
+
+    
+    
     // turretTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
     // turretTalon.reverseSensor(false);
     // turretTalon.configEncoderCodesPerRev(4096); // Magnetic encoder ticks per revolution
@@ -86,7 +97,7 @@ public class ControlTurret
     if (mRobot.vision_processor_instance.cregions.mTargetVisible == 1)
     {
       double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
-     
+
       // if (mEnabled > 0)
       // {
       if (xpos < 160)
