@@ -5,22 +5,15 @@ import edu.wpi.first.wpilibj.Talon;
 public class ControlWinch
 {
   private Talon winchTalon;
-  private StringBuilder sc_debug_info = new StringBuilder();
-  private long mlastUpdateTime = 0;
-  private double mWantedRPM = 3600;
   private int mEnabled = 0;
   private int mDebug = 0;
-
+  private double mSpeed=0.0;
+  
   public ControlWinch()
   {
-    winchTalon = new Talon(9);
-    mlastUpdateTime = System.currentTimeMillis();
-  } // ShooterControl init
-
-  public double GetShooterPosition()
-  {
-    return winchTalon.getPosition();
-  }
+    winchTalon = new Talon(IOMapping.WINCH_PWN_PORT);
+    winchTalon.set(0);
+  } // ControlWinch
 
   public void EnableDebug()
   {
@@ -35,26 +28,17 @@ public class ControlWinch
   public void Enable()
   {
     mEnabled = 1;
+    winchTalon.set(mSpeed);
   }
 
   public void Disable()
   {
     mEnabled = 0;
+    winchTalon.set(0);
   }
 
   public void Tick()
   {
-    if (Robot.InputSystem.B_Button_Control_Stick && !Robot.InputSystem.Y_Button_Control_Stick)
-    {
-      winchTalon.set(-1);
-    }
-    else if (!Robot.InputSystem.B_Button_Control_Stick && Robot.InputSystem.Y_Button_Control_Stick)
-    {
-      winchTalon.set(1);
-    }
-    else
-    {
-      winchTalon.set(0);
-    }
+    winchTalon.set(mSpeed);
   }
 }
