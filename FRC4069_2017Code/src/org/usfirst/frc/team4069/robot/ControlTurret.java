@@ -22,9 +22,9 @@ public class ControlTurret
   private Robot mRobot;
   private LowPassFilter lpf = new LowPassFilter(100);
 
+  private boolean turretLimitSwitchEnabled;
   
-  
-  private boolean turretEncoderZeroed = true;
+  private boolean turretEncoderZeroed = false;
 
   public ControlTurret(Robot robot)
   {
@@ -91,10 +91,36 @@ public class ControlTurret
   public void Tick()
   {
     // return;
-    /*
-     * if (turretEncoderZeroed) { if (Robot.InputSystem.Turret_Limit_Switch) { turretTalon.set(0); } else {
-     */
-    if (mRobot.vision_processor_instance.cregions.mTargetVisible == 1)
+	  
+	  turretLimitSwitchEnabled = turretLimitSwitch.get();
+	  
+    if (turretEncoderZeroed) {
+    	if (turretLimitSwitchEnabled) {
+    		turretTalon.set(0);
+    	}else{
+    		turretTalon.set(mRobot.controlStick.getAxis(AxisType.kY));
+    	}
+    }
+    else
+    { // here if turret is not yet zeroed, must zero first
+    	if (turretLimitSwitchEnabled == false) // if limit NOT pressed
+    	{
+    		turretTalon.set(-0.1); // crawl toward limit switch
+    	}
+    	else{
+    		turretTalon.set(0);
+    		while (turretLimitSwitchEnabled == true)
+    		{
+    			turretTalon.set(0.1); // go until off limit switch
+    			turretLimitSwitchEnabled = turretLimitSwitch.get();
+    		}
+    		turretTalon.set(0); // turn off talon
+    		turretTalon.reset(); // reset encoder ticks
+    		turretEncoderZeroed = true;
+    	}
+    } // else turret not yet zeroed
+    
+    /*if (mRobot.vision_processor_instance.cregions.mTargetVisible == 1)
     {
       double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
 
@@ -118,30 +144,6 @@ public class ControlTurret
     else
     {
       turretTalon.set(mRobot.controlStick.getAxis(AxisType.kY)); //
-    }
-    // }
-    // else
-    /// {
-    // turretTalon.set(0); // if not enabled, set turret speed to zero
-    // }
-    // } // if limit switch NOT hit
-    // } // if turret zeroed
-    // else
-    // { // here if turret is not yet zeroed, must zero first
-    // if (Robot.InputSystem.Turret_Limit_Switch == false) // if limit NOT pressed
-    // {
-    // turretTalon.set(0.015); // crawl toward limit switch
-    // }
-    // else
-    // {
-    // turretTalon.set(0);
-    // while (Robot.InputSystem.Turret_Limit_Switch == true)
-    // {
-    // turretTalon.set(-0.01); // go until off limit switch
-    // }
-    // turretTalon.set(0); // turn off talon
-    // turretTalon.reset(); // reset encoder ticks
-    // }
-    // } // else turret not yet zeroed
+    }*/
   } // Tick()
 }// class ControlTurret
