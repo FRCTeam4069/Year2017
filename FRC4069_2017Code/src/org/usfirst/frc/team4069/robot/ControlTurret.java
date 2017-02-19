@@ -138,7 +138,7 @@ public class ControlTurret
   // Init with limit switch sensor to properly 'zero' out encoder
   public void Tick()
   {
-	  if(Robot.InputSystem.Start_Button_Control_Stick){
+	  if(Robot.InputSystem.Start_Button_Control_Stick_Once){
 		  autoTargetingEnabled = !autoTargetingEnabled;
 	  }
 	  

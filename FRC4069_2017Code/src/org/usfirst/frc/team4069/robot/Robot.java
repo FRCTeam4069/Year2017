@@ -226,6 +226,8 @@ public class Robot extends SampleRobot
     public static boolean RB_Button_Control_Stick = false; // r
     public static boolean RB_Button_Control_Stick_Prev = false;
     public static boolean Start_Button_Control_Stick=false;
+    public static boolean Start_Button_Control_Stick_Prev = false;
+    public static boolean Start_Button_Control_Stick_Once = false;
 
     // Driver stick buttons
     public static boolean Y_Button_Driver_Stick = false;
@@ -236,7 +238,9 @@ public class Robot extends SampleRobot
     public static boolean RB_Button_Driver_Stick = false; //
     public static boolean RB_Button_Driver_Stick_Prev = false;
     public static boolean Start_Button_Driver_Stick = false; //small black button on front
-
+    public static boolean Start_Button_Driver_Stick_Prev = false;
+    public static boolean Start_Button_Driver_Stick_Once = false;
+    
     public static boolean Turret_Limit_Switch = false;
 
     public static void ReadAllInput(Joystick driverstk, Joystick controlstk)
@@ -248,7 +252,9 @@ public class Robot extends SampleRobot
       B_Button_Control_Stick = controlstk.getRawButton(IOMapping.CONTROL_B_BUTTON);
       RB_Button_Control_Stick_Prev = RB_Button_Control_Stick;
       RB_Button_Control_Stick = controlstk.getRawButton(IOMapping.CONTROL_RIGHT_BACK_BUTTON);
+      Start_Button_Control_Stick_Prev = Start_Button_Control_Stick;
       Start_Button_Control_Stick = controlstk.getRawButton(IOMapping.CONTROL_SMALL_START_BUTTON);
+      Start_Button_Control_Stick_Once = Start_Button_Control_Stick_Prev == false && Start_Button_Control_Stick == true;
 
       Y_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_Y_BUTTON);
       A_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_A_BUTTON);
@@ -257,7 +263,9 @@ public class Robot extends SampleRobot
       B_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_B_BUTTON);
       RB_Button_Driver_Stick_Prev = RB_Button_Driver_Stick;
       RB_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_RIGHT_BACK_BUTTON);
+      Start_Button_Driver_Stick_Prev = Start_Button_Driver_Stick;
       Start_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_SMALL_START_BUTTON);
+      Start_Button_Driver_Stick_Once = Start_Button_Driver_Stick_Prev == false && Start_Button_Driver_Stick == true;
     } // ReadAllInput
   } // public static inputsystem class
 } // class Robot
