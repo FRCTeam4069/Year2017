@@ -240,6 +240,9 @@ public class Robot extends SampleRobot
     public static boolean Start_Button_Driver_Stick = false; //small black button on front
     public static boolean Start_Button_Driver_Stick_Prev = false;
     public static boolean Start_Button_Driver_Stick_Once = false;
+    public static boolean Back_Button_Control_Stick = false;
+    public static boolean Back_Button_Control_Stick_Prev = false;
+    public static boolean Back_Button_Control_Stick_Once = false;
     
     public static boolean Turret_Limit_Switch = false;
 
@@ -255,7 +258,10 @@ public class Robot extends SampleRobot
       Start_Button_Control_Stick_Prev = Start_Button_Control_Stick;
       Start_Button_Control_Stick = controlstk.getRawButton(IOMapping.CONTROL_SMALL_START_BUTTON);
       Start_Button_Control_Stick_Once = Start_Button_Control_Stick_Prev == false && Start_Button_Control_Stick == true;
-
+      Back_Button_Control_Stick_Prev = Back_Button_Control_Stick;
+      Back_Button_Control_Stick = controlstk.getRawButton(IOMapping.CONTROL_SMALL_BACK_BUTTON);
+      Back_Button_Control_Stick_Once = Back_Button_Control_Stick_Prev == false && Back_Button_Control_Stick == true;
+      
       Y_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_Y_BUTTON);
       A_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_A_BUTTON);
       X_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_X_BUTTON);

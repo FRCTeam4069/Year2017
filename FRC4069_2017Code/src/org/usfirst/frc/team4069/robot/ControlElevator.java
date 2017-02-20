@@ -7,7 +7,10 @@ public class ControlElevator
   private Talon elevatorTalon;
   private int mEnabled = 0;
   private int mDebug = 0;
-  private double mSpeed=0.0;
+  private double mSpeed=0.0; // default speed used by elevator
+  private double mSecondSpeed=0.0; // secondary speed which can be toggled
+  
+  private boolean useSecondSpeed = false; // should second or first speed be used
   
   public ControlElevator()
   {
@@ -15,11 +18,21 @@ public class ControlElevator
     elevatorTalon.set(0);
   } // controlElevator
 
-
+  /**
+   * Set main speed of elevator
+   * @param spd
+   */
   public void setElevatorSpeed(double spd)
   {
     mSpeed=spd;
-    elevatorTalon.set(mSpeed);
+  }
+  
+  /**
+   * Set secondary speed of elevator
+   * @param spd
+   */
+  public void setElevatorSecondSpeed(double spd){
+	  mSecondSpeed=spd;
   }
   
   public void EnableDebug()
@@ -48,7 +61,17 @@ public class ControlElevator
   {
     if (mEnabled==1)
     {
-      elevatorTalon.set(mSpeed);
+    	// if back button is pressed once, toggle between main/second speed
+    	if(Robot.InputSystem.Back_Button_Control_Stick_Once){
+    		useSecondSpeed = !useSecondSpeed;
+    	}
+    	// if second speed is toggled use second instead of main speed
+    	if(useSecondSpeed){
+    		elevatorTalon.set(mSecondSpeed);
+    	}
+    	else{ // else just use main speed
+    		elevatorTalon.set(mSpeed);
+    	}
     }
     else
       elevatorTalon.set(0);
