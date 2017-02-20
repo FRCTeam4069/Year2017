@@ -39,19 +39,23 @@ public class ControlMove
   double mDriveBaseRadius = mDistanceBetweenWheelCentersInCM / 2;
   double mDriveBaseCircumference = mDistanceBetweenWheelCentersInCM * Math.PI; //
   double mDriveBaseTicksInCircumference = TICKS_PER_CM * mDriveBaseCircumference;
-
+  
+  private Robot mRobot;
+  
   // Current command executing, and a list of commands to be executed...
   private MoveCommand mCurrentCommand = null;
   ArrayList<MoveCommand> mCommandList = new ArrayList<MoveCommand>(); // Arrays.asList(new TurnOneWheelCommand(.25, 50, false), new StopCommand()));
-
+  
   /**
    * Class Constructor MoveFunctions Constructor, given the driver stick, setup motors and encoders assign low pass filters to motors
    * 
    * @param driverstk
    */
-  public ControlMove(Joystick driverstk)
+  public ControlMove(Joystick driverstk, Robot robot)
   {
     driverStick = driverstk;
+    
+    mRobot = robot;
 
     leftDriveMotor = new Talon(IOMapping.LEFT_DRIVE_MOTOR_PWM_PORT);
     rightDriveMotor = new Talon(IOMapping.RIGHT_DRIVE_MOTOR_PWM_PORT);
@@ -104,7 +108,6 @@ public class ControlMove
     //System.out.println("DoNextcommand returning with "+mCommandList.size());
     return mCommandList.size();
   }// doNextCommand
-
   
   /**
    * If no commands on list, and no current command, return 1, else return 0
@@ -168,7 +171,7 @@ public class ControlMove
   public void MoveOperatorControl()
   {
     mCommandList.clear();  //NOTE! Operator takes control clear command list, no more autonomous stuff
-    OperatorControlCommand oc = new OperatorControlCommand(this);
+    OperatorControlCommand oc = new OperatorControlCommand(this, mRobot);
     oc.Init();
     mCurrentCommand = oc;
   }

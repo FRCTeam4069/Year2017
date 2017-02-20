@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.RobotDrive;
 
+import org.usfirst.frc.team4069.robot.Robot.InputSystem;
+
 import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -25,6 +27,7 @@ public class Robot extends SampleRobot
   public ControlIntake mIntakeController;
   public ControlElevator mElevatorController;
   
+  public double mRobotSpeed = 0.0; // used only in teleop, gives all controls access to robot speed
   
   private Control_MoveAimShoot mMoveAimShoot;
 
@@ -60,13 +63,13 @@ public class Robot extends SampleRobot
   public Robot()
   {
     Log.mDebug = 1; // Enable logging output
-
+    
     mShooterController = new ControlShooter(controlStick);
     mWinchController = new ControlWinch();
-    mMoveController = new ControlMove(driverStick); // pass joystick
+    mMoveController = new ControlMove(driverStick, this); // pass joystick
     mTurretController = new ControlTurret(this);
-    mIntakeController = new ControlIntake();
-    mElevatorController = new ControlElevator();
+    mIntakeController = new ControlIntake(this);
+    mElevatorController = new ControlElevator(this);
     
     
     lidar_instance = new ThreadLIDAR();
@@ -95,6 +98,7 @@ public class Robot extends SampleRobot
   // ---------------------------------------------------------------------------------------------
   // OPERATORCONTROL :
   //
+  
   @Override
   public void operatorControl()
   {
@@ -112,6 +116,8 @@ public class Robot extends SampleRobot
       // mWinchController.Tick();
       mMoveController.Tick();
       mTurretController.Tick();
+      mIntakeController.Tick();
+      mElevatorController.Tick();
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled
@@ -225,9 +231,18 @@ public class Robot extends SampleRobot
     public static boolean B_Button_Control_Stick = false;
     public static boolean RB_Button_Control_Stick = false; // r
     public static boolean RB_Button_Control_Stick_Prev = false;
-    public static boolean Start_Button_Control_Stick=false;
+    public static boolean Start_Button_Control_Stick = false;
     public static boolean Start_Button_Control_Stick_Prev = false;
     public static boolean Start_Button_Control_Stick_Once = false;
+    public static boolean Dpad_Up_Control_Stick = false;
+    public static boolean Dpad_Up_Control_Stick_Prev = false;
+    public static boolean Dpad_Up_Control_Stick_Pressed_Once = false;
+    public static boolean Dpad_Up_Control_Stick_Released_Once = false;
+    public static boolean Dpad_Down_Control_Stick = false;
+    public static boolean Dpad_Down_Control_Stick_Prev = false;
+    public static boolean Dpad_Down_Control_Stick_Pressed_Once = false;
+    public static boolean Dpad_Down_Control_Stick_Released_Once = false;
+    public static int Dpad_Angle_Control_Stick = 0;
 
     // Driver stick buttons
     public static boolean Y_Button_Driver_Stick = false;
@@ -261,6 +276,15 @@ public class Robot extends SampleRobot
       Back_Button_Control_Stick_Prev = Back_Button_Control_Stick;
       Back_Button_Control_Stick = controlstk.getRawButton(IOMapping.CONTROL_SMALL_BACK_BUTTON);
       Back_Button_Control_Stick_Once = Back_Button_Control_Stick_Prev == false && Back_Button_Control_Stick == true;
+      Dpad_Angle_Control_Stick = controlstk.getPOV(IOMapping.CONTROL_DPAD);
+      Dpad_Up_Control_Stick_Prev = Dpad_Up_Control_Stick;
+      Dpad_Up_Control_Stick = Dpad_Angle_Control_Stick >= 315 || Dpad_Angle_Control_Stick <= 45;
+      Dpad_Up_Control_Stick_Pressed_Once = Dpad_Up_Control_Stick_Prev == false && Dpad_Up_Control_Stick == true;
+      Dpad_Up_Control_Stick_Released_Once = Dpad_Up_Control_Stick_Prev == true && Dpad_Up_Control_Stick == false;
+      Dpad_Down_Control_Stick_Prev = Dpad_Down_Control_Stick;
+      Dpad_Down_Control_Stick = Dpad_Angle_Control_Stick >= 135 && Dpad_Angle_Control_Stick <= 225;
+      Dpad_Down_Control_Stick_Pressed_Once = Dpad_Down_Control_Stick_Prev == false && Dpad_Down_Control_Stick == true;
+      Dpad_Down_Control_Stick_Released_Once = Dpad_Down_Control_Stick_Prev == true && Dpad_Down_Control_Stick == false;
       
       Y_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_Y_BUTTON);
       A_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_A_BUTTON);

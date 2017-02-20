@@ -58,6 +58,7 @@ public class IOMapping
   public static final int DRIVER_RIGHT_X_AXIS = 4;
   public static final int DRIVER_LEFT_Y_AXIS = 1;
   public static final int DRIVER_LEFT_X_AXIS = 0;
+  public static final int DRIVER_DPAD = 0;
   
   public static final int CONTROL_Y_BUTTON = 4;
   public static final int CONTROL_A_BUTTON = 1;
@@ -71,7 +72,7 @@ public class IOMapping
   public static final int CONTROL_RIGHT_X_AXIS = 4;
   public static final int CONTROL_LEFT_Y_AXIS = 1;
   public static final int CONTROL_LEFT_X_AXIS = 0;
-  
+  public static final int CONTROL_DPAD = 0;
   
   
   
