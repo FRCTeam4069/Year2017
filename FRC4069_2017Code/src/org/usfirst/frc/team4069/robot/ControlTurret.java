@@ -114,7 +114,7 @@ public class ControlTurret
     if (mRobot.vision_processor_instance.cregions.mTargetVisible == 1)
     {
       double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
-      double humanOffset = mRobot.controlStick.getAxis(AxisType.values()[IOMapping.CONTROL_RIGHT_Y_AXIS]);
+      double humanOffset = mRobot.controlStick.getRawAxis(IOMapping.CONTROL_RIGHT_Y_AXIS);
       
       double addABit = Lerp(-16,16,-1,1,humanOffset);
       
