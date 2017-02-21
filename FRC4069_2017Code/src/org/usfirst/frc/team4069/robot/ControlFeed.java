@@ -47,7 +47,16 @@ public class ControlFeed
       feedTalon.set(mFeedSpeed);
     }
   }
+  
   public void Tick()
   {
+	  if(mEnabled == 1){
+		  if(Robot.InputSystem.Y_Button_Driver_Stick || Robot.InputSystem.Y_Button_Control_Stick){
+			  feedTalon.set(mFeedSpeed);
+		  }
+		  else{
+			  feedTalon.set(0);
+		  }
+	  }
   }
 }

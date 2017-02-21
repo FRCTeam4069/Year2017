@@ -18,6 +18,7 @@ public class ControlShooter
   private int mEnabled = 0;
   public double motorOutput = 0.0;
   public double targetRPM = 0.0;
+  private double targetRPMPercentChange = 0.0;
   public LowPassFilter lpf = new LowPassFilter(1000);
   private Joystick _joy;
   private int mTesting=0;
@@ -114,8 +115,10 @@ public class ControlShooter
 
     if (targetRPM != 0.0)
     {
+      double humanInput = _joy.getRawAxis(IOMapping.CONTROL_RIGHT_Y_AXIS);
+      double tenPercentOfTarget = targetRPM * 0.1;
       shooterCANTalon.changeControlMode(TalonControlMode.Speed);
-      shooterCANTalon.set(lpf.calculate(targetRPM)); //
+      shooterCANTalon.set(lpf.calculate(targetRPM + humanInput * tenPercentOfTarget)); //
     }
   }// ShooterTick
 
