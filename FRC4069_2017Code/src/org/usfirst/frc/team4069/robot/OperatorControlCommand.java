@@ -1,7 +1,5 @@
 package org.usfirst.frc.team4069.robot;
 
-import org.usfirst.frc.team4069.robot.Robot.InputSystem;
-
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 
 public class OperatorControlCommand extends MoveCommand
@@ -9,11 +7,9 @@ public class OperatorControlCommand extends MoveCommand
   double mDriverRobotSpeed = 0.0;
   double mDriverRobotTurnDirection = 0.0;
   ControlMove mControlMove;
-  private Robot mRobot;
   
-  public OperatorControlCommand(ControlMove cntmv, Robot robot)
+  public OperatorControlCommand(ControlMove cntmv)
   {
-	mRobot = robot;
     mControlMove = cntmv;
   }
 
@@ -22,7 +18,7 @@ public class OperatorControlCommand extends MoveCommand
   {
 
   }
-  
+
   @Override
   public boolean Tick()
   {
@@ -33,12 +29,10 @@ public class OperatorControlCommand extends MoveCommand
     // (left-right)
     mDriverRobotTurnDirection = mControlMove.rightDriveMotorLowPassFilter.calculate(mControlMove.driverStick.getAxis(AxisType.kX));
 
-    mRobot.mRobotSpeed = mDriverRobotSpeed;
-    
     // Last move robot. Let the robotdrive class handle the driving aspect of
-    // the robot    
-    mControlMove.mRobotDrive.arcadeDrive(mDriverRobotSpeed, mDriverRobotTurnDirection); // move robot
+    // the robot
     
+    mControlMove.mRobotDrive.arcadeDrive(mDriverRobotSpeed, mDriverRobotTurnDirection); // move robot
     return false;
   }
 

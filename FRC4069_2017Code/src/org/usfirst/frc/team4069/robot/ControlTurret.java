@@ -34,7 +34,7 @@ public class ControlTurret
 
   private boolean turretLimitSwitchEnabled;
 
-  private boolean turretEncoderZeroed = false;
+  private boolean turretEncoderZeroed = true;
   private double turretEncoderPosition;
 
   private boolean autoTargetingEnabled = true;
