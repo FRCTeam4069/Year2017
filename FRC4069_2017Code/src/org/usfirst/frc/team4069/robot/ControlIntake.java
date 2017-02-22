@@ -29,20 +29,16 @@ public class ControlIntake
   public void setIntakeSpeed(double speed)
   {
     frontSpeed = backSpeed = speed;
-    intakeTalonFront.set(getFrontSpeed());
-    intakeTalonBack.set(getBackSpeed());
   }
 
   public void setBackIntakeSpeed(double spd)
   {
     backSpeed = spd;
-    intakeTalonBack.set(getBackSpeed());
   }
 
   public void setFrontIntakeSpeed(double spd)
   {
     frontSpeed = spd;
-    intakeTalonFront.set(getFrontSpeed());
   }
 
   public void EnableDebug()

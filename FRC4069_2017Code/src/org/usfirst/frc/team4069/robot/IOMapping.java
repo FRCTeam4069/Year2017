@@ -20,7 +20,7 @@ public class IOMapping
   public static final int WINCH_PWN_PORT = 6;
   public static final int INTAKE_FRONT_PWM_PORT = 7;
   public static final int INTAKE_BACK_PWM_PORT = 5;
-  public static final int ELEVATOR_PWM_PORT = 9;
+  public static final int ELEVATOR_PWM_PORT = 3;
   
   public static final int FEED_PWM_PORT = 8;
   

@@ -104,22 +104,20 @@ public class Robot extends SampleRobot
   public void operatorControl()
   {
     mMoveController.mRobotDrive.setSafetyEnabled(false);
-    //mShooterController.Enable();
+    mShooterController.setRPMWanted(1800);
+    mShooterController.Enable();
     mMoveController.MoveOperatorControl(); // human driving watch out!
     
     //mTurretController.Enable();
     
     //mWinchController.Enable();
     
-    //mElevatorController.setElevatorSpeed(0.6);
-    //mElevatorController.setElevatorSecondSpeed(0.8);
-    //mElevatorController.Enable();
+    mElevatorController.setElevatorSpeed(0.6);
+    mElevatorController.setElevatorSecondSpeed(0.8);
     
-    //mIntakeController.setIntakeSpeed(0.6);
-    //mIntakeController.Enable();
+    mIntakeController.setIntakeSpeed(0.8);
     
     //mFeedController.setFeedSpeed(0.6);
-    //mFeedController.Enable();
 
     while (isOperatorControl() && isEnabled())
     {
@@ -130,8 +128,8 @@ public class Robot extends SampleRobot
       //mWinchController.Tick();
       mMoveController.Tick();
       //mTurretController.Tick();
-      //mIntakeController.Tick();
-      //mElevatorController.Tick();
+      mIntakeController.Tick();
+      mElevatorController.Tick();
       //mFeedController.Tick();
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
