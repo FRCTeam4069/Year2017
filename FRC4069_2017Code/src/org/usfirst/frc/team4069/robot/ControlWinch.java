@@ -11,7 +11,7 @@ public class ControlWinch
   
   public ControlWinch()
   {
-    winchTalon = new Talon(IOMapping.WINCH_PWN_PORT);
+    winchTalon = new Talon(0); //IOMapping.WINCH_PWN_PORT);
     winchTalon.set(0);
   } // ControlWinch
 

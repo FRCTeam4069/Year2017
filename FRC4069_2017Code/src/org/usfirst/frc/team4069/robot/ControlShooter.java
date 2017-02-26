@@ -29,7 +29,7 @@ public class ControlShooter
     _joy = stk;
     shooterCANTalon = new CANTalon(IOMapping.SHOOTER_CANBUS_PORT);
     shooterCANTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
-    shooterCANTalon.reverseSensor(false);
+    shooterCANTalon.reverseSensor(true);
     shooterCANTalon.configEncoderCodesPerRev(4096); // Magnetic encoder ticks
                                                     // per revolution 2^12
     // shooterCANTalon.setAllowableClosedLoopErr(0); //4096);
@@ -40,8 +40,8 @@ public class ControlShooter
 
     // set closed loop gains in slot 0
     shooterCANTalon.setProfile(0);
-    shooterCANTalon.setF(0.1097);
-    shooterCANTalon.setP(0.15);
+    shooterCANTalon.setF(0.0325); //1097);
+    shooterCANTalon.setP(0); //.15);
     shooterCANTalon.setI(0);
     shooterCANTalon.setD(0); //0.05);
     shooterCANTalon.changeControlMode(TalonControlMode.Speed);
@@ -92,19 +92,19 @@ public class ControlShooter
 
       if (_joy.getRawButton(IOMapping.CONTROL_A_BUTTON))
       {
-        targetRPM = 800; // 1300;
+        targetRPM = 1800; // 1300;
       }
       if (_joy.getRawButton(IOMapping.CONTROL_B_BUTTON))
       {
-        targetRPM = 900; // best spot 2800rpm output when set to this
+        targetRPM = 1900; // best spot 2800rpm output when set to this
       }
       else if (_joy.getRawButton(IOMapping.CONTROL_X_BUTTON))
       {
-        targetRPM = 600;
+        targetRPM = 2000;
       }
       else if (_joy.getRawButton(IOMapping.CONTROL_Y_BUTTON))
       {
-        targetRPM = 400; // actual 2797rpm???
+        targetRPM = 2100; // actual 2797rpm???
       }
       if ((_joy.getRawButton(5)) || (_joy.getRawButton(6)))
       {

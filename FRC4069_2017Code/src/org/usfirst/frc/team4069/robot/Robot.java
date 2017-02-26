@@ -112,15 +112,15 @@ public class Robot extends SampleRobot
     
     //mWinchController.Enable();
     
-    mElevatorController.setElevatorSpeed(0.6);
-    mElevatorController.setElevatorSecondSpeed(0.8);
-    mElevatorController.Enable();
+    //mElevatorController.setElevatorSpeed(0.6);  //NOTE Elevaotr dir ok
+    //mElevatorController.setElevatorSecondSpeed(0); //1.0); //0.8);
+    //mElevatorController.Enable();
     
-    mIntakeController.setIntakeSpeed(0.8);
-    mIntakeController.Enable();
+    //mIntakeController.setIntakeSpeed(0.8);  //NOTE Intake direction ok
+    //mIntakeController.Enable();
     
-    mFeedController.setFeedSpeed(0.6);
-    mFeedController.Enable();
+    //mFeedController.setFeedSpeed(0.9);
+    //mFeedController.Enable();
 
     while (isOperatorControl() && isEnabled())
     {
@@ -131,9 +131,9 @@ public class Robot extends SampleRobot
       //mWinchController.Tick();
       mMoveController.Tick();
       //mTurretController.Tick();
-      mIntakeController.Tick();
-      mElevatorController.Tick();
-      mFeedController.Tick();
+      //mIntakeController.Tick();
+      //mElevatorController.Tick();
+      //mFeedController.Tick();
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled
@@ -176,6 +176,8 @@ public class Robot extends SampleRobot
     long deltat = System.currentTimeMillis() - mLastDashboardUpdateTime;
     if (deltat > 1000)
     {
+      SmartDashboard.putNumber("AUTOTARGET XPOS: ",vision_processor_instance.cregions.mXGreenLine);
+      SmartDashboard.putNumber("Auto TARGET Enabled: ", vision_processor_instance.cregions.mTargetVisible);
       SmartDashboard.putBoolean("TURRETLIMITSWITCH", mTurretController.turretLimitSwitch.get());
       SmartDashboard.putNumber("TURRETENCODER", mTurretController.GetShooterPosition());
       SmartDashboard.putNumber("LEFTENCODER", mMoveController.leftEncoder.get());

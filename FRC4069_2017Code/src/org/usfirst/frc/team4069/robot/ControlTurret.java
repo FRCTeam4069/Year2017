@@ -20,11 +20,12 @@ public class ControlTurret
   private Robot mRobot;
   private LowPassFilter lpf = new LowPassFilter(100);
 
-  public static final int turretEncoderMax = -14100;
+  public static final int turretEncoderMax = 7780;
 
-  public static final int turretEncoderMin = -39;
+  public static final int turretEncoderMin = -50;
 
-  public static final int turretEncoderMidpoint = -6153;
+  
+  public static final int turretEncoderMidpoint = 4000;
 
   private int targetEncoderPosition;
 
@@ -34,10 +35,10 @@ public class ControlTurret
 
   private boolean turretLimitSwitchEnabled;
 
-  private boolean turretEncoderZeroed = true;
+  private boolean turretEncoderZeroed = false;
   private double turretEncoderPosition;
 
-  private boolean autoTargetingEnabled = true;
+  private boolean autoTargetingEnabled = false; // true;
 
   public ControlTurret(Robot robot)
   {
@@ -115,16 +116,16 @@ public class ControlTurret
     {
       double xpos = mRobot.vision_processor_instance.cregions.mXGreenLine;
       double humanOffset = mRobot.controlStick.getRawAxis(IOMapping.CONTROL_RIGHT_X_AXIS);
-      
-      double addABit = Lerp(-16,16,-1,1,humanOffset);
-      
-      double adjustedXPos = xpos + addABit;  //allow user to change xposition of target by + or - 5% (-16 to +16) in a 320 x range
-      
+
+      double addABit = Lerp(-16, 16, -1, 1, humanOffset);
+
+      double adjustedXPos = xpos; // + addABit; // allow user to change xposition of target by + or - 5% (-16 to +16) in a 320 x range
+
       if (adjustedXPos < 160)
       {
         spd = Lerp(.25, .025, 0, 160, adjustedXPos);
       }
-      if (xpos > adjustedXPos)
+      if (xpos > 160) //adjustedXPos)
       {
         spd = Lerp(-.25, -.025, 320, 160, adjustedXPos);
       }
@@ -140,6 +141,7 @@ public class ControlTurret
    */
   private double imposeEncoderSafetyLimits(double motorValue)
   {
+    
     double safeMotorValue = 0.0;
     if (turretEncoderPosition >= turretEncoderMin || turretLimitSwitchEnabled)
     {
@@ -177,13 +179,13 @@ public class ControlTurret
     // toggle auto targeting with start button
     if (Robot.InputSystem.Start_Button_Control_Stick_Once)
     {
-      autoTargetingEnabled = !autoTargetingEnabled;
+//      autoTargetingEnabled = !autoTargetingEnabled;
     }
 
     // test code for encoder targeting, moves turret to midpoint if a is pressed
     if (Robot.InputSystem.A_Button_Control_Stick)
     {
-      setTargetEncoderPosition(turretEncoderMidpoint);
+      //setTargetEncoderPosition(turretEncoderMidpoint);
     }
 
     // read some values
@@ -192,6 +194,20 @@ public class ControlTurret
 
     if (turretEncoderZeroed)
     {
+      double mv = handleAutoTargeting();
+      //mv = imposeEncoderSafetyLimits(mv);
+      if ((turretEncoderPosition < 0 ) && (mv > 0))  //+mv means towards limit, - means encoder towards limit
+      {
+        mv = 0;
+      }
+      if ((turretEncoderPosition > turretEncoderMax)&&(mv < 0))
+      {
+        mv = 0;
+      }
+      turretTalon.set(mv);
+    }/*
+      
+      
       double maxSpeed = 0.5; // scaling constant for motor speed
       double motorValue = 0; // input to the turret motor
       double driverStick = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed;
@@ -203,8 +219,7 @@ public class ControlTurret
       { // if auto targeting enabled, apply auto targeting to motorValue
         motorValue = handleAutoTargeting();
       }
-      else 
-      if (encoderTargetingEnabled)
+      else if (encoderTargetingEnabled)
       { // otherwise, if encoder targeting is on, apply encoder targeting to motorValue
         double error = (turretEncoderPosition - targetEncoderPosition) / 2000;
         motorValue = error > 0 ? Math.min(maxTargetPositionSpeed, error) : Math.max(-maxTargetPositionSpeed, error);
@@ -221,8 +236,8 @@ public class ControlTurret
         motorValue = lpf.calculate(motorValue); // also apply lowpassfilter here
       }
       motorValue = imposeEncoderSafetyLimits(motorValue); // finally impose hard safety limits on motorValue
-      turretTalon.set(motorValue);
-    }
+      turretTalon.set(-motorValue);
+    }*/
     else
     { // here if turret is not yet zeroed, must zero first
       DoTurretZeroStep();
@@ -233,14 +248,14 @@ public class ControlTurret
   {
     if (turretLimitSwitchEnabled == false) // if limit NOT pressed
     {
-      turretTalon.set(-0.1); // crawl toward limit switch
+      turretTalon.set(0.1); // crawl toward limit switch
     }
     else
     {
       turretTalon.set(0);
       while (turretLimitSwitchEnabled == true)
       {
-        turretTalon.set(0.1); // go until off limit switch
+        turretTalon.set(-0.1); // go until off limit switch
         turretLimitSwitchEnabled = turretLimitSwitch.get();
       }
       turretTalon.set(0); // turn off talon
