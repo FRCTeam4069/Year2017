@@ -15,6 +15,7 @@ public class ControlFeed
   {
     feedTalon = new Talon(IOMapping.FEED_PWM_PORT);
     mRobot = robot;
+    mFeedSpeed=0.5;
   }
 
   public void EnableDebug()
@@ -51,12 +52,15 @@ public class ControlFeed
   public void Tick()
   {
 	  if(mEnabled == 1){
-		  if(Robot.InputSystem.Y_Button_Driver_Stick || Robot.InputSystem.Y_Button_Control_Stick){
+		  //if(Robot.InputSystem.Y_Button_Driver_Stick || Robot.InputSystem.Y_Button_Control_Stick){
 			  feedTalon.set(mFeedSpeed);
-		  }
-		  else{
-			  feedTalon.set(0);
-		  }
+		  //}
+		  //else{
+			//  feedTalon.set(0);
+		  //}
+	  }
+	  else{
+	    feedTalon.set(0);
 	  }
   }
 }

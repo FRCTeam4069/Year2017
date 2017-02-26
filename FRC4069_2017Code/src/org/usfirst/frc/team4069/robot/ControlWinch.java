@@ -7,7 +7,7 @@ public class ControlWinch
   private Talon winchTalon;
   private int mEnabled = 0;
   private int mDebug = 0;
-  private double mSpeed=0.0;
+  private double mSpeed=0.5;
   
   public ControlWinch()
   {
@@ -39,6 +39,16 @@ public class ControlWinch
 
   public void Tick()
   {
-    winchTalon.set(mSpeed);
+    if(mEnabled == 1){
+      if(Robot.InputSystem.A_Button_Control_Stick){
+        winchTalon.set(mSpeed);
+      }
+      else{
+        winchTalon.set(0);
+      }
+    }
+    else{
+      winchTalon.set(0);
+    }
   }
 }

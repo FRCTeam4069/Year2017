@@ -104,8 +104,8 @@ public class Robot extends SampleRobot
   public void operatorControl()
   {
     mMoveController.mRobotDrive.setSafetyEnabled(false);
-    mShooterController.setRPMWanted(1800);
-    mShooterController.Enable();
+    //mShooterController.setRPMWanted(-50);
+    //mShooterController.Enable();
     mMoveController.MoveOperatorControl(); // human driving watch out!
     
     //mTurretController.Enable();
@@ -114,10 +114,13 @@ public class Robot extends SampleRobot
     
     mElevatorController.setElevatorSpeed(0.6);
     mElevatorController.setElevatorSecondSpeed(0.8);
+    mElevatorController.Enable();
     
     mIntakeController.setIntakeSpeed(0.8);
+    mIntakeController.Enable();
     
-    //mFeedController.setFeedSpeed(0.6);
+    mFeedController.setFeedSpeed(0.6);
+    mFeedController.Enable();
 
     while (isOperatorControl() && isEnabled())
     {
@@ -130,7 +133,7 @@ public class Robot extends SampleRobot
       //mTurretController.Tick();
       mIntakeController.Tick();
       mElevatorController.Tick();
-      //mFeedController.Tick();
+      mFeedController.Tick();
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled

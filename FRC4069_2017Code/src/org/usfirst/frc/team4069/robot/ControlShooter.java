@@ -21,7 +21,7 @@ public class ControlShooter
   private double targetRPMPercentChange = 0.0;
   public LowPassFilter lpf = new LowPassFilter(1000);
   private Joystick _joy;
-  private int mTesting=0;
+  private int mTesting=1;
   public boolean runFeed = false;
   
   public ControlShooter(Joystick stk)
@@ -92,19 +92,19 @@ public class ControlShooter
 
       if (_joy.getRawButton(IOMapping.CONTROL_A_BUTTON))
       {
-        targetRPM = 1800; // 1300;
+        targetRPM = 800; // 1300;
       }
       if (_joy.getRawButton(IOMapping.CONTROL_B_BUTTON))
       {
-        targetRPM = 1900; // best spot 2800rpm output when set to this
+        targetRPM = 900; // best spot 2800rpm output when set to this
       }
       else if (_joy.getRawButton(IOMapping.CONTROL_X_BUTTON))
       {
-        targetRPM = 2000;
+        targetRPM = 600;
       }
       else if (_joy.getRawButton(IOMapping.CONTROL_Y_BUTTON))
       {
-        targetRPM = 2100; // actual 2797rpm???
+        targetRPM = 400; // actual 2797rpm???
       }
       if ((_joy.getRawButton(5)) || (_joy.getRawButton(6)))
       {
@@ -115,10 +115,10 @@ public class ControlShooter
 
     if (targetRPM != 0.0)
     {
-      double humanInput = _joy.getRawAxis(IOMapping.CONTROL_RIGHT_Y_AXIS);
-      double tenPercentOfTarget = targetRPM * 0.1;
+      //double humanInput = _joy.getRawAxis(IOMapping.CONTROL_RIGHT_Y_AXIS);
+      //double tenPercentOfTarget = targetRPM * 0.1;
       shooterCANTalon.changeControlMode(TalonControlMode.Speed);
-      shooterCANTalon.set(lpf.calculate(targetRPM + humanInput * tenPercentOfTarget)); //
+      shooterCANTalon.set(lpf.calculate(targetRPM));// + humanInput * tenPercentOfTarget)); //
     }
   }// ShooterTick
 

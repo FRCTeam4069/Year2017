@@ -46,7 +46,7 @@ public class Robot extends IterativeRobot
     /* set closed loop gains in slot0 */
     _talon.setProfile(0);
     _talon.setF(0.1097);
-    _talon.setP(0.11); //22);
+    _talon.setP(0.22); //22);
     _talon.setI(0);
     _talon.setD(0);
   }
