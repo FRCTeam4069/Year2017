@@ -39,18 +39,18 @@ public class ThreadVideoCapture implements Runnable
   int mKeepRunning = 1;
   int mCameraConnectionType = VCT_USB;
   boolean mEnabled = true;
-  
+
   private VideoCapture vcap;
 
   public void run()
   {
     FrameQueue = new Mat[mFrameBufferDepth];
-    for(int i=0;i<mFrameBufferDepth;i++)
+    for (int i = 0; i < mFrameBufferDepth; i++)
     {
-      FrameQueue[i]=new Mat();
+      FrameQueue[i] = new Mat();
     }
     InLock = new Object();
-    OutLock = new Object(); 
+    OutLock = new Object();
     InitCapture();
 
     while (mKeepRunning == 1)
@@ -61,7 +61,7 @@ public class ThreadVideoCapture implements Runnable
 
   public static void main(String args[])
   {
-  //  (new Thread(new VideoCaptureThread())).start();
+    // (new Thread(new VideoCaptureThread())).start();
   }// main
 
   /**
@@ -86,7 +86,7 @@ public class ThreadVideoCapture implements Runnable
   private void InitCapture()
   {
     vcap = new VideoCapture();
-    if (vcap==null)
+    if (vcap == null)
     {
       System.out.println("vcap is null!");
     }
@@ -101,8 +101,6 @@ public class ThreadVideoCapture implements Runnable
     }
   }// InitCapture
 
-  
-  
   /*
    * Read a frame into framequeue, update indexes allows upto 4 frames to be stored. IF no frames have been removed, update last frame location with new frame
    * 
@@ -113,7 +111,7 @@ public class ThreadVideoCapture implements Runnable
     {
       if (mEnabled)
       {
-        //System.out.println("About to read frame index="+FrameInIndex);
+        // System.out.println("About to read frame index="+FrameInIndex);
         boolean state = vcap.read(FrameQueue[FrameInIndex]); // FrameInIndex is always 'safe' to write too by definition
         if (state == false)
         {
@@ -158,7 +156,7 @@ public class ThreadVideoCapture implements Runnable
           mKeepRunning = 0;
         } // catch
 
-      } //else Enabled
+      } // else Enabled
     } // while true
   }// Capture
 
@@ -169,7 +167,7 @@ public class ThreadVideoCapture implements Runnable
   {
     if (FrameOutIndex != FrameInIndex)
     {
-      Mat frameout = FrameQueue[FrameOutIndex]; //.clone(); // NOTE copy!
+      Mat frameout = FrameQueue[FrameOutIndex]; // .clone(); // NOTE copy!
       int frametosend = FrameOutIndex; // safe to read...
       frametosend++;
       frametosend %= mFrameBufferDepth; // do manipulations locally
@@ -184,8 +182,6 @@ public class ThreadVideoCapture implements Runnable
                  // we could keep last frame sent and resend it, but calling routine could do that
   }// GetFrame
 
-  
-  
   /*****************************************************************************************
    * Init USB camera
    */
@@ -197,7 +193,7 @@ public class ThreadVideoCapture implements Runnable
 
     while ((!vcap.open(videoStreamAddress)) && (mKeepRunning == 1))
     {
-      
+
       System.out.println("Error connecting to camera stream, retrying " + count);
       count++;
       try
@@ -210,34 +206,34 @@ public class ThreadVideoCapture implements Runnable
       }
     } // while !open
 
-    vcap.set(Videoio.CAP_PROP_FRAME_WIDTH,320);
+    vcap.set(Videoio.CAP_PROP_FRAME_WIDTH, 320);
     vcap.set(Videoio.CAP_PROP_FRAME_HEIGHT, 200);
-    
-    //if (!vcap.set(CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1))
-    //{
-//      System.out.println("Error exp absolute");
-  //  }
-   // vcap.set(Videoio.CAP_PROP_AUTO_EXPOSURE,0);
+
+    // if (!vcap.set(CV_CAP_PROP_EXPOSURE_ABSOLUTE, 0.1))
+    // {
+    // System.out.println("Error exp absolute");
+    // }
+    // vcap.set(Videoio.CAP_PROP_AUTO_EXPOSURE,0);
     if (!vcap.set(Videoio.CAP_PROP_EXPOSURE, 0))
     {
       System.out.println("Error prop exposure");
     }
-    
-    if (!vcap.set(Videoio.CAP_PROP_BRIGHTNESS,0)) //.1)) //.1)) //; //CV_CAP_PROP_BRIGHTNESS, 1);
+
+    if (!vcap.set(Videoio.CAP_PROP_BRIGHTNESS, 0)) // .1)) //.1)) //; //CV_CAP_PROP_BRIGHTNESS, 1);
     {
       System.out.println("Error brightness");
     }
-    if (!vcap.set(Videoio.CAP_PROP_CONTRAST,-1)) //; //CV_CAP_PROP_CONTRAST, 0);
+    if (!vcap.set(Videoio.CAP_PROP_CONTRAST, -1)) // ; //CV_CAP_PROP_CONTRAST, 0);
     {
       System.out.println("Error contrast");
     }
-    System.out.println("vcap width = "+vcap.get(Videoio.CAP_PROP_FRAME_WIDTH));
+    System.out.println("vcap width = " + vcap.get(Videoio.CAP_PROP_FRAME_WIDTH));
 
-    System.out.println("vcap height="+vcap.get(Videoio.CAP_PROP_FRAME_HEIGHT));
+    System.out.println("vcap height=" + vcap.get(Videoio.CAP_PROP_FRAME_HEIGHT));
     cameraConnected = true;
     System.out.println("Successfully connected to USB Camera Stream");
 
-  } //SetupUSBCamera
+  } // SetupUSBCamera
 
   /**************************************************************************************
    * Sets up IP camera, must pass IP address as string ex 192.168.1.44

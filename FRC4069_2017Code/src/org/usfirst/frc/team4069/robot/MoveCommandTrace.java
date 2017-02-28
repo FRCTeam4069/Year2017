@@ -14,15 +14,15 @@ public class MoveCommandTrace extends MoveCommand
   double driveDist = 0;
   boolean doneDriving = true;
   private ControlMove mControlMove;
-  
+
   public double error = 0.0;
   public double correctionFactor = 0.0;
   public double resultantleftspeed = 0.0;
   public double resultantrightspeed = 0.0;
   private final double ERROR_SCALING_CONST_P = .400;
-  private int TickCounter=0;
-  
-  public MoveCommandTrace(ControlMove ctrlmove,ArrayList<Vector2> path, double speed)
+  private int TickCounter = 0;
+
+  public MoveCommandTrace(ControlMove ctrlmove, ArrayList<Vector2> path, double speed)
   {
     mControlMove = ctrlmove;
     mSpeed = speed;

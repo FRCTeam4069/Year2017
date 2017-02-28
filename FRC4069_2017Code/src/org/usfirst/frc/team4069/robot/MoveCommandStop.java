@@ -3,7 +3,7 @@ package org.usfirst.frc.team4069.robot;
 public class MoveCommandStop extends MoveCommand
 {
   private ControlMove mControlMove;
-  
+
   MoveCommandStop(ControlMove ctrlmove)
   {
     mControlMove = ctrlmove;

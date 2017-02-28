@@ -3,10 +3,7 @@ package org.usfirst.frc.team4069.robot;
 import edu.wpi.first.wpilibj.Joystick;
 
 /**
- * The RobotMap is a mapping from the ports sensors and actuators are wired into
- * to a variable name. This provides flexibility changing wiring, makes checking
- * the wiring easier and significantly reduces the number of magic numbers
- * floating around.
+ * The RobotMap is a mapping from the ports sensors and actuators are wired into to a variable name. This provides flexibility changing wiring, makes checking the wiring easier and significantly reduces the number of magic numbers floating around.
  */
 public class IOMapping
 {
@@ -21,11 +18,11 @@ public class IOMapping
   public static final int INTAKE_FRONT_PWM_PORT = 7;
   public static final int INTAKE_BACK_PWM_PORT = 5;
   public static final int ELEVATOR_PWM_PORT = 3;
-  
+
   public static final int FEED_PWM_PORT = 8;
-  
+
   public static final int TURRET_LIMIT_SWITCH = 8;
-  
+
   /**
    * Left encoder Digital I/O ports.
    */
@@ -52,29 +49,26 @@ public class IOMapping
   public static final int DRIVER_B_BUTTON = 2;
   public static final int DRIVER_LEFT_BACK_BUTTON = 5;
   public static final int DRIVER_RIGHT_BACK_BUTTON = 6;
-  public static final int DRIVER_SMALL_BACK_BUTTON = 7; //on front of controller, small black button labeled back
-  public static final int DRIVER_SMALL_START_BUTTON = 8; //on front of controller small black start button
+  public static final int DRIVER_SMALL_BACK_BUTTON = 7; // on front of controller, small black button labeled back
+  public static final int DRIVER_SMALL_START_BUTTON = 8; // on front of controller small black start button
   public static final int DRIVER_RIGHT_Y_AXIS = 5;
   public static final int DRIVER_RIGHT_X_AXIS = 4;
   public static final int DRIVER_LEFT_Y_AXIS = 1;
   public static final int DRIVER_LEFT_X_AXIS = 0;
   public static final int DRIVER_DPAD = 0;
-  
+
   public static final int CONTROL_Y_BUTTON = 4;
   public static final int CONTROL_A_BUTTON = 1;
   public static final int CONTROL_X_BUTTON = 3;
   public static final int CONTROL_B_BUTTON = 2;
-  public static final int CONTROL_LEFT_BACK_BUTTON=5;
+  public static final int CONTROL_LEFT_BACK_BUTTON = 5;
   public static final int CONTROL_RIGHT_BACK_BUTTON = 6;
-  public static final int CONTROL_SMALL_BACK_BUTTON = 7; //small black button on front of controller labeled 'back'
-  public static final int CONTROL_SMALL_START_BUTTON = 8; //small black button on front of controller labeled start
+  public static final int CONTROL_SMALL_BACK_BUTTON = 7; // small black button on front of controller labeled 'back'
+  public static final int CONTROL_SMALL_START_BUTTON = 8; // small black button on front of controller labeled start
   public static final int CONTROL_RIGHT_Y_AXIS = 5;
   public static final int CONTROL_RIGHT_X_AXIS = 4;
   public static final int CONTROL_LEFT_Y_AXIS = 1;
   public static final int CONTROL_LEFT_X_AXIS = 0;
   public static final int CONTROL_DPAD = 0;
-  
-  
-  
-  
+
 }

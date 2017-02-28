@@ -21,9 +21,9 @@ public class ControlShooter
   private double targetRPMPercentChange = 0.0;
   public LowPassFilter lpf = new LowPassFilter(1000);
   private Joystick _joy;
-  private int mTesting=1;
+  private int mTesting = 1;
   public boolean runFeed = false;
-  
+
   public ControlShooter(Joystick stk)
   {
     _joy = stk;
@@ -40,10 +40,10 @@ public class ControlShooter
 
     // set closed loop gains in slot 0
     shooterCANTalon.setProfile(0);
-    shooterCANTalon.setF(0.0325); //1097);
-    shooterCANTalon.setP(0); //.15);
+    shooterCANTalon.setF(0.0325); // 1097);
+    shooterCANTalon.setP(0); // .15);
     shooterCANTalon.setI(0);
-    shooterCANTalon.setD(0); //0.05);
+    shooterCANTalon.setD(0); // 0.05);
     shooterCANTalon.changeControlMode(TalonControlMode.Speed);
   } // ShooterControl init
 
@@ -58,8 +58,8 @@ public class ControlShooter
   }
 
   /**
-   * Passed a percentage 0-100, if the current rpm is within that percentage of the target rpm
-   * returns 1, else returns 0
+   * Passed a percentage 0-100, if the current rpm is within that percentage of the target rpm returns 1, else returns 0
+   * 
    * @return
    */
   public int isShooterWithingPercentage(double percentok)
@@ -71,9 +71,8 @@ public class ControlShooter
       return 1;
     else
       return 0;
-  }//isShooterWithinPercentage
-  
-  
+  }// isShooterWithinPercentage
+
   /**
    * ShooterTick : Should be called with all the other update functions after inputs have been read/updated IF proper button held down, will call set speed to set to wanted RPM's
    */
@@ -86,7 +85,7 @@ public class ControlShooter
     }
     motorOutput = shooterCANTalon.getOutputVoltage() / shooterCANTalon.getBusVoltage();
 
-    if (mTesting == 1) //if testing, enable buttons, else just set rpm on tick
+    if (mTesting == 1) // if testing, enable buttons, else just set rpm on tick
     {
       targetRPM = 0.0;
 
@@ -115,13 +114,12 @@ public class ControlShooter
 
     if (targetRPM != 0.0)
     {
-      //double humanInput = _joy.getRawAxis(IOMapping.CONTROL_RIGHT_Y_AXIS);
-      //double tenPercentOfTarget = targetRPM * 0.1;
+      // double humanInput = _joy.getRawAxis(IOMapping.CONTROL_RIGHT_Y_AXIS);
+      // double tenPercentOfTarget = targetRPM * 0.1;
       shooterCANTalon.changeControlMode(TalonControlMode.Speed);
       shooterCANTalon.set(lpf.calculate(targetRPM));// + humanInput * tenPercentOfTarget)); //
     }
   }// ShooterTick
-
 
   public void Enable()
   {

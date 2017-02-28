@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 
-public class ControlMove 
+public class ControlMove
 {
   // Objects MoveControl interfaces with...
   public RobotDrive mRobotDrive; // class that handles basic drive
@@ -39,13 +39,13 @@ public class ControlMove
   double mDriveBaseRadius = mDistanceBetweenWheelCentersInCM / 2;
   double mDriveBaseCircumference = mDistanceBetweenWheelCentersInCM * Math.PI; //
   double mDriveBaseTicksInCircumference = TICKS_PER_CM * mDriveBaseCircumference;
-  
+
   private Robot mRobot;
-  
+
   // Current command executing, and a list of commands to be executed...
   private MoveCommand mCurrentCommand = null;
   ArrayList<MoveCommand> mCommandList = new ArrayList<MoveCommand>(); // Arrays.asList(new TurnOneWheelCommand(.25, 50, false), new StopCommand()));
-  
+
   /**
    * Class Constructor MoveFunctions Constructor, given the driver stick, setup motors and encoders assign low pass filters to motors
    * 
@@ -54,7 +54,7 @@ public class ControlMove
   public ControlMove(Joystick driverstk, Robot robot)
   {
     driverStick = driverstk;
-    
+
     mRobot = robot;
 
     leftDriveMotor = new Talon(IOMapping.LEFT_DRIVE_MOTOR_PWM_PORT);
@@ -75,8 +75,6 @@ public class ControlMove
     mRobotDrive.setExpiration(0.1);
   } // MoveFunctions constructor
 
-  
-  
   public double AverageDistanceTraveledInCM()
   {
     double leftDistance = leftEncoder.getDistance();
@@ -85,7 +83,6 @@ public class ControlMove
     return averageDistance;
   }
 
-  
   /**
    * Checks mCommandList to see if any move commands are waiting, if so, pulls the next one and calls its initialization routine to execute it.
    * 
@@ -93,7 +90,7 @@ public class ControlMove
    */
   public int DoNextCommand()
   {
-    //System.out.println("DoNextCommand....");
+    // System.out.println("DoNextCommand....");
     if (mCommandList.size() == 0) // when no commands left, stop.
     {
       System.out.println("Commandlist empty, adding stop command");
@@ -105,12 +102,13 @@ public class ControlMove
     mCommandList.remove(0);
     mc.Init();
     mCurrentCommand = mc;
-    //System.out.println("DoNextcommand returning with "+mCommandList.size());
+    // System.out.println("DoNextcommand returning with "+mCommandList.size());
     return mCommandList.size();
   }// doNextCommand
-  
+
   /**
    * If no commands on list, and no current command, return 1, else return 0
+   * 
    * @return
    */
   public int isControlMoveFinished()
@@ -123,22 +121,20 @@ public class ControlMove
 
   public void Tick()
   {
-    //System.out.println("MainTick list = "+mCommandList.size()+" mcurrentcommand="+mCurrentCommand);
+    // System.out.println("MainTick list = "+mCommandList.size()+" mcurrentcommand="+mCurrentCommand);
     if ((mCurrentCommand == null) || (mCurrentCommand.Tick() == true)) // done?
     {
-      //System.out.println("About to donextcommand num="+mCommandList.size());
+      // System.out.println("About to donextcommand num="+mCommandList.size());
       DoNextCommand();
     }
   }// Tick
 
-  
-  //-----------------------------------------------------------------------------
-  //Add_commands below...
-  
-  
+  // -----------------------------------------------------------------------------
+  // Add_commands below...
+
   public void addPivotCMD(double degrees, double speed)
   {
-    MoveCommandPivot p = new MoveCommandPivot(this,degrees, speed);
+    MoveCommandPivot p = new MoveCommandPivot(this, degrees, speed);
     mCommandList.add(p);
   }// Pivot
 
@@ -150,27 +146,25 @@ public class ControlMove
 
   public void addMoveStraightCMD(double speed, double distance)
   {
-    mCommandList.add(new MoveCommandStraight(this,speed, distance));
+    mCommandList.add(new MoveCommandStraight(this, speed, distance));
   }
 
   public void addDoTurnCMD()
   {
-    mCommandList.add(new MoveCommandTurnOneWheel(this,.80, 20, false));
+    mCommandList.add(new MoveCommandTurnOneWheel(this, .80, 20, false));
   }
 
   public void addDelayCMD(int milliseconds)
   {
     mCommandList.add(new MoveCommandDelay(this, milliseconds));
   }
-  
-  
+
   /**
-   * Set current command to Operator Control (tele-operator mode) for human driving. There is no exit from this, it stays in effect until changed by something outside.
-   * NOTE: This command clears all pending commands and 'takes control' we may want to preserve list in future?
+   * Set current command to Operator Control (tele-operator mode) for human driving. There is no exit from this, it stays in effect until changed by something outside. NOTE: This command clears all pending commands and 'takes control' we may want to preserve list in future?
    */
   public void MoveOperatorControl()
   {
-    mCommandList.clear();  //NOTE! Operator takes control clear command list, no more autonomous stuff
+    mCommandList.clear(); // NOTE! Operator takes control clear command list, no more autonomous stuff
     OperatorControlCommand oc = new OperatorControlCommand(this, mRobot);
     oc.Init();
     mCurrentCommand = oc;

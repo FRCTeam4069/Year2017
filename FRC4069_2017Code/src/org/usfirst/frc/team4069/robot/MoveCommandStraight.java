@@ -5,15 +5,14 @@ public class MoveCommandStraight extends MoveCommand
   double mSpeed;
   double mDistance;
   private ControlMove mControlMove;
-  private int TickCounter=0;
-  private double correctionFactor=0.0;
+  private int TickCounter = 0;
+  private double correctionFactor = 0.0;
   private double resultantleftspeed = 0.0;
   private double resultantrightspeed = 0.0;
   private double error = 0.0;
   private final double ERROR_SCALING_CONST_P = .400;
-  
-  
-  MoveCommandStraight(ControlMove ctrlmove,double speed, double distance)
+
+  MoveCommandStraight(ControlMove ctrlmove, double speed, double distance)
   {
     mControlMove = ctrlmove;
     mSpeed = speed;
@@ -36,9 +35,9 @@ public class MoveCommandStraight extends MoveCommand
   @Override
   public boolean Tick()
   {
-    //System.out.println("Move Command straight tick");
-    double leftDistance =  mControlMove.leftEncoder.getDistance();
-    double rightDistance =  mControlMove.rightEncoder.getDistance();
+    // System.out.println("Move Command straight tick");
+    double leftDistance = mControlMove.leftEncoder.getDistance();
+    double rightDistance = mControlMove.rightEncoder.getDistance();
     double averageDistance = (leftDistance + rightDistance) / 2;
 
     if (Math.abs(averageDistance) >= mDistance)
@@ -63,10 +62,7 @@ public class MoveCommandStraight extends MoveCommand
       resultantleftspeed = -1.0;
     if (resultantrightspeed < -1.0)
       resultantrightspeed = -1.0;
-    System.out.println("leftdist="+leftDistance+",rightdist="+rightDistance+
-        ",error="+error+",correctionFactor="+correctionFactor+
-        ",resultleft="+resultantleftspeed+
-        ",resultsright="+resultantrightspeed);
+    System.out.println("leftdist=" + leftDistance + ",rightdist=" + rightDistance + ",error=" + error + ",correctionFactor=" + correctionFactor + ",resultleft=" + resultantleftspeed + ",resultsright=" + resultantrightspeed);
     mControlMove.leftDriveMotor.set(resultantleftspeed); // +err means left ahead, subtract from left speed
     mControlMove.rightDriveMotor.set(resultantrightspeed); // -err means right ahead, add -err to right speed
     return false; // not done yet

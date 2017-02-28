@@ -8,14 +8,13 @@ public class ControlFeed
   private int mEnabled = 0;
   private int mDebug = 0;
   private Robot mRobot;
-  private double mFeedSpeed=0.65;
-  
-  
+  private double mFeedSpeed = 0.65;
+
   public ControlFeed(Robot robot)
   {
     feedTalon = new Talon(IOMapping.FEED_PWM_PORT);
     mRobot = robot;
-    mFeedSpeed=0.5;
+    mFeedSpeed = 0.5;
   }
 
   public void EnableDebug()
@@ -43,24 +42,26 @@ public class ControlFeed
   public void setFeedSpeed(double fs)
   {
     mFeedSpeed = fs;
-    if (mEnabled==1) //if enabled, change right away
+    if (mEnabled == 1) // if enabled, change right away
     {
       feedTalon.set(mFeedSpeed);
     }
   }
-  
+
   public void Tick()
   {
-	  if(mEnabled == 1){
-		  //if(Robot.InputSystem.Y_Button_Driver_Stick || Robot.InputSystem.Y_Button_Control_Stick){
-			  feedTalon.set(mFeedSpeed);
-		  //}
-		  //else{
-			//  feedTalon.set(0);
-		  //}
-	  }
-	  else{
-	    feedTalon.set(0);
-	  }
+    if (mEnabled == 1)
+    {
+      // if(Robot.InputSystem.Y_Button_Driver_Stick || Robot.InputSystem.Y_Button_Control_Stick){
+      feedTalon.set(mFeedSpeed);
+      // }
+      // else{
+      // feedTalon.set(0);
+      // }
+    }
+    else
+    {
+      feedTalon.set(0);
+    }
   }
 }

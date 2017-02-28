@@ -15,21 +15,21 @@ public class ThreadArduinoGyro implements Runnable
   byte[] toSend = new byte[1];
   byte[] toGet = new byte[10];
   public double lastHeading = -1;
-  public String lastError="";
-  public String lastMessage="";
-  
+  public String lastError = "";
+  public String lastMessage = "";
+
   public ThreadArduinoGyro()
   {
     mi2sdev = new I2C(I2C.Port.kMXP, 0x51); // 4);
-    lastMessage="I2C Created";
+    lastMessage = "I2C Created";
   }
 
   public void run()
   {
-    lastError="Startup...";
-    
-    int bigctr=0;
-    
+    lastError = "Startup...";
+
+    int bigctr = 0;
+
     while (enabled == 1)
     {
       toSend[0] = 1;
@@ -40,7 +40,7 @@ public class ThreadArduinoGyro implements Runnable
       try
       {
         rval = new String(toGet, "UTF-8");
-        lastMessage=rval;
+        lastMessage = rval;
         if (rval.isEmpty() == false)
         {
           double head = 0.0;
@@ -51,16 +51,16 @@ public class ThreadArduinoGyro implements Runnable
             {
               lastHeading = head;
               lastError = rval;
-              //System.out.println("Heading CHANGE:" + head + " degrees");
+              // System.out.println("Heading CHANGE:" + head + " degrees");
             }
           }
           catch (Exception e)
           {
-            //System.out.println("Exception: " + e.getMessage());
-            lastError="GyroERR("+bigctr+"):"+e.getMessage();
+            // System.out.println("Exception: " + e.getMessage());
+            lastError = "GyroERR(" + bigctr + "):" + e.getMessage();
             lastHeading = -1;
           }
-        }//isempty?
+        } // isempty?
 
       }
       catch (UnsupportedEncodingException e1)

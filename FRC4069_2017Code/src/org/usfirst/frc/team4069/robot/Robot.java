@@ -27,9 +27,9 @@ public class Robot extends SampleRobot
   public ControlIntake mIntakeController;
   public ControlElevator mElevatorController;
   public ControlFeed mFeedController;
-  
+
   public double mRobotSpeed = 0.0; // used only in teleop, gives all controls access to robot speed
-  
+
   private Control_MoveAimShoot mMoveAimShoot;
 
   Preferences prefs = Preferences.getInstance();
@@ -64,7 +64,7 @@ public class Robot extends SampleRobot
   public Robot()
   {
     Log.mDebug = 1; // Enable logging output
-    
+
     mShooterController = new ControlShooter(controlStick);
     mWinchController = new ControlWinch();
     mMoveController = new ControlMove(driverStick, this); // pass joystick
@@ -72,7 +72,7 @@ public class Robot extends SampleRobot
     mIntakeController = new ControlIntake(this);
     mElevatorController = new ControlElevator(this);
     mFeedController = new ControlFeed(this);
-    
+
     lidar_instance = new ThreadLIDAR();
     lidarThreadHandle = new Thread(lidar_instance);
     lidarThreadHandle.start();
@@ -99,41 +99,41 @@ public class Robot extends SampleRobot
   // ---------------------------------------------------------------------------------------------
   // OPERATORCONTROL :
   //
-  
+
   @Override
   public void operatorControl()
   {
     mMoveController.mRobotDrive.setSafetyEnabled(false);
-    //mShooterController.setRPMWanted(-50);
-    //mShooterController.Enable();
+    // mShooterController.setRPMWanted(-50);
+    // mShooterController.Enable();
     mMoveController.MoveOperatorControl(); // human driving watch out!
-    
-    //mTurretController.Enable();
-    
-    //mWinchController.Enable();
-    
-    //mElevatorController.setElevatorSpeed(0.6);  //NOTE Elevaotr dir ok
-    //mElevatorController.setElevatorSecondSpeed(0); //1.0); //0.8);
-    //mElevatorController.Enable();
-    
-    //mIntakeController.setIntakeSpeed(0.8);  //NOTE Intake direction ok
-    //mIntakeController.Enable();
-    
-    //mFeedController.setFeedSpeed(0.9);
-    //mFeedController.Enable();
+
+    // mTurretController.Enable();
+
+    // mWinchController.Enable();
+
+    // mElevatorController.setElevatorSpeed(0.6); //NOTE Elevaotr dir ok
+    // mElevatorController.setElevatorSecondSpeed(0); //1.0); //0.8);
+    // mElevatorController.Enable();
+
+    // mIntakeController.setIntakeSpeed(0.8); //NOTE Intake direction ok
+    // mIntakeController.Enable();
+
+    // mFeedController.setFeedSpeed(0.9);
+    // mFeedController.Enable();
 
     while (isOperatorControl() && isEnabled())
     {
       InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
-      //mShooterController.Tick();
-      //mWinchController.Tick();
+      // mShooterController.Tick();
+      // mWinchController.Tick();
       mMoveController.Tick();
-      //mTurretController.Tick();
-      //mIntakeController.Tick();
-      //mElevatorController.Tick();
-      //mFeedController.Tick();
+      // mTurretController.Tick();
+      // mIntakeController.Tick();
+      // mElevatorController.Tick();
+      // mFeedController.Tick();
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled
@@ -176,7 +176,7 @@ public class Robot extends SampleRobot
     long deltat = System.currentTimeMillis() - mLastDashboardUpdateTime;
     if (deltat > 1000)
     {
-      SmartDashboard.putNumber("AUTOTARGET XPOS: ",vision_processor_instance.cregions.mXGreenLine);
+      SmartDashboard.putNumber("AUTOTARGET XPOS: ", vision_processor_instance.cregions.mXGreenLine);
       SmartDashboard.putNumber("Auto TARGET Enabled: ", vision_processor_instance.cregions.mTargetVisible);
       SmartDashboard.putBoolean("TURRETLIMITSWITCH", mTurretController.turretLimitSwitch.get());
       SmartDashboard.putNumber("TURRETENCODER", mTurretController.GetShooterPosition());
@@ -270,13 +270,13 @@ public class Robot extends SampleRobot
     public static boolean B_Button_Driver_Stick_Prev = false;
     public static boolean RB_Button_Driver_Stick = false; //
     public static boolean RB_Button_Driver_Stick_Prev = false;
-    public static boolean Start_Button_Driver_Stick = false; //small black button on front
+    public static boolean Start_Button_Driver_Stick = false; // small black button on front
     public static boolean Start_Button_Driver_Stick_Prev = false;
     public static boolean Start_Button_Driver_Stick_Once = false;
     public static boolean Back_Button_Control_Stick = false;
     public static boolean Back_Button_Control_Stick_Prev = false;
     public static boolean Back_Button_Control_Stick_Once = false;
-    
+
     public static boolean Turret_Limit_Switch = false;
 
     public static void ReadAllInput(Joystick driverstk, Joystick controlstk)
@@ -303,7 +303,7 @@ public class Robot extends SampleRobot
       Dpad_Down_Control_Stick = Dpad_Angle_Control_Stick >= 135 && Dpad_Angle_Control_Stick <= 225;
       Dpad_Down_Control_Stick_Pressed_Once = Dpad_Down_Control_Stick_Prev == false && Dpad_Down_Control_Stick == true;
       Dpad_Down_Control_Stick_Released_Once = Dpad_Down_Control_Stick_Prev == true && Dpad_Down_Control_Stick == false;
-      
+
       Y_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_Y_BUTTON);
       A_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_A_BUTTON);
       X_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_X_BUTTON);

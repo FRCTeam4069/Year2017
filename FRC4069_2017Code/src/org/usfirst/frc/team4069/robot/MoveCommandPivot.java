@@ -9,11 +9,11 @@ public class MoveCommandPivot extends MoveCommand
   public double correctionFactor = 0.0;
   private final double ERROR_SCALING_CONST_P = .400;
   private double error = 0.0;
-  
-  public MoveCommandPivot(ControlMove ctrlmove,double degrees, double speed)
+
+  public MoveCommandPivot(ControlMove ctrlmove, double degrees, double speed)
   {
     mControlMove = ctrlmove;
-    
+
     mSpeed = speed;
     mDegrees = degrees;
 

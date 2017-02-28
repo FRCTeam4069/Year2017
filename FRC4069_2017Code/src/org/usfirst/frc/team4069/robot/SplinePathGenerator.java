@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4069.robot;
 
-
 //SEE: http://en.wikipedia.org/wiki/Monotone_cubic_interpolation
 
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ public class SplinePathGenerator
    * 
    * The spline is guaranteed to pass through each control point exactly. Moreover, assuming the control points are monotonic (Y is non-decreasing or non-increasing) then the interpolated values will also be monotonic.
    * 
-   * This function uses the Fritsch-Carlson method for computing the spline parameters. 
+   * This function uses the Fritsch-Carlson method for computing the spline parameters.
    * 
    * SEE: http://en.wikipedia.org/wiki/Monotone_cubic_interpolation
    * 

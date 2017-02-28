@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4069.robot;
 
-
 /*
  * SingleEvent is a single recorded event in a file.
  * It consists of 5 things.
@@ -18,23 +17,23 @@ public class SingleEvent
   public int rightEncoderValue;
   public double leftmotorsetting;
   public double rightmotorsetting;
-  
-  SingleEvent(long t,int le,int re,double leftmtrval,double rhtmtrval)
+
+  SingleEvent(long t, int le, int re, double leftmtrval, double rhtmtrval)
   {
     dTime = t;
     leftEncoderValue = le;
     rightEncoderValue = re;
-    leftmotorsetting=leftmtrval;
-    rightmotorsetting=rhtmtrval;
-    
+    leftmotorsetting = leftmtrval;
+    rightmotorsetting = rhtmtrval;
+
   }
-  
-  void setValues(long t,int le,int re,double leftmtr,double rhtmtr)
-  {    
-    dTime= t;
-    leftEncoderValue=le;
-    rightEncoderValue=re;
+
+  void setValues(long t, int le, int re, double leftmtr, double rhtmtr)
+  {
+    dTime = t;
+    leftEncoderValue = le;
+    rightEncoderValue = re;
     leftmotorsetting = leftmtr;
-    rightmotorsetting= rhtmtr;
+    rightmotorsetting = rhtmtr;
   }
 }

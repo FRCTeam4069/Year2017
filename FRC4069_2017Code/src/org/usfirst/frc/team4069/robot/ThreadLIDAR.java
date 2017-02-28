@@ -109,8 +109,8 @@ public class ThreadLIDAR implements Runnable
     mSerpt.writeString("RR\r\n");
     doSleep(5000);
 
-    //System.out.println("Startup DX Cmd:" + doDXCmd());
-    //doSleep(2000);
+    // System.out.println("Startup DX Cmd:" + doDXCmd());
+    // doSleep(2000);
     System.out.println("Calling IV command...");
     doIVCmd();
     lastMessage = mIVResponse;
@@ -239,9 +239,9 @@ public class ThreadLIDAR implements Runnable
 
     if (mState == 99) // exit?
     {
-    //  doDXCmd();
-//      mSerpt.reset();
-  //    mSerpt.free();
+      // doDXCmd();
+      // mSerpt.reset();
+      // mSerpt.free();
     }
   }// run
 

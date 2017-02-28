@@ -2,13 +2,13 @@ package org.usfirst.frc.team4069.robot;
 
 public class MoveCommandDelay extends MoveCommand
 {
-  
+
   private int milliseconds;
-  
+
   private long startTime;
   ControlMove mControlMove;
-  
-  public MoveCommandDelay(ControlMove ctrlmove,int milliseconds)
+
+  public MoveCommandDelay(ControlMove ctrlmove, int milliseconds)
   {
     mControlMove = ctrlmove;
     this.milliseconds = milliseconds;
@@ -31,7 +31,8 @@ public class MoveCommandDelay extends MoveCommand
   public boolean Tick()
   {
     System.out.println("Delay tick");
-    if((int)(System.currentTimeMillis() - startTime) >= milliseconds){
+    if ((int) (System.currentTimeMillis() - startTime) >= milliseconds)
+    {
       return true;
     }
     return false;
