@@ -27,12 +27,6 @@ public class MoveCommandStraight extends MoveCommand
   }
 
   @Override
-  public void Done()
-  {
-
-  }
-
-  @Override
   public boolean Tick()
   {
     // System.out.println("Move Command straight tick");
@@ -44,7 +38,6 @@ public class MoveCommandStraight extends MoveCommand
     {
       mControlMove.leftDriveMotor.set(0);
       mControlMove.rightDriveMotor.set(0);
-      Done();
       return true;
     }
     TickCounter++;

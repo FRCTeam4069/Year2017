@@ -24,10 +24,4 @@ public class MoveCommandStop extends MoveCommand
     mControlMove.rightDriveMotor.set(0);
     return true;
   }
-
-  @Override
-  public void Done()
-  {
-  }
-
 }

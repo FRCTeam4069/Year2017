@@ -40,9 +40,4 @@ public class OperatorControlCommand extends MoveCommand
     mControlMove.mRobotDrive.arcadeDrive(mDriverRobotSpeed, mDriverRobotTurnDirection); // move robot
     return false;
   }
-
-  @Override
-  public void Done()
-  {
-  }
 }// class OperatorControlCommand

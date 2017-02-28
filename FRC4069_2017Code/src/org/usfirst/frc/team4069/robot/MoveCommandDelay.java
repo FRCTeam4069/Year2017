@@ -20,12 +20,6 @@ public class MoveCommandDelay extends MoveCommand
     startTime = System.currentTimeMillis();
   }
 
-  @Override
-  public void Done()
-  {
-
-  }
-
   // For + degrees left wheel goes forward, right wheel goes backwards
   @Override
   public boolean Tick()
