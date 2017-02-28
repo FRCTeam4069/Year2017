@@ -346,7 +346,7 @@ public class ThreadVisionProcessor implements Runnable
       }
 
       Point centerbtm = new Point(0, 20);
-
+      Point rht = new Point(0,200);
       double head = mRobot.arduino_thread_instance.lastHeading;
       if (head != -1.0)
       {
@@ -355,6 +355,16 @@ public class ThreadVisionProcessor implements Runnable
       else
         Imgproc.putText(original, "HEADING:Err No Lock", centerbtm, 0, 0.5, RED);
 
+      if (mRobot.ON_RED_SIDE_OF_FIELD == true)
+      {
+        Imgproc.putText(original,"RED",rht,0,0.5,RED);
+      }
+      else
+      {
+        Imgproc.putText(original, "BLUE", rht, 0, 0.5, BLUE);
+      }
+      
+      
       Point lastsn = new Point(50, 230);
       Imgproc.putText(original, "Target Last Heading:" + lastHeadingTargetSeen, lastsn, 0, 0.5, YELLOW);
 

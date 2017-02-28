@@ -24,7 +24,7 @@ public class Robot extends SampleRobot
 	// CHANGE THIS DEPENDING ON WHAT SIDE OF THE FIELD WE ARE ON //
 	// --------------------------------------------------------- //
 	
-	private boolean ON_RED_SIDE_OF_FIELD = false;
+	public boolean ON_RED_SIDE_OF_FIELD = false;
 	
   public ControlShooter mShooterController; // shooter functions
   public ControlWinch mWinchController; // winch functions
