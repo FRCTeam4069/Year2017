@@ -30,11 +30,6 @@ public class MoveCommandPivot extends MoveCommand
     mControlMove.rightEncoder.reset(); // zero counts
   }
 
-  @Override
-  public void Done()
-  {
-  }
-
   // For + degrees left wheel goes forward, right wheel goes backwards
   @Override
   public boolean Tick()
@@ -48,7 +43,6 @@ public class MoveCommandPivot extends MoveCommand
     {
       mControlMove.leftDriveMotor.set(0);
       mControlMove.rightDriveMotor.set(0);
-      Done();
       return true;
     }
 

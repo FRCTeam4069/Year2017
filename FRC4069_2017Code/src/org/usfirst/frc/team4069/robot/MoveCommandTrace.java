@@ -121,9 +121,4 @@ public class MoveCommandTrace extends MoveCommand
     mControlMove.rightEncoder.reset(); // clear encoder distances/ticks
   }
 
-  @Override
-  public void Done()
-  {
   }
-
-}

@@ -46,10 +46,4 @@ public class MoveCommandTurnOneWheel extends MoveCommand
     else
       return false;
   }
-
-  @Override
-  public void Done()
-  {
-
-  }
 }
