@@ -149,9 +149,9 @@ public class ControlMove
     mCommandList.add(new MoveCommandStraight(this, speed, distance));
   }
 
-  public void addDoTurnCMD()
+  public void addDoTurnCMD(boolean isRightWheel)
   {
-    mCommandList.add(new MoveCommandTurnOneWheel(this, .80, 20, false));
+	  mCommandList.add(new MoveCommandTurnOneWheel(this, .80, 20, isRightWheel));
   }
 
   public void addDelayCMD(int milliseconds)

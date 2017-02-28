@@ -20,6 +20,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SampleRobot
 {
+	// --------------------------------------------------------- //
+	// CHANGE THIS DEPENDING ON WHAT SIDE OF THE FIELD WE ARE ON //
+	// --------------------------------------------------------- //
+	
+	private boolean ON_RED_SIDE_OF_FIELD = false;
+	
   public ControlShooter mShooterController; // shooter functions
   public ControlWinch mWinchController; // winch functions
   public ControlMove mMoveController; // ALL robot movement functions
@@ -140,6 +146,7 @@ public class Robot extends SampleRobot
   } // operatorControl
 
   // AUTONOMOUS AUTONOMOUS AUTONOMOUS
+  // thanks for that...
 
   @Override
   public void autonomous()
@@ -155,8 +162,12 @@ public class Robot extends SampleRobot
     mShooterController.setRPMWanted(1800);
     mShooterController.Enable();
     mMoveController.addDelayCMD(5000);
-    mMoveController.addMoveStraightCMD(-0.45, 115);
-    mMoveController.addDoTurnCMD();
+    if (ON_RED_SIDE_OF_FIELD) {
+    	mMoveController.addMoveStraightCMD(0.45, 115);
+    } else {
+    	mMoveController.addMoveStraightCMD(-0.45, 115);
+    }
+    mMoveController.addDoTurnCMD(ON_RED_SIDE_OF_FIELD);
 
     while (isAutonomous() && isEnabled())
     {
