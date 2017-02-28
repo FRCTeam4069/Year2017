@@ -230,14 +230,14 @@ public class ControlTurret
       turretTalon.set(0.1); // crawl toward limit switch
     }
     else
-    {
-      turretTalon.set(0);
-      while (turretLimitSwitchEnabled == true)
+    { //now lets move off limit switch...
+      turretTalon.set(0);  //turn off turret movement
+      while (turretLimitSwitchEnabled == true)   //while limit switch is pressed
       {
         turretTalon.set(-0.1); // go until off limit switch
         turretLimitSwitchEnabled = turretLimitSwitch.get();
       }
-      turretTalon.set(0); // turn off talon
+      turretTalon.set(0); // turn off turret
       turretTalon.setEncPosition(0); // reset encoder ticks
       turretEncoderZeroed = true;
     }
