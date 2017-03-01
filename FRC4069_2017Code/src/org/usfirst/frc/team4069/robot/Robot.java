@@ -114,7 +114,7 @@ public class Robot extends SampleRobot
     mShooterController.Enable();
     mMoveController.MoveOperatorControl(); // human driving watch out!
 
-    mTurretController.Enable();
+    //mTurretController.Enable();
 
     //mWinchController.Enable();
 
@@ -136,7 +136,7 @@ public class Robot extends SampleRobot
       mShooterController.Tick();
       //mWinchController.Tick();
       mMoveController.Tick();
-      mTurretController.Tick();
+      //mTurretController.Tick();
       // mIntakeController.Tick();
       //mElevatorController.Tick();
       //mFeedController.Tick();
