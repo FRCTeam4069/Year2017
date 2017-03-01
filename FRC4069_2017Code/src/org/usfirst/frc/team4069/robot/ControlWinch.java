@@ -7,11 +7,11 @@ public class ControlWinch
   private Talon winchTalon;
   private int mEnabled = 0;
   private int mDebug = 0;
-  private double mSpeed = 0.5;
+  private double mSpeed = 1;
 
   public ControlWinch()
   {
-    winchTalon = new Talon(0); // IOMapping.WINCH_PWN_PORT);
+    winchTalon = new Talon(IOMapping.WINCH_PWN_PORT);
     winchTalon.set(0);
   } // ControlWinch
 
@@ -41,14 +41,14 @@ public class ControlWinch
   {
     if (mEnabled == 1)
     {
-      if (Robot.InputSystem.A_Button_Control_Stick)
-      {
+      //if (Robot.InputSystem.A_Button_Control_Stick)
+      //{
         winchTalon.set(mSpeed);
-      }
+      /*}
       else
       {
         winchTalon.set(0);
-      }
+      }*/
     }
     else
     {
