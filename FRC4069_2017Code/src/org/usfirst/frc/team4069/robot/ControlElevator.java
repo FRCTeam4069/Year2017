@@ -13,7 +13,6 @@ public class ControlElevator {
 	private double mSecondSpeed = 0.0; // secondary speed which can be toggled
 	private boolean useSecondSpeed = false; // should second or first speed be
 											// used
-	private boolean dpadButtonHeld = false;
 	private Robot mRobot;
 
 	public ControlElevator(Robot robot) {
@@ -103,18 +102,14 @@ public class ControlElevator {
 		if (Robot.InputSystem.Back_Button_Control_Stick_Once) {
 			useSecondSpeed = !useSecondSpeed;
 		}
-		if (InputSystem.Dpad_Up_Control_Stick && !dpadButtonHeld) {
+		if (InputSystem.Dpad_Up_Control_Stick_Pressed_Once) {
 			if (mEnabled == 1) {
 				Disable();
 			} else {
 				Enable();
 			}
-			dpadButtonHeld = true;
 		}
-		if (!InputSystem.Dpad_Up_Control_Stick) {
-			dpadButtonHeld = false;
-		}
-		
+	
 		if (mEnabled == 1) {
 			elevatorTalon.set(getElevatorSpeed());
 		} else {
