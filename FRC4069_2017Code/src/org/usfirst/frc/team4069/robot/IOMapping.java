@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Joystick;
 public class IOMapping
 {
   // Drive motor PWM ports
-  public static final int LEFT_DRIVE_MOTOR_PWM_PORT = 6; // red
+  public static final int LEFT_DRIVE_MOTOR_PWM_PORT = 8; // red
   public static final int RIGHT_DRIVE_MOTOR_PWM_PORT = 9; // green
   
   public static final int ELEVATOR_PWM_PORT = 2; // green/blue band
@@ -18,7 +18,7 @@ public class IOMapping
   public static final int INTAKE_BACK_PWM_PORT = 4;
   public static final int INTAKE_FRONT_PWM_PORT = 5;
   
-  public static final int WINCH_PWN_PORT = 7; // blue
+  public static final int WINCH_PWN_PORT = 6; // blue
   
   public static final int SHOOTER_CANBUS_PORT = 0;
   public static final int TURRET_CANBUS_PORT = 1;
