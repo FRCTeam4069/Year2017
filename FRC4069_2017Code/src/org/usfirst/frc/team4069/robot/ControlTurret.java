@@ -157,9 +157,8 @@ public class ControlTurret
   {
     double motorValue=0.0; //return wanted manual turret movement
     
-    /*NOTE: Needs fixing with new robot configuration
-    double maxSpeed = 0.5; // scaling constant for motor speed
-    double driverStick = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed;
+    /*double maxSpeed = 0.5; // scaling constant for motor speed
+    double driverStick = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed * -1;
 
     if (Math.abs(driverStick) > 0.1)
     { // if joystick is down, exit out of encoder targeting routine
@@ -167,22 +166,22 @@ public class ControlTurret
     }
 
     if (encoderTargetingEnabled)
-    { // otherwise, if encoder targeting is on, apply encoder targeting to motorValue
+    { // if encoder targeting is on, apply encoder targeting to motorValue
       double error = (turretEncoderPosition - targetEncoderPosition) / 2000;
       motorValue = error > 0 ? Math.min(maxTargetPositionSpeed, error) : Math.max(-maxTargetPositionSpeed, error);
       motorValue = lpf.calculate(motorValue); // apply lowpassfilter for smoother movement
     }
     else
     { // otherwise just let the turret be controlled manually
-      motorValue = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed; // decrease speed as turret gets closer to min/max so turret does not slide past limits
-
+      motorValue = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed * -1;
+      
+      // decrease speed as turret gets closer to min/max so turret does not slide past limits
       if ((motorValue > 0 && turretEncoderPosition < turretEncoderMidpoint) || (motorValue < 0 && turretEncoderPosition > turretEncoderMidpoint))
       {
-        motorValue *= Lerp(1, 0, 0, turretEncoderMin - turretEncoderMidpoint, Math.abs(turretEncoderPosition - turretEncoderMidpoint));
+        motorValue *= Lerp(1, 0, 0, turretEncoderMidpoint - turretEncoderMin, Math.abs(turretEncoderPosition - turretEncoderMidpoint));
         motorValue = lpf.calculate(motorValue); // also apply lowpassfilter here
       }
-    }
-    */
+    }*/
     return motorValue;
   } // getManualTurretMovementValue
 
@@ -196,7 +195,7 @@ public class ControlTurret
 
     if (Robot.InputSystem.Start_Button_Control_Stick_Once)
     {
-      // autoTargetingEnabled = !autoTargetingEnabled;
+      //autoTargetingEnabled = !autoTargetingEnabled;
     }
 
     if (turretEncoderZeroed == false)

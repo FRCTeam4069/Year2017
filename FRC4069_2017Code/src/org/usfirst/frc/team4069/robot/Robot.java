@@ -111,15 +111,15 @@ public class Robot extends SampleRobot
   {
     mMoveController.mRobotDrive.setSafetyEnabled(false);
     // mShooterController.setRPMWanted(-50);
-    mShooterController.Enable();
+    //mShooterController.Enable();
     mMoveController.MoveOperatorControl(); // human driving watch out!
 
-    //mTurretController.Enable();
+    mTurretController.Enable();
 
     //mWinchController.Enable();
 
     //mElevatorController.setElevatorSpeed(0.8); //NOTE Elevaotr dir ok
-    //mElevatorController.setElevatorSecondSpeed(0); //1.0); //0.8);
+    //mElevatorController.setElevatorSecondSpeed(0.6); //1.0); //0.8);
     //mElevatorController.Enable();
 
     // mIntakeController.setIntakeSpeed(0.8); //NOTE Intake direction ok
@@ -133,13 +133,13 @@ public class Robot extends SampleRobot
       InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
-      mShooterController.Tick();
+      //mShooterController.Tick();
       //mWinchController.Tick();
       mMoveController.Tick();
-      //mTurretController.Tick();
+      mTurretController.Tick();
       //mIntakeController.Tick();
       //mElevatorController.Tick();
-      mFeedController.Tick();
+      //mFeedController.Tick();
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled
