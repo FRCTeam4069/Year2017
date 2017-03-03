@@ -137,9 +137,9 @@ public class Robot extends SampleRobot
       //mWinchController.Tick();
       mMoveController.Tick();
       //mTurretController.Tick();
-      // mIntakeController.Tick();
+      //mIntakeController.Tick();
       //mElevatorController.Tick();
-      //mFeedController.Tick();
+      mFeedController.Tick();
       SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled
@@ -161,6 +161,7 @@ public class Robot extends SampleRobot
     mMoveController.rightEncoder.reset();
     mShooterController.setRPMWanted(1800);
     mShooterController.Enable();
+    mFeedController.Enable();
     mMoveController.addDelayCMD(5000);
     if (ON_RED_SIDE_OF_FIELD) {
     	mMoveController.addMoveStraightCMD(0.45, 115);
