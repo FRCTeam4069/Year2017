@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Talon;
 
 public class ControlElevator {
 	private Talon elevatorTalon;
+	// This is god awfully broken, and really needs to be refactored
 	private int mEnabled = 0;
 	private int mDebug = 0;
 	private int mDirection = 1; // 1 for forwards, -1 for backwards
