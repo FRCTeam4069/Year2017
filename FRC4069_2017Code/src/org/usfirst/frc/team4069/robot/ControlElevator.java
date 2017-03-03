@@ -120,11 +120,5 @@ public class ControlElevator {
 		} else {
 			elevatorTalon.set(0);
 		}
-
-		if (mEnabled == 1) {
-			elevatorTalon.set(getElevatorSpeed());
-		} else {
-			elevatorTalon.set(0);
-		}
 	}
 }
