@@ -23,10 +23,12 @@ public class ControlShooter
   private Joystick _joy;
   private int mTesting = 1;
   public boolean runFeed = false;
+  private Robot mRobot;
 
-  public ControlShooter(Joystick stk)
+  public ControlShooter(Robot robot, Joystick stk)
   {
     _joy = stk;
+    mRobot = robot;
     shooterCANTalon = new CANTalon(IOMapping.SHOOTER_CANBUS_PORT);
     shooterCANTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
     shooterCANTalon.reverseSensor(true);
@@ -111,7 +113,9 @@ public class ControlShooter
         shooterCANTalon.set(0);
       }
     }
-
+    
+    mRobot.mShooterTargetRPM = targetRPM;
+    
     if (targetRPM != 0.0)
     {
       // double humanInput = _joy.getRawAxis(IOMapping.CONTROL_RIGHT_Y_AXIS);

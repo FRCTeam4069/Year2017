@@ -37,7 +37,7 @@ public class ControlTurret
   private boolean turretEncoderZeroed = false;
   private double turretEncoderPosition;
 
-  private boolean autoTargetingEnabled = false; // true;
+  private boolean autoTargetingEnabled = true; // true;
 
   public ControlTurret(Robot robot)
   {
@@ -140,16 +140,13 @@ public class ControlTurret
 
   boolean isOkToMoveTurret(double mv)
   {
-    if ((turretEncoderPosition <= turretEncoderMin) && (mv < 0)) // if position is past limit switch, and mv is away from switch
-    {
-      return true; // ok to move away from limit switch
-    }
-
-    if ((turretEncoderPosition >= turretEncoderMax) && (mv > 0)) // if position is past clockwise softlimit but we are attempting move towards limit switch (anticlockwise)...
-    {
-      return true; // ok, to move towards switch if past/at soft limit
-    }
-    return false; // false if at a limit and trying to move more past limit
+	if(mv < 0 && turretEncoderPosition >= turretEncoderMax){
+		return false;
+	}
+	if(mv > 0 && turretEncoderPosition <= turretEncoderMin){
+		return false;
+	}
+    return true; // false if at a limit and trying to move more past limit
   } // isOkToMoveTurret
 
   // read joystick and return a manual motor movement value
@@ -157,7 +154,7 @@ public class ControlTurret
   {
     double motorValue=0.0; //return wanted manual turret movement
     
-    /*double maxSpeed = 0.5; // scaling constant for motor speed
+    double maxSpeed = 0.5; // scaling constant for motor speed
     double driverStick = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed * -1;
 
     if (Math.abs(driverStick) > 0.1)
@@ -181,7 +178,7 @@ public class ControlTurret
         motorValue *= Lerp(1, 0, 0, turretEncoderMidpoint - turretEncoderMin, Math.abs(turretEncoderPosition - turretEncoderMidpoint));
         motorValue = lpf.calculate(motorValue); // also apply lowpassfilter here
       }
-    }*/
+    }
     return motorValue;
   } // getManualTurretMovementValue
 
@@ -195,9 +192,9 @@ public class ControlTurret
 
     if (Robot.InputSystem.Start_Button_Control_Stick_Once)
     {
-      //autoTargetingEnabled = !autoTargetingEnabled;
+      autoTargetingEnabled = !autoTargetingEnabled;
     }
-
+    
     if (turretEncoderZeroed == false)
     {
       DoTurretZeroStep();
@@ -226,14 +223,14 @@ public class ControlTurret
   {
     if (turretLimitSwitchEnabled == false) // if limit NOT pressed
     {
-      turretTalon.set(0.1); // crawl toward limit switch
+      turretTalon.set(0.2); // crawl toward limit switch
     }
     else
     { //now lets move off limit switch...
       turretTalon.set(0);  //turn off turret movement
       while (turretLimitSwitchEnabled == true)   //while limit switch is pressed
       {
-        turretTalon.set(-0.1); // go until off limit switch
+        turretTalon.set(-0.2); // go until off limit switch
         turretLimitSwitchEnabled = turretLimitSwitch.get();
       }
       turretTalon.set(0); // turn off turret

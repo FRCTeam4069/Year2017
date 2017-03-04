@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.Talon;
 
 public class ControlElevator {
 	private Talon elevatorTalon;
-	// This is god awfully broken, and really needs to be refactored
 	private int mEnabled = 0;
 	private int mDebug = 0;
 	private int mDirection = 1; // 1 for forwards, -1 for backwards
@@ -86,35 +85,38 @@ public class ControlElevator {
 	 * Updates elevator direction based on dpad
 	 */
 	private void updateDirection() {
-		if (InputSystem.Dpad_Down_Control_Stick_Pressed_Once) {
-			// if dpad down is pressed once, reverse direction of elevator
+		if (Math.abs(InputSystem.LT_Button_Control_Stick) > 0.1) {
+			// if lt button is pressed, reverse direction of elevator
 			setReverseDirection(true);
 		}
-		if (InputSystem.Dpad_Down_Control_Stick_Released_Once) {
-			// if dpad down is released once, un-reverse direction of elevator
+		else{
 			setReverseDirection(false);
 		}
 	}
 
 	public void Tick() {
-
+		
 		updateDirection(); // if back button is pressed once, toggle between
 							// main/second speed
 		if (Robot.InputSystem.Back_Button_Control_Stick_Once) {
 			useSecondSpeed = !useSecondSpeed;
 		}
-		if (InputSystem.Dpad_Up_Control_Stick_Pressed_Once) {
+		if (InputSystem.RT_Button_Control_Stick_Pressed_Once) {
 			if (mEnabled == 1) {
 				Disable();
 			} else {
 				Enable();
 			}
 		}
-	
+		
+		double speed = 0;
+		
 		if (mEnabled == 1) {
-			elevatorTalon.set(getElevatorSpeed());
-		} else {
-			elevatorTalon.set(0);
+			speed = getElevatorSpeed();
 		}
+		
+		mRobot.mElevatorSpeed = speed;
+		
+		elevatorTalon.set(speed);
 	}
 }

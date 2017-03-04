@@ -26,6 +26,8 @@ public class Robot extends SampleRobot
 	
 	public boolean ON_RED_SIDE_OF_FIELD = false;
 	
+	private boolean SIMPLE_AUTONOMOUS_MODE = true;
+	
   public ControlShooter mShooterController; // shooter functions
   public ControlWinch mWinchController; // winch functions
   public ControlMove mMoveController; // ALL robot movement functions
@@ -35,7 +37,9 @@ public class Robot extends SampleRobot
   public ControlFeed mFeedController;
 
   public double mRobotSpeed = 0.0; // used only in teleop, gives all controls access to robot speed
-
+  public double mShooterTargetRPM = 0.0;
+  public double mElevatorSpeed = 0.0;
+  
   private Control_MoveAimShoot mMoveAimShoot;
 
   Preferences prefs = Preferences.getInstance();
@@ -71,7 +75,7 @@ public class Robot extends SampleRobot
   {
     Log.mDebug = 1; // Enable logging output
 
-    mShooterController = new ControlShooter(controlStick);
+    mShooterController = new ControlShooter(this, controlStick);
     mWinchController = new ControlWinch();
     mMoveController = new ControlMove(driverStick, this); // pass joystick
     mTurretController = new ControlTurret(this);
@@ -111,36 +115,36 @@ public class Robot extends SampleRobot
   {
     mMoveController.mRobotDrive.setSafetyEnabled(false);
     // mShooterController.setRPMWanted(-50);
-    //mShooterController.Enable();
+    mShooterController.Enable();
     mMoveController.MoveOperatorControl(); // human driving watch out!
 
     mTurretController.Enable();
 
-    //mWinchController.Enable();
+    mWinchController.Enable();
 
-    //mElevatorController.setElevatorSpeed(0.8); //NOTE Elevaotr dir ok
-    //mElevatorController.setElevatorSecondSpeed(0.6); //1.0); //0.8);
+    mElevatorController.setElevatorSpeed(0.8); //NOTE Elevaotr dir ok
+    mElevatorController.setElevatorSecondSpeed(0.6); //1.0); //0.8);
     //mElevatorController.Enable();
 
     // mIntakeController.setIntakeSpeed(0.8); //NOTE Intake direction ok
     // mIntakeController.Enable();
 
     //mFeedController.setFeedSpeed(0.9);
-    //mFeedController.Enable();
+    mFeedController.Enable();
 
     while (isOperatorControl() && isEnabled())
     {
       InputSystem.ReadAllInput(driverStick, controlStick); // Read all sensor/input devices
 
       // ALL UPDATE ROUTINES updating based on read/updated sensor values
-      //mShooterController.Tick();
-      //mWinchController.Tick();
+      mShooterController.Tick();
+      mWinchController.Tick();
       mMoveController.Tick();
       mTurretController.Tick();
       //mIntakeController.Tick();
-      //mElevatorController.Tick();
-      //mFeedController.Tick();
-      SendDataToSmartDashboard();
+      mElevatorController.Tick();
+      mFeedController.Tick();
+      //SendDataToSmartDashboard();
       Timer.delay(0.005); // wait for a motor update time
     } // while isEnabled
   } // operatorControl
@@ -151,32 +155,45 @@ public class Robot extends SampleRobot
   @Override
   public void autonomous()
   {
-    mMoveAimShoot = new Control_MoveAimShoot(this);
+	  mTurretController.Enable();
+	    //mShooterController.Enable(); // control_moveaimshoot will sequence these
 
-    mTurretController.Disable();
-    mShooterController.Disable(); // control_moveaimshoot will sequence these
+	    mMoveController.mRobotDrive.setSafetyEnabled(false);
+	    mMoveController.leftEncoder.reset();
+	    mMoveController.rightEncoder.reset();
+	    //mElevatorController.Enable();
+	    //mShooterController.setRPMWanted(1800);
+	    //mShooterController.Enable();
+	    //mFeedController.Enable();
+	    
+	    
+	  if (SIMPLE_AUTONOMOUS_MODE) {
+		  
+		  mMoveController.addMoveStraightCMD(0.25, 300);
+		  
+	  } else {
+		    //mMoveAimShoot = new Control_MoveAimShoot(this);
 
-    mMoveController.mRobotDrive.setSafetyEnabled(false);
-    mMoveController.leftEncoder.reset();
-    mMoveController.rightEncoder.reset();
-    mShooterController.setRPMWanted(1800);
-    mShooterController.Enable();
-    mFeedController.Enable();
-    mMoveController.addDelayCMD(5000);
-    if (ON_RED_SIDE_OF_FIELD) {
-    	mMoveController.addMoveStraightCMD(0.45, 115);
-    } else {
-    	mMoveController.addMoveStraightCMD(-0.45, 115);
-    }
-    mMoveController.addDoTurnCMD(ON_RED_SIDE_OF_FIELD);
-
+		    
+		    mMoveController.addDelayCMD(5000);
+		    if (ON_RED_SIDE_OF_FIELD) {
+		    	mMoveController.addMoveStraightCMD(0.25, 115);
+		    } else {
+		    	mMoveController.addMoveStraightCMD(-0.25, 115);
+		    }
+		    mMoveController.addDoTurnCMD(ON_RED_SIDE_OF_FIELD);
+	  }
+	
     while (isAutonomous() && isEnabled())
     {
-      SendDataToSmartDashboard();
+    	mMoveController.mRobotDrive.arcadeDrive(0,0);
+      //SendDataToSmartDashboard();
       mMoveController.Tick();
-      mTurretController.Tick();
-      mShooterController.Tick();
+      //mTurretController.Tick();
+      //mShooterController.Tick();
+      //mElevatorController.Tick();
       // mMoveAimShoot.Tick(); //master sequencer of the above, it will enable/disable them as needed
+    	Timer.delay(0.005);
     }
   }// autonomous
 
@@ -273,6 +290,12 @@ public class Robot extends SampleRobot
     public static boolean Dpad_Down_Control_Stick_Pressed_Once = false;
     public static boolean Dpad_Down_Control_Stick_Released_Once = false;
     public static int Dpad_Angle_Control_Stick = 0;
+    public static double RT_Button_Control_Stick = 0.0;
+    public static double RT_Button_Control_Stick_Prev = 0.0;
+    public static boolean RT_Button_Control_Stick_Pressed_Once = false;
+    public static double LT_Button_Control_Stick = 0.0;
+    public static double LT_Button_Control_Stick_Prev = 0.0;
+    public static boolean LT_Button_Control_Stick_Pressed_Once = false;
 
     // Driver stick buttons
     public static boolean Y_Button_Driver_Stick = false;
@@ -315,7 +338,13 @@ public class Robot extends SampleRobot
       Dpad_Down_Control_Stick = Dpad_Angle_Control_Stick >= 135 && Dpad_Angle_Control_Stick <= 225;
       Dpad_Down_Control_Stick_Pressed_Once = Dpad_Down_Control_Stick_Prev == false && Dpad_Down_Control_Stick == true;
       Dpad_Down_Control_Stick_Released_Once = Dpad_Down_Control_Stick_Prev == true && Dpad_Down_Control_Stick == false;
-
+      RT_Button_Control_Stick_Prev = RT_Button_Control_Stick;
+      RT_Button_Control_Stick = controlstk.getRawAxis(3);
+      RT_Button_Control_Stick_Pressed_Once = Math.abs(RT_Button_Control_Stick_Prev) < 0.1 && Math.abs(RT_Button_Control_Stick) >= 0.1;
+      LT_Button_Control_Stick_Prev = LT_Button_Control_Stick;
+      LT_Button_Control_Stick = controlstk.getAxis(AxisType.kZ);
+      LT_Button_Control_Stick_Pressed_Once = Math.abs(LT_Button_Control_Stick_Prev) < 0.1 && Math.abs(LT_Button_Control_Stick) >= 0.1;
+      
       Y_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_Y_BUTTON);
       A_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_A_BUTTON);
       X_Button_Driver_Stick = driverstk.getRawButton(IOMapping.DRIVER_X_BUTTON);

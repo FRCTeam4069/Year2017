@@ -41,14 +41,16 @@ public class ControlWinch
   {
     if (mEnabled == 1)
     {
-      //if (Robot.InputSystem.A_Button_Control_Stick)
-      //{
+      if (Robot.InputSystem.A_Button_Driver_Stick){
         winchTalon.set(mSpeed);
-      /*}
+      }
+      else if(Robot.InputSystem.Y_Button_Driver_Stick){
+    	  winchTalon.set(-mSpeed);
+      }
       else
       {
         winchTalon.set(0);
-      }*/
+      }
     }
     else
     {

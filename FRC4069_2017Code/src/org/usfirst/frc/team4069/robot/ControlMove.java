@@ -60,8 +60,8 @@ public class ControlMove
     leftDriveMotor = new Talon(IOMapping.LEFT_DRIVE_MOTOR_PWM_PORT);
     rightDriveMotor = new Talon(IOMapping.RIGHT_DRIVE_MOTOR_PWM_PORT);
 
-    leftDriveMotorLowPassFilter = new LowPassFilter(250); // prevent motors tearing gears apart
-    rightDriveMotorLowPassFilter = new LowPassFilter(250);
+    leftDriveMotorLowPassFilter = new LowPassFilter(125); // prevent motors tearing gears apart
+    rightDriveMotorLowPassFilter = new LowPassFilter(125);
 
     leftEncoder = new Encoder(IOMapping.LEFT_DRIVE_ENCODER_1, IOMapping.LEFT_DRIVE_ENCODER_2);
     rightEncoder = new Encoder(IOMapping.RIGHT_DRIVE_ENCODER_1, IOMapping.RIGHT_DRIVE_ENCODER_2);
@@ -125,7 +125,10 @@ public class ControlMove
     if ((mCurrentCommand == null) || (mCurrentCommand.Tick() == true)) // done?
     {
       // System.out.println("About to donextcommand num="+mCommandList.size());
-      DoNextCommand();
+      if (DoNextCommand()==-1)
+      {
+    	  mRobot.mMoveController.mRobotDrive.arcadeDrive(0,0);
+      }
     }
   }// Tick
 
