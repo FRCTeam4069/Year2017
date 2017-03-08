@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4069.robot;
+//package org.usfirst.frc.team4069.robot;
 
 /**
  * Hybrid class this is an example of how to have the robot finish a set of moves, turn the turret to target and shoot when rpms are ok
@@ -6,6 +6,7 @@ package org.usfirst.frc.team4069.robot;
  * @author EA
  *
  */
+/*
 public class Control_MoveAimShoot
 {
   private int mEnabled = 0;
@@ -67,3 +68,4 @@ public class Control_MoveAimShoot
     // does not exist yet
   }// tick
 } // Control_MoveAimShoot
+*/
