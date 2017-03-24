@@ -27,13 +27,13 @@ public class Robot extends SampleRobot {
 	public boolean ON_RED_SIDE_OF_FIELD = false;
 	private boolean SIMPLE_AUTONOMOUS_MODE = true;
 
-	//public ControlShooter mShooterController; // shooter functions
+	public ControlShooter mShooterController; // shooter functions
 	public ControlWinch mWinchController; // winch functions
 	public ControlMove mMoveController; // ALL robot movement functions
-	//public ControlTurret mTurretController;
+	public ControlTurret mTurretController;
 	//public ControlIntake mIntakeController;
 	public ControlElevator mElevatorController;
-	//public ControlFeed mFeedController;
+	public ControlFeed mFeedController;
 
 	public double mRobotSpeed = 0.0; // used only in teleop, gives all controls
 										// access to robot speed
@@ -73,13 +73,13 @@ public class Robot extends SampleRobot {
 	public Robot() {
 		Log.mDebug = 1; // Enable logging output
 
-		//mShooterController = new ControlShooter(this, controlStick);
+		mShooterController = new ControlShooter(this, controlStick);
 		mWinchController = new ControlWinch();
 		mMoveController = new ControlMove(driverStick, this); // pass joystick
-		//mTurretController = new ControlTurret(this);
+		mTurretController = new ControlTurret(this);
 		//mIntakeController = new ControlIntake(this);
 		mElevatorController = new ControlElevator(this);
-		//mFeedController = new ControlFeed(this);
+		mFeedController = new ControlFeed(this);
 
 		lidar_instance = new ThreadLIDAR();
 		lidarThreadHandle = new Thread(lidar_instance);
@@ -123,10 +123,10 @@ public class Robot extends SampleRobot {
 	public void operatorControl() {
 		mMoveController.mRobotDrive.setSafetyEnabled(false);
 		// mShooterController.setRPMWanted(-50);
-		//mShooterController.Enable();
+		mShooterController.Enable();
 		mMoveController.MoveOperatorControl(); // human driving watch out!
 
-		//mTurretController.Enable();
+		mTurretController.Enable();
 
 		mWinchController.Enable();
 
@@ -138,7 +138,7 @@ public class Robot extends SampleRobot {
 		// mIntakeController.Enable();
 
 		// mFeedController.setFeedSpeed(0.9);
-		//mFeedController.Enable();
+		mFeedController.Enable();
 
 		while (isOperatorControl() && isEnabled()) {
 			InputSystem.ReadAllInput(driverStick, controlStick); // Read all
@@ -146,13 +146,13 @@ public class Robot extends SampleRobot {
 																	// devices
 
 			// ALL UPDATE ROUTINES updating based on read/updated sensor values
-			//mShooterController.Tick();
+			mShooterController.Tick();
 			mWinchController.Tick();
 			mMoveController.Tick();
-			//mTurretController.Tick();
+			mTurretController.Tick();
 			// mIntakeController.Tick();
 			mElevatorController.Tick();
-			//mFeedController.Tick();
+			mFeedController.Tick();
 			// SendDataToSmartDashboard();
 			Timer.delay(0.005); // wait for a motor update time
 		} // while isEnabled

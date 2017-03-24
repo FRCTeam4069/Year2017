@@ -95,7 +95,7 @@ public class ControlShooter
       {
         targetRPM = 1800; // 1300;
       }
-      if (_joy.getRawButton(IOMapping.CONTROL_B_BUTTON))
+      else if (_joy.getRawButton(IOMapping.CONTROL_B_BUTTON))
       {
         targetRPM = 1900; // best spot 2800rpm output when set to this
       }
@@ -107,22 +107,19 @@ public class ControlShooter
       {
         targetRPM = 2100; // actual 2797rpm???
       }
-      if ((_joy.getRawButton(5)) || (_joy.getRawButton(6)))
+      /*if ((_joy.getRawButton(5)) || (_joy.getRawButton(6)))
       {
         shooterCANTalon.changeControlMode(TalonControlMode.Speed);
         shooterCANTalon.set(0);
-      }
+      }*/
     }
     
     mRobot.mShooterTargetRPM = targetRPM;
     
-    if (targetRPM != 0.0)
-    {
-      // double humanInput = _joy.getRawAxis(IOMapping.CONTROL_RIGHT_Y_AXIS);
-      // double tenPercentOfTarget = targetRPM * 0.1;
-      shooterCANTalon.changeControlMode(TalonControlMode.Speed);
-      shooterCANTalon.set(lpf.calculate(targetRPM));// + humanInput * tenPercentOfTarget)); //
-    }
+    // double humanInput = _joy.getRawAxis(IOMapping.CONTROL_RIGHT_Y_AXIS);
+    // double tenPercentOfTarget = targetRPM * 0.1;
+    shooterCANTalon.changeControlMode(TalonControlMode.Speed);
+    shooterCANTalon.set(lpf.calculate(targetRPM));// + humanInput * tenPercentOfTarget)); //
   }// ShooterTick
 
   public void Enable()

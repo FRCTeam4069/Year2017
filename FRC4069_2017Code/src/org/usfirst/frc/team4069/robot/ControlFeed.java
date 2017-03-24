@@ -8,7 +8,7 @@ public class ControlFeed
   private int mEnabled = 0;
   private int mDebug = 0;
   private Robot mRobot;
-  private double mFeedSpeed = 0.8;
+  private double mFeedSpeed = 0.7;
 
   public ControlFeed(Robot robot)
   {
@@ -41,10 +41,6 @@ public class ControlFeed
   public void setFeedSpeed(double fs)
   {
     mFeedSpeed = fs;
-    if (mEnabled == 1) // if enabled, change right away
-    {
-      feedTalon.set(mFeedSpeed);
-    }
   }
 
   public void Tick()
@@ -56,10 +52,11 @@ public class ControlFeed
       // if(Robot.InputSystem.Y_Button_Driver_Stick || Robot.InputSystem.Y_Button_Control_Stick){
 	  	if(Math.abs(mRobot.mElevatorSpeed) > 0){
 	    	if(mRobot.mShooterTargetRPM > 0){
-				feedTalon.set(mFeedSpeed);
+				feedTalon.set(-mFeedSpeed);
 			}
 			else if(mRobot.mShooterTargetRPM == 0){
-				feedTalon.set(-mFeedSpeed);
+				//feedTalon.set(mFeedSpeed);
+				feedTalon.set(0);
 			}
 	  	}
 	  	else{
