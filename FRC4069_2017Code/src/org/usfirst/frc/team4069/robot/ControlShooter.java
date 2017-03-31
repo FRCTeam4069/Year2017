@@ -1,5 +1,11 @@
 package org.usfirst.frc.team4069.robot;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
@@ -24,6 +30,32 @@ public class ControlShooter
   private int mTesting = 1;
   public boolean runFeed = false;
   private Robot mRobot;
+  
+  private static final HashMap<Double, Integer> speedTableMetersToRPM;
+  private static final Double[] speedTableDistances;
+  private static final double[] speedTableSlopesAboveIndex;
+  
+  static {
+	  HashMap<Double, Integer> t = new HashMap<>();
+	  
+	  t.put(5.0, 800);
+	  t.put(7.5, 1700);
+	  t.put(10.8, 2500);
+	  
+	  speedTableDistances = (Double[]) t.keySet().toArray();
+	  Arrays.sort(speedTableDistances);
+	  Integer[] speedTableSpeeds = (Integer[]) t.values().toArray();
+	  Arrays.sort(speedTableSpeeds);
+	  speedTableSlopesAboveIndex = new double[t.size()];
+	  for (int i = 0; i < speedTableDistances.length - 1; i++) {
+		  int y2 = speedTableSpeeds[i + 1];
+		  int y1 = speedTableSpeeds[i];
+		  double x2 = speedTableDistances[i + 1];
+		  double x1 = speedTableDistances[i];
+		  speedTableSlopesAboveIndex[i] = (double)(y2 - y1) / (x2 - x1);
+	  }
+	  speedTableMetersToRPM = (HashMap<Double, Integer>) Collections.unmodifiableMap(t);
+  }
 
   public ControlShooter(Robot robot, Joystick stk)
   {
@@ -52,6 +84,28 @@ public class ControlShooter
   public void setRPMWanted(double rpm)
   {
     targetRPM = rpm;
+  }
+  
+  //experimental
+  private double getRPMFromDistance (double distMeters) {
+	  int indexBelowDistMeters = -1;
+	  for (int i = 0; i < speedTableDistances.length; i++) {
+		  if (speedTableDistances[i] >= distMeters) {
+			  indexBelowDistMeters = i - 1;
+			  break;
+		  }
+	  }
+	  double slope = -1.0;
+	  double belowDistIterator = indexBelowDistMeters;
+	  for (int i = 0; belowDistIterator >= 0; i++) {
+		  double highSlope = speedTableSlopesAboveIndex[indexBelowDistMeters + i + 1];
+		  double lowSlope = speedTableSlopesAboveIndex[indexBelowDistMeters - i];
+		  double averageSlope = (highSlope - lowSlope) / 2;
+		  double weight = 1 / (i + 1);
+		  slope = (slope * (1 - weight)) + (averageSlope * weight);
+		  belowDistIterator--;
+	  }
+	  return (slope * distMeters) + speedTableMetersToRPM.get(speedTableDistances[indexBelowDistMeters]);
   }
 
   public double getCurrentRPM()
@@ -131,5 +185,5 @@ public class ControlShooter
   {
     mEnabled = 0;
   }
-
+  
 }// ShooterControl
