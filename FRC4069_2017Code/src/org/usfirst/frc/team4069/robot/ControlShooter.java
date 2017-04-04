@@ -3,15 +3,10 @@ package org.usfirst.frc.team4069.robot;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
-
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Joystick.AxisType;
 
 /**
  * ShooterControl : Uses a CANTalon with a encoder and a PID controller to set the RPM's on the shooter motor to a fixed value and hold them there

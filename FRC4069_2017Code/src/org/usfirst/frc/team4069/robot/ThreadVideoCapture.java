@@ -8,10 +8,6 @@ import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
-import edu.wpi.cscore.CvSource;
-import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.Preferences;
-
 public class ThreadVideoCapture implements Runnable
 {
   public static final int VCT_USB = 0;

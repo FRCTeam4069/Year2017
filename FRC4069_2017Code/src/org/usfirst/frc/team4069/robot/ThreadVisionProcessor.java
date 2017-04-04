@@ -1,36 +1,23 @@
 package org.usfirst.frc.team4069.robot;
 
 import org.opencv.core.Mat;
-import org.opencv.videoio.VideoCapture;
 import org.usfirst.frc.team4069.robot.ThreadLIDAR.LidarSpot;
 
-import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Preferences;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.imageio.ImageIO;
-
-import org.opencv.*;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfInt4;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 public class ThreadVisionProcessor implements Runnable
