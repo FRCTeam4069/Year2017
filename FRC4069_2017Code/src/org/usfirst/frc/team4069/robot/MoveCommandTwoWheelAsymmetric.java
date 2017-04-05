@@ -7,7 +7,7 @@ public class MoveCommandTwoWheelAsymmetric extends MoveCommand {
 	private ControlMove mControlMove;
 	private final double ERROR_SCALING_CONST_P = .400;
 
-	MoveCommandTwoWheelAsymmetric(ControlMove ctrlmove, double averageSpeed, double leftDistance, double rightDistance)
+	public MoveCommandTwoWheelAsymmetric(ControlMove ctrlmove, double averageSpeed, double leftDistance, double rightDistance)
 	{
 	  mControlMove = ctrlmove;
 	  mLeftDistance = leftDistance;
@@ -15,6 +15,28 @@ public class MoveCommandTwoWheelAsymmetric extends MoveCommand {
 	  double averageToLeftMultiplier = leftDistance / ((leftDistance + rightDistance) / 2);
 	  mLeftSpeed = averageSpeed * averageToLeftMultiplier;
 	}
+	
+	/*
+	// Instead of distance for both wheels, takes radius of circle and angle
+	public MoveCommandTwoWheelAsymmetric(ControlMove ctrlmove, double averageSpeed, double radius, double angle, boolean moveRight){
+		mControlMove = ctrlmove;
+		double halfRobotWidth = ControlMove.mDriveBaseRadius;
+		double leftDistance, rightDistance;
+		if(moveRight){
+			leftDistance = radius + halfRobotWidth;
+			rightDistance = radius - halfRobotWidth;
+		}
+		else{
+			leftDistance = radius - halfRobotWidth;
+			rightDistance = radius + halfRobotWidth;
+		}
+		leftDistance *= angle;
+		rightDistance *= angle;
+		mLeftDistance = leftDistance;
+		mRightMultiplier = rightDistance / leftDistance;
+		double averageToLeftMultiplier = leftDistance / ((leftDistance + rightDistance) / 2);
+		mLeftSpeed = averageSpeed * averageToLeftMultiplier;
+	}*/
 	
 	@Override
 	public boolean Tick() {

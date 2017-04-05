@@ -23,21 +23,21 @@ public class ControlMove
   public Joystick driverStick;
 
   // Hard coded values from robot/encoder geometry
-  private final double TICKS_PER_ENCODER_ROTATION = 256;
+  public static final double TICKS_PER_ENCODER_ROTATION = 256;
 
-  private final double TICKS_PER_WHEEL_ROTATION = 150;
+  public static final double TICKS_PER_WHEEL_ROTATION = 150;
 
-  private final double WHEEL_CIRCUMFERENCE_IN_CM = 12.566; // 12.566cm = 4" diameter 2"radius= 2 * 6.28
+  public static final double WHEEL_CIRCUMFERENCE_IN_CM = 12.566; // 12.566cm = 4" diameter 2"radius= 2 * 6.28
 
-  private final double CM_PER_TICK = WHEEL_CIRCUMFERENCE_IN_CM / TICKS_PER_WHEEL_ROTATION;
+  public static final double CM_PER_TICK = WHEEL_CIRCUMFERENCE_IN_CM / TICKS_PER_WHEEL_ROTATION;
 
-  private final double TICKS_PER_CM = TICKS_PER_WHEEL_ROTATION / WHEEL_CIRCUMFERENCE_IN_CM;
+  public static final double TICKS_PER_CM = TICKS_PER_WHEEL_ROTATION / WHEEL_CIRCUMFERENCE_IN_CM;
 
   // Robot Geometry
-  double mDistanceBetweenWheelCentersInCM = 24 * 2.54; // Diameter of Robot's drive base
-  double mDriveBaseRadius = mDistanceBetweenWheelCentersInCM / 2;
-  double mDriveBaseCircumference = mDistanceBetweenWheelCentersInCM * Math.PI; //
-  double mDriveBaseTicksInCircumference = TICKS_PER_CM * mDriveBaseCircumference;
+  public static final double mDistanceBetweenWheelCentersInCM = 24 * 2.54; // Diameter of Robot's drive base
+  public static final double mDriveBaseRadius = mDistanceBetweenWheelCentersInCM / 2;
+  public static final double mDriveBaseCircumference = mDistanceBetweenWheelCentersInCM * Math.PI; //
+  public static final double mDriveBaseTicksInCircumference = TICKS_PER_CM * mDriveBaseCircumference;
 
   private Robot mRobot;
 
