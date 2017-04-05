@@ -174,9 +174,9 @@ public class Robot extends SampleRobot {
 			//mMoveController.addDelayCMD(5000);
 
 			mMoveController.addMoveStraightCMD(-0.25, 115);
-
 			mMoveController.addDoTurnCMD(ON_RED_SIDE_OF_FIELD);
-			
+			mMoveController.addMoveStraightCMD(-0.25, 100);
+			mMoveController.addMoveStraightCMD(0.25, 100);
 			mMoveController.addMoveStraightCMD(-0.25, 50);
 		}
 

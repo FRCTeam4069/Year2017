@@ -9,7 +9,4 @@ public abstract class MoveCommand
   public abstract boolean Tick();
 
   public abstract void Init();
-  
-  //Unused function
-  // public abstract void Done();
 }

@@ -5,7 +5,6 @@ public class MoveCommandStraight extends MoveCommand
   double mSpeed;
   double mDistance;
   private ControlMove mControlMove;
-  private int TickCounter = 0;
   private double correctionFactor = 0.0;
   private double resultantleftspeed = 0.0;
   private double resultantrightspeed = 0.0;
@@ -40,7 +39,7 @@ public class MoveCommandStraight extends MoveCommand
       mControlMove.rightDriveMotor.set(0);
       return true;
     }
-    TickCounter++;
+    
     error = leftDistance - rightDistance; // if error > 0 left is ahead subtract error from left
                                           // if error < 0 right is ahead add -error to right
     correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error
