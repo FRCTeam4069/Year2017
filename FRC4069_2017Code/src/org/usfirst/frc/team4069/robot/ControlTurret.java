@@ -138,20 +138,22 @@ public class ControlTurret
 
   boolean isOkToMoveTurret(double mv)
   {
-	if(mv < 0 && turretEncoderPosition >= turretEncoderMax){
-		return false;
-	}
-	if(mv > 0 && turretEncoderPosition <= turretEncoderMin){
-		return false;
-	}
+    if (mv < 0 && turretEncoderPosition >= turretEncoderMax)
+    {
+      return false;
+    }
+    if (mv > 0 && turretEncoderPosition <= turretEncoderMin)
+    {
+      return false;
+    }
     return true; // false if at a limit and trying to move more past limit
   } // isOkToMoveTurret
 
   // read joystick and return a manual motor movement value
   double getManualTurretMovementValue()
   {
-    double motorValue=0.0; //return wanted manual turret movement
-    
+    double motorValue = 0.0; // return wanted manual turret movement
+
     double maxSpeed = 0.5; // scaling constant for motor speed
     double driverStick = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed * -1;
 
@@ -169,7 +171,7 @@ public class ControlTurret
     else
     { // otherwise just let the turret be controlled manually
       motorValue = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed * -1;
-      
+
       // decrease speed as turret gets closer to min/max so turret does not slide past limits
       if ((motorValue > 0 && turretEncoderPosition < turretEncoderMidpoint) || (motorValue < 0 && turretEncoderPosition > turretEncoderMidpoint))
       {
@@ -192,7 +194,7 @@ public class ControlTurret
     {
       autoTargetingEnabled = !autoTargetingEnabled;
     }
-    
+
     if (turretEncoderZeroed == false)
     {
       DoTurretZeroStep();
@@ -209,7 +211,7 @@ public class ControlTurret
     if (isOkToMoveTurret(motorMovementValue) == false) // FINAL check to verify its ok to move turret direction it wants to go...
       motorMovementValue = 0; // stop movement if not ok to move
 
-    turretTalon.set(motorMovementValue); //Note: No Lowpass here! auto-target does not want one, do manual in manual calcs
+    turretTalon.set(motorMovementValue); // Note: No Lowpass here! auto-target does not want one, do manual in manual calcs
   } // Tick()
 
   // -----------------------------------------------------------------------
@@ -224,9 +226,9 @@ public class ControlTurret
       turretTalon.set(0.2); // crawl toward limit switch
     }
     else
-    { //now lets move off limit switch...
-      turretTalon.set(0);  //turn off turret movement
-      while (turretLimitSwitchEnabled == true)   //while limit switch is pressed
+    { // now lets move off limit switch...
+      turretTalon.set(0); // turn off turret movement
+      while (turretLimitSwitchEnabled == true) // while limit switch is pressed
       {
         turretTalon.set(-0.2); // go until off limit switch
         turretLimitSwitchEnabled = turretLimitSwitch.get();

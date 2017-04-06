@@ -45,23 +45,27 @@ public class ControlFeed
 
   public void Tick()
   {
-	// Enable feed if shooter is moving, otherwise disable feed
-	
+    // Enable feed if shooter is moving, otherwise disable feed
+
     if (mEnabled == 1)
     {
       // if(Robot.InputSystem.Y_Button_Driver_Stick || Robot.InputSystem.Y_Button_Control_Stick){
-	  	if(Math.abs(mRobot.mElevatorSpeed) > 0){
-	    	if(mRobot.mShooterTargetRPM > 0){
-				feedTalon.set(-mFeedSpeed);
-			}
-			else if(mRobot.mShooterTargetRPM == 0){
-				//feedTalon.set(mFeedSpeed);
-				feedTalon.set(0);
-			}
-	  	}
-	  	else{
-	  		feedTalon.set(0);
-	  	}
+      if (Math.abs(mRobot.mElevatorSpeed) > 0)
+      {
+        if (mRobot.mShooterTargetRPM > 0)
+        {
+          feedTalon.set(-mFeedSpeed);
+        }
+        else if (mRobot.mShooterTargetRPM == 0)
+        {
+          // feedTalon.set(mFeedSpeed);
+          feedTalon.set(0);
+        }
+      }
+      else
+      {
+        feedTalon.set(0);
+      }
       // }
       // else{
       // feedTalon.set(0);

@@ -28,7 +28,7 @@ public class MoveCommandStraight extends MoveCommand
   @Override
   public boolean Tick()
   {
-     System.out.println("Move Command straight tick");
+    System.out.println("Move Command straight tick");
     double leftDistance = mControlMove.leftEncoder.getDistance();
     double rightDistance = mControlMove.rightEncoder.getDistance();
     double averageDistance = (leftDistance + rightDistance) / 2;
@@ -39,7 +39,7 @@ public class MoveCommandStraight extends MoveCommand
       mControlMove.rightDriveMotor.set(0);
       return true;
     }
-    
+
     error = leftDistance - rightDistance; // if error > 0 left is ahead subtract error from left
                                           // if error < 0 right is ahead add -error to right
     correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error
