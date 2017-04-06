@@ -72,11 +72,11 @@ public class Robot extends SampleRobot {
 
 		lidar_instance = new ThreadLIDAR();
 		lidarThreadHandle = new Thread(lidar_instance);
-		//lidarThreadHandle.start();
+		lidarThreadHandle.start();
 
 		video_capture_instance = new ThreadVideoCapture();
 		VideoCaptureThreadHandle = new Thread(video_capture_instance);
-		//VideoCaptureThreadHandle.start();
+		VideoCaptureThreadHandle.start();
 		video_capture_instance.Enable(); // begin getting frames.
 
 		vision_processor_instance = new ThreadVisionProcessor(video_capture_instance, VideoCaptureThreadHandle, this); // pass
@@ -92,7 +92,7 @@ public class Robot extends SampleRobot {
 																														// grab
 																														// frames
 		VisionProcessorThreadHandle = new Thread(vision_processor_instance);
-		//VisionProcessorThreadHandle.start();
+		VisionProcessorThreadHandle.start();
 
 		arduino_thread_instance = new ThreadArduinoGyro();
 		arduinoThreadHandle = new Thread(arduino_thread_instance);

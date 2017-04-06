@@ -26,11 +26,11 @@ public class ControlShooter
   public boolean runFeed = false;
   private Robot mRobot;
   
-  private static final HashMap<Double, Integer> speedTableMetersToRPM;
-  private static final Double[] speedTableDistances;
-  private static final double[] speedTableSlopesAboveIndex;
+  //private static final HashMap<Double, Integer> speedTableMetersToRPM;
+  //private static final Double[] speedTableDistances;
+  //private static final double[] speedTableSlopesAboveIndex;
   
-  static {
+  /*static {
 	  HashMap<Double, Integer> t = new HashMap<>();
 	  
 	  t.put(5.0, 800);
@@ -50,7 +50,7 @@ public class ControlShooter
 		  speedTableSlopesAboveIndex[i] = (double)(y2 - y1) / (x2 - x1);
 	  }
 	  speedTableMetersToRPM = (HashMap<Double, Integer>) Collections.unmodifiableMap(t);
-  }
+  }*/
 
   public ControlShooter(Robot robot, Joystick stk)
   {
@@ -82,7 +82,7 @@ public class ControlShooter
   }
   
   //experimental
-  private double getRPMFromDistance (double distMeters) {
+  /*private double getRPMFromDistance (double distMeters) {
 	  int indexBelowDistMeters = -1;
 	  for (int i = 0; i < speedTableDistances.length; i++) {
 		  if (speedTableDistances[i] >= distMeters) {
@@ -101,7 +101,7 @@ public class ControlShooter
 		  belowDistIterator--;
 	  }
 	  return (slope * distMeters) + speedTableMetersToRPM.get(speedTableDistances[indexBelowDistMeters]);
-  }
+  }*/
 
   public double getCurrentRPM()
   {
@@ -154,7 +154,7 @@ public class ControlShooter
       }
       else if (_joy.getRawButton(IOMapping.CONTROL_Y_BUTTON))
       {
-        targetRPM = 2100; // actual 2797rpm???
+        targetRPM = 3250; // actual 2797rpm???
       }
       /*if ((_joy.getRawButton(5)) || (_joy.getRawButton(6)))
       {

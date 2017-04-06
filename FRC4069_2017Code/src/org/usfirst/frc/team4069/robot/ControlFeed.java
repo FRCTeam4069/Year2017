@@ -8,7 +8,7 @@ public class ControlFeed
   private int mEnabled = 0;
   private int mDebug = 0;
   private Robot mRobot;
-  private double mFeedSpeed = 0.7;
+  private double mFeedSpeed = 0.95;
 
   public ControlFeed(Robot robot)
   {
