@@ -179,9 +179,9 @@ public class Robot extends SampleRobot {
 
 			mMoveController.addMoveStraightCMD(-0.25, 115);
 			mMoveController.addDoTurnCMD(ON_RED_SIDE_OF_FIELD);
-			mMoveController.addMoveStraightCMD(-0.25, 100);
-			mMoveController.addMoveStraightCMD(0.25, 100);
-			mMoveController.addMoveStraightCMD(-0.25, 50);
+			mMoveController.addMoveStraightCMD(-0.25, 35);
+			mMoveController.addMoveStraightCMD(0.25, 70);
+			mMoveController.addMoveStraightCMD(-0.25, 35);
 		}
 
 		while (isAutonomous() && isEnabled()) {
