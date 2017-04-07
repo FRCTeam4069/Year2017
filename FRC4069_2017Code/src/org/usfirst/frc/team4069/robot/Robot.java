@@ -173,7 +173,7 @@ public class Robot extends SampleRobot {
 
 		if (SIMPLE_AUTONOMOUS_MODE) {
 
-			mMoveController.addMoveStraightCMD(0.25, 350);
+			mMoveController.addMoveStraightCMD(-0.25, 350);
 
 		} else {
 			// mMoveAimShoot = new Control_MoveAimShoot(this);
