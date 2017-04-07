@@ -200,12 +200,13 @@ public class Robot extends SampleRobot {
 			//mFeedController.Enable();
 			
 			mMoveController.mRobotDrive.arcadeDrive(0, 0);
-			/*SendDataToSmartDashboard();
+			SendDataToSmartDashboard();
 			mMoveController.Tick();
 			//System.out.println("tick");
 			//mTurretController.Tick();
-			//mShooterController.Tick();
-			//mElevatorController.Tick();
+			mShooterController.Tick();
+			mElevatorController.Tick();
+			mFeedController.Tick();
 			// mMoveAimShoot.Tick(); //master sequencer of the above, it will
 			// enable/disable them as needed*/
 			Timer.delay(0.005);
