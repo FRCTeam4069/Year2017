@@ -23,6 +23,8 @@ public class Robot extends SampleRobot {
 	public ControlTurret mTurretController;
 	//public ControlIntake mIntakeController;
 	public ControlElevator mElevatorController;
+	private AutoControlElevator mAutoElevatorController;
+	private AutoControlShooter mAutoShooterController;
 	public ControlFeed mFeedController;
 
 	public double mRobotSpeed = 0.0; // used only in teleop, gives all controls
@@ -69,6 +71,8 @@ public class Robot extends SampleRobot {
 		mTurretController = new ControlTurret(this);
 		//mIntakeController = new ControlIntake(this);
 		mElevatorController = new ControlElevator(this);
+		mAutoElevatorController = new AutoControlElevator(this);
+		mAutoShooterController = new AutoControlShooter(this);
 		mFeedController = new ControlFeed(this);
 
 		lidar_instance = new ThreadLIDAR();
@@ -161,14 +165,11 @@ public class Robot extends SampleRobot {
 		mMoveController.mRobotDrive.setSafetyEnabled(false);
 		mMoveController.leftEncoder.reset();
 		mMoveController.rightEncoder.reset();
-		//mElevatorController.setElevatorSpeed(0.8); // NOTE Elevaotr dir ok
-		//mElevatorController.setElevatorSecondSpeed(0.6); // 1.0); //0.8);
-
-		//mElevatorController.Enable();
-		//mShooterController.setRPMWanted(1800);
-		//mShooterController.Enable();
-	    //mFeedController.Enable();
-	    //mFeedController.setFeedSpeed(-0.9);
+		mAutoElevatorController.setElevatorSpeed(0.8);
+		mAutoElevatorController.Enable();
+		mAutoShooterController.Enable();
+	    mFeedController.Enable();
+	    mFeedController.setFeedSpeed(-0.9);
 
 		if (SIMPLE_AUTONOMOUS_MODE) {
 
@@ -193,8 +194,11 @@ public class Robot extends SampleRobot {
 			mMoveController.mRobotDrive.arcadeDrive(0, 0);
 			// SendDataToSmartDashboard();
 			mMoveController.Tick();
+			mAutoShooterController.Tick();
+			mAutoElevatorController.Tick();
+			
 			//System.out.println("tick");
-			//mTurretController.Tick();
+			mTurretController.Tick();
 			//mShooterController.Tick();
 			//mElevatorController.Tick();
 			// mMoveAimShoot.Tick(); //master sequencer of the above, it will

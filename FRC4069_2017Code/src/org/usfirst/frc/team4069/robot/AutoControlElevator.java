@@ -8,11 +8,7 @@ public class AutoControlElevator {
 	private Talon elevatorTalon;
 	private int mEnabled = 0;
 	private int mDebug = 0;
-	private int mDirection = 1; // 1 for forwards, -1 for backwards
 	private double mSpeed = 0.0; // default speed used by elevator
-	private double mSecondSpeed = 0.0; // secondary speed which can be toggled
-	private boolean useSecondSpeed = false; // should second or first speed be
-											// used
 	private Robot mRobot;
 
 	public AutoControlElevator(Robot robot) {
@@ -29,15 +25,6 @@ public class AutoControlElevator {
 
 	public void setElevatorSpeed(double spd) {
 		mSpeed = spd;
-	}
-
-	/**
-	 * Set secondary speed of elevator
-	 * 
-	 * @param spd
-	 */
-	public void setElevatorSecondSpeed(double spd) {
-		mSecondSpeed = spd;
 	}
 
 	public void EnableDebug() {
@@ -59,26 +46,13 @@ public class AutoControlElevator {
 	}
 
 	/**
-	 * true = run backwards, false = run forwards
-	 * 
-	 * @param reverseDirection
-	 */
-	public void setReverseDirection(boolean reverseDirection) {
-		mDirection = reverseDirection ? -1 : 1;
-	}
-
-	/**
 	 * Calculates elevator speed based on direction
 	 * 
 	 * @return
 	 */
 	private double getElevatorSpeed() {
-		// if second speed is toggled use second instead of main speed
-		if (useSecondSpeed) {
-			return mSecondSpeed * mDirection * -1;
-		} else { // else just use main speed
-			return mSpeed * mDirection * -1;
-		}
+		return mSpeed * -1;
+		
 	}
 
 	public void Tick() {
