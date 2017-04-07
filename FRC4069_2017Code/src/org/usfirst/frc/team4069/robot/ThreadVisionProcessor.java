@@ -88,6 +88,10 @@ public class ThreadVisionProcessor implements Runnable
     //cregions.addRange(22, 230, 101, 32, 255, 204); // 28, 236, 194, 32, 252, 204);
     //cregions.addRange(22, 239, 240, 46, 255, 255);
     
+    // North bay competition
+    cregions.addRange(0x00, 0x58, 0x2D, 0x25, 0x66, 0x3D);
+    
+    // Other competition
     cregions.addRange(0x07, 0x77, 0x38, 0x30, 0x94, 0x51);
     
     while ((true) && (mExitThread == false))

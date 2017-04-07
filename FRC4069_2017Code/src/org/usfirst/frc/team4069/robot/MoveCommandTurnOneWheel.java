@@ -35,12 +35,23 @@ public class MoveCommandTurnOneWheel extends MoveCommand
   @Override
   public boolean Tick()
   {
-    Log.Log("Turnonewheel tick");
+    //Log.Log("Turnonewheel tick");
     double distanceTraveledByWheel;
     if (isRightWheel)
       distanceTraveledByWheel = mControlMove.rightEncoder.getDistance();
     else
       distanceTraveledByWheel = mControlMove.leftEncoder.getDistance();
+    System.out.println(distCM + " and " + distanceTraveledByWheel);
+    if (isRightWheel)
+    {
+      mControlMove.rightDriveMotor.set(speedCMPerSec);
+      mControlMove.leftDriveMotor.set(0);
+    }
+    else
+    {
+      mControlMove.leftDriveMotor.set(speedCMPerSec);
+      mControlMove.rightDriveMotor.set(0);
+    }
     if (Math.abs(distanceTraveledByWheel) >= distCM)
       return true;
     else

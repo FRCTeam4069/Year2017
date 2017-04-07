@@ -9,7 +9,7 @@ public class MoveCommandStraight extends MoveCommand
   private double resultantleftspeed = 0.0;
   private double resultantrightspeed = 0.0;
   private double error = 0.0;
-  private final double ERROR_SCALING_CONST_P = .400;
+  private final double ERROR_SCALING_CONST_P = .04;
 
   MoveCommandStraight(ControlMove ctrlmove, double speed, double distance)
   {

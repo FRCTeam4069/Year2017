@@ -142,11 +142,11 @@ public class ControlShooter
 
       if (_joy.getRawButton(IOMapping.CONTROL_A_BUTTON))
       {
-        targetRPM = 1800; // 1300;
+        targetRPM = 2850; // 1300;
       }
       else if (_joy.getRawButton(IOMapping.CONTROL_B_BUTTON))
       {
-        targetRPM = 1900; // best spot 2800rpm output when set to this
+        targetRPM = 3050; // best spot 2800rpm output when set to this
       }
       else if (_joy.getRawButton(IOMapping.CONTROL_X_BUTTON))
       {

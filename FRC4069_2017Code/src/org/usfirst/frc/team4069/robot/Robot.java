@@ -14,7 +14,7 @@ public class Robot extends SampleRobot {
 	// --------------------------------------------------------- //
 
 	public boolean ON_RED_SIDE_OF_FIELD = false;
-	private boolean SIMPLE_AUTONOMOUS_MODE = false;
+	private boolean SIMPLE_AUTONOMOUS_MODE = true;
 
 	public ControlShooter mShooterController; // shooter functions
 	public ControlWinch mWinchController; // winch functions
@@ -142,7 +142,7 @@ public class Robot extends SampleRobot {
 			// mIntakeController.Tick();
 			mElevatorController.Tick();
 			mFeedController.Tick();
-			// SendDataToSmartDashboard();
+			SendDataToSmartDashboard();
 			Timer.delay(0.005); // wait for a motor update time
 		} // while isEnabled
 	} // operatorControl
@@ -152,24 +152,26 @@ public class Robot extends SampleRobot {
 
 	@Override
 	public void autonomous() {
+		
 		mTurretController.Enable();
-		// mShooterController.Enable(); // control_moveaimshoot will sequence
+		//mShooterController.Enable(); // control_moveaimshoot will sequence
 		// these
 
 		mMoveController.mRobotDrive.setSafetyEnabled(false);
 		mMoveController.leftEncoder.reset();
 		mMoveController.rightEncoder.reset();
-		mElevatorController.setElevatorSpeed(0.8); // NOTE Elevaotr dir ok
-		mElevatorController.setElevatorSecondSpeed(0.6); // 1.0); //0.8);
+		//mElevatorController.setElevatorSpeed(0.8); // NOTE Elevaotr dir ok
+		//mElevatorController.setElevatorSecondSpeed(0.6); // 1.0); //0.8);
 
-		mElevatorController.Enable();
-		mShooterController.setRPMWanted(1800);
-		mShooterController.Enable();
-	//	mFeedController.Enable();
+		//mElevatorController.Enable();
+		//mShooterController.setRPMWanted(1800);
+		//mShooterController.Enable();
+	    //mFeedController.Enable();
+	    //mFeedController.setFeedSpeed(-0.9);
 
 		if (SIMPLE_AUTONOMOUS_MODE) {
 
-			mMoveController.addMoveStraightCMD(0.25, 400);
+			mMoveController.addMoveStraightCMD(0.25, 350);
 
 		} else {
 			// mMoveAimShoot = new Control_MoveAimShoot(this);
@@ -183,17 +185,17 @@ public class Robot extends SampleRobot {
 			mMoveController.addMoveStraightCMD(0.25, 70);
 			mMoveController.addMoveStraightCMD(-0.25, 35);
 		}
-
+		
 		while (isAutonomous() && isEnabled()) {
-		//	mFeedController.Enable();
-
-			//mMoveController.mRobotDrive.arcadeDrive(0, 0);
+			//mFeedController.Enable();
+			
+			mMoveController.mRobotDrive.arcadeDrive(0, 0);
 			// SendDataToSmartDashboard();
 			mMoveController.Tick();
-			System.out.println("tick");
-			// mTurretController.Tick();
-			mShooterController.Tick();
-			mElevatorController.Tick();
+			//System.out.println("tick");
+			//mTurretController.Tick();
+			//mShooterController.Tick();
+			//mElevatorController.Tick();
 			// mMoveAimShoot.Tick(); //master sequencer of the above, it will
 			// enable/disable them as needed
 			Timer.delay(0.005);
@@ -208,8 +210,8 @@ public class Robot extends SampleRobot {
 		if (deltat > 1000) {
 			SmartDashboard.putNumber("AUTOTARGET XPOS: ", vision_processor_instance.cregions.mXGreenLine);
 			SmartDashboard.putNumber("Auto TARGET Enabled: ", vision_processor_instance.cregions.mTargetVisible);
-			//SmartDashboard.putBoolean("TURRETLIMITSWITCH", mTurretController.turretLimitSwitch.get());
-			//SmartDashboard.putNumber("TURRETENCODER", mTurretController.GetShooterPosition());
+			SmartDashboard.putBoolean("TURRETLIMITSWITCH", mTurretController.turretLimitSwitch.get());
+			SmartDashboard.putNumber("TURRETENCODER", mTurretController.GetShooterPosition());
 			SmartDashboard.putNumber("LEFTENCODER", mMoveController.leftEncoder.get());
 			SmartDashboard.putNumber("RIGHTENCODER", mMoveController.rightEncoder.get());
 			SmartDashboard.putNumber("LEFTDISTANCE", mMoveController.leftEncoder.getDistance());

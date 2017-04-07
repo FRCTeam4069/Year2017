@@ -18,7 +18,7 @@ public class ControlTurret
   private Robot mRobot;
   private LowPassFilter lpf = new LowPassFilter(100);
 
-  public static final int turretEncoderMax = 7780;
+  public static final int turretEncoderMax = 8466;
 
   public static final int turretEncoderMin = -50;
 
@@ -171,9 +171,19 @@ public class ControlTurret
       motorValue = mRobot.controlStick.getAxis(AxisType.kY) * maxSpeed * -1;
       
       // decrease speed as turret gets closer to min/max so turret does not slide past limits
-      if ((motorValue > 0 && turretEncoderPosition < turretEncoderMidpoint) || (motorValue < 0 && turretEncoderPosition > turretEncoderMidpoint))
+      /*if ((motorValue > 0 && turretEncoderPosition < turretEncoderMidpoint) || (motorValue < 0 && turretEncoderPosition > turretEncoderMidpoint))
       {
         motorValue *= Lerp(1, 0, 0, turretEncoderMidpoint - turretEncoderMin, Math.abs(turretEncoderPosition - turretEncoderMidpoint));
+        motorValue = lpf.calculate(motorValue); // also apply lowpassfilter here
+      }*/
+      if (motorValue > 0 && turretEncoderPosition < turretEncoderMidpoint)
+      {
+        motorValue *= Lerp(1, 0, 0, turretEncoderMidpoint - turretEncoderMin, Math.abs(turretEncoderPosition - turretEncoderMidpoint));
+        motorValue = lpf.calculate(motorValue); // also apply lowpassfilter here
+      }
+      else if (motorValue < 0 && turretEncoderPosition > turretEncoderMidpoint)
+      {
+        motorValue *= Lerp(1, 0, 0, turretEncoderMax - turretEncoderMidpoint, Math.abs(turretEncoderPosition - turretEncoderMidpoint));
         motorValue = lpf.calculate(motorValue); // also apply lowpassfilter here
       }
     }

@@ -31,7 +31,7 @@ public class OperatorControlCommand extends MoveCommand
     // Calculate robot turn direction from the left drive joystick's x-axis
     // (left-right)
     mDriverRobotTurnDirection = mControlMove.rightDriveMotorLowPassFilter.calculate(mControlMove.driverStick.getAxis(AxisType.kX));
-
+    
     mRobot.mRobotSpeed = mDriverRobotSpeed;
 
     // Last move robot. Let the robotdrive class handle the driving aspect of
