@@ -30,7 +30,6 @@ public class ControlFeed
   public void Enable()
   {
     mEnabled = 1;
-    feedTalon.set(mFeedSpeed);
   }
 
   public void Disable()

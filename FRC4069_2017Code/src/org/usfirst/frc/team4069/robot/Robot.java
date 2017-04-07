@@ -15,7 +15,7 @@ public class Robot extends SampleRobot {
 	// --------------------------------------------------------- //
 
 	public boolean ON_RED_SIDE_OF_FIELD = false;
-	private boolean SIMPLE_AUTONOMOUS_MODE = true;
+	private boolean SIMPLE_AUTONOMOUS_MODE = false;
 	private boolean SHOOTING_AUTONOMOUS_MODE = true;
 
 	public ControlShooter mShooterController; // shooter functions
@@ -67,7 +67,7 @@ public class Robot extends SampleRobot {
 		mShooterController = new ControlShooter(this, controlStick);
 		mWinchController = new ControlWinch();
 		mMoveController = new ControlMove(driverStick, this); // pass joystick
-		mTurretController = new ControlTurret(this);
+		//mTurretController = new ControlTurret(this);
 		//mIntakeController = new ControlIntake(this);
 		mElevatorController = new ControlElevator(this);
 		mFeedController = new ControlFeed(this);
@@ -118,7 +118,7 @@ public class Robot extends SampleRobot {
 		mShooterController.Enable();
 		mMoveController.MoveOperatorControl(); // human driving watch out!
 
-		mTurretController.Enable();
+		//mTurretController.Enable();
 
 		mWinchController.Enable();
 		
@@ -143,7 +143,7 @@ public class Robot extends SampleRobot {
 			mShooterController.Tick();
 			mWinchController.Tick();
 			mMoveController.Tick();
-			mTurretController.Tick();
+			//mTurretController.Tick();
 			// mIntakeController.Tick();
 			mElevatorController.Tick();
 			mFeedController.Tick();
@@ -182,6 +182,8 @@ public class Robot extends SampleRobot {
 			mShooterController.setAutonomous();
 			mFeedController.setAutonomous();
 			mElevatorController.setAutonomous();
+			mElevatorController.setElevatorSpeed(0.8);
+			mElevatorController.setElevatorSecondSpeed(0.6);
 		}
 		else{
 			// mMoveAimShoot = new Control_MoveAimShoot(this);
@@ -201,7 +203,7 @@ public class Robot extends SampleRobot {
 			
 			mMoveController.mRobotDrive.arcadeDrive(0, 0);
 			SendDataToSmartDashboard();
-			mMoveController.Tick();
+			//mMoveController.Tick();
 			//System.out.println("tick");
 			//mTurretController.Tick();
 			mShooterController.Tick();
