@@ -9,7 +9,7 @@ public class MoveCommandStraight extends MoveCommand
   private double resultantleftspeed = 0.0;
   private double resultantrightspeed = 0.0;
   private double error = 0.0;
-  private final double ERROR_SCALING_CONST_P = .04;
+  private final double ERROR_SCALING_CONST_P = .4;
 
   MoveCommandStraight(ControlMove ctrlmove, double speed, double distance)
   {
@@ -39,24 +39,67 @@ public class MoveCommandStraight extends MoveCommand
       mControlMove.rightDriveMotor.set(0);
       return true;
     }
-
-    error = leftDistance - rightDistance; // if error > 0 left is ahead subtract error from left
-                                          // if error < 0 right is ahead add -error to right
-    correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error
-
-    resultantleftspeed = -mSpeed - correctionFactor;
-    resultantrightspeed = -mSpeed + correctionFactor;
-    if (resultantleftspeed > 1.0)
-      resultantleftspeed = 1.0;
-    if (resultantrightspeed > 1.0)
-      resultantrightspeed = 1.0;
-    if (resultantleftspeed < -1.0)
-      resultantleftspeed = -1.0;
-    if (resultantrightspeed < -1.0)
-      resultantrightspeed = -1.0;
-    System.out.println("leftdist=" + leftDistance + ",rightdist=" + rightDistance + ",error=" + error + ",correctionFactor=" + correctionFactor + ",resultleft=" + resultantleftspeed + ",resultsright=" + resultantrightspeed);
-    mControlMove.leftDriveMotor.set(resultantleftspeed); // +err means left ahead, subtract from left speed
-    mControlMove.rightDriveMotor.set(resultantrightspeed); // -err means right ahead, add -err to right speed
-    return false; // not done yet
+    
+    error = rightDistance - leftDistance; // if error > 0 left is ahead subtract error from left
+    // if error < 0 right is ahead add -error to right
+	correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error
+	
+	resultantleftspeed = mSpeed - correctionFactor;
+	resultantrightspeed = mSpeed + correctionFactor;
+	if (resultantleftspeed > 1.0)
+	resultantleftspeed = 1.0;
+	if (resultantrightspeed > 1.0)
+	resultantrightspeed = 1.0;
+	if (resultantleftspeed < -1.0)
+	resultantleftspeed = -1.0;
+	if (resultantrightspeed < -1.0)
+	resultantrightspeed = -1.0;
+	System.out.println("leftdist=" + leftDistance + ",rightdist=" + rightDistance + ",error=" + error + ",correctionFactor=" + correctionFactor + ",resultleft=" + resultantleftspeed + ",resultsright=" + resultantrightspeed);
+	mControlMove.leftDriveMotor.set(resultantleftspeed); // +err means left ahead, subtract from left speed
+	mControlMove.rightDriveMotor.set(resultantrightspeed); // -err means right ahead, add -err to right speed
+	return false; // not done yet
+    
+    /*if(mSpeed < 0){
+	
+	    error = leftDistance - rightDistance; // if error > 0 left is ahead subtract error from left
+	                                          // if error < 0 right is ahead add -error to right
+	    correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error
+	
+	    resultantleftspeed = mSpeed - correctionFactor;
+	    resultantrightspeed = mSpeed + correctionFactor;
+	    if (resultantleftspeed > 1.0)
+	      resultantleftspeed = 1.0;
+	    if (resultantrightspeed > 1.0)
+	      resultantrightspeed = 1.0;
+	    if (resultantleftspeed < -1.0)
+	      resultantleftspeed = -1.0;
+	    if (resultantrightspeed < -1.0)
+	      resultantrightspeed = -1.0;
+	    System.out.println("leftdist=" + leftDistance + ",rightdist=" + rightDistance + ",error=" + error + ",correctionFactor=" + correctionFactor + ",resultleft=" + resultantleftspeed + ",resultsright=" + resultantrightspeed);
+	    mControlMove.leftDriveMotor.set(resultantleftspeed); // +err means left ahead, subtract from left speed
+	    mControlMove.rightDriveMotor.set(resultantrightspeed); // -err means right ahead, add -err to right speed
+	    return false; // not done yet
+    }
+    else{
+    	
+	    error = rightDistance - leftDistance; // if error > 0 left is ahead subtract error from left
+	                                          // if error < 0 right is ahead add -error to right
+	    correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error
+	
+	    resultantleftspeed = mSpeed - correctionFactor;
+	    resultantrightspeed = mSpeed + correctionFactor;
+	    if (resultantleftspeed > 1.0)
+	      resultantleftspeed = 1.0;
+	    if (resultantrightspeed > 1.0)
+	      resultantrightspeed = 1.0;
+	    if (resultantleftspeed < -1.0)
+	      resultantleftspeed = -1.0;
+	    if (resultantrightspeed < -1.0)
+	      resultantrightspeed = -1.0;
+	    System.out.println("leftdist=" + leftDistance + ",rightdist=" + rightDistance + ",error=" + error + ",correctionFactor=" + correctionFactor + ",resultleft=" + resultantleftspeed + ",resultsright=" + resultantrightspeed);
+	    mControlMove.leftDriveMotor.set(resultantleftspeed); // +err means left ahead, subtract from left speed
+	    mControlMove.rightDriveMotor.set(resultantrightspeed); // -err means right ahead, add -err to right speed
+	    return false; // not done yet
+    }*/
   }// Tick
 }

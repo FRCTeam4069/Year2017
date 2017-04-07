@@ -16,6 +16,7 @@ public class Robot extends SampleRobot {
 
 	public boolean ON_RED_SIDE_OF_FIELD = false;
 	private boolean SIMPLE_AUTONOMOUS_MODE = true;
+	private boolean SHOOTING_AUTONOMOUS_MODE = true;
 
 	public ControlShooter mShooterController; // shooter functions
 	public ControlWinch mWinchController; // winch functions
@@ -113,13 +114,15 @@ public class Robot extends SampleRobot {
 	public void operatorControl() {
 		mMoveController.mRobotDrive.setSafetyEnabled(false);
 		// mShooterController.setRPMWanted(-50);
+		mShooterController.setTeleop();
 		mShooterController.Enable();
 		mMoveController.MoveOperatorControl(); // human driving watch out!
 
 		mTurretController.Enable();
 
 		mWinchController.Enable();
-
+		
+		mElevatorController.setTeleop();
 		mElevatorController.setElevatorSpeed(0.8); // NOTE Elevaotr dir ok
 		mElevatorController.setElevatorSecondSpeed(0.6); // 1.0); //0.8);
 		//mElevatorController.Enable();
@@ -128,6 +131,7 @@ public class Robot extends SampleRobot {
 		// mIntakeController.Enable();
 
 		// mFeedController.setFeedSpeed(0.9);
+		mFeedController.setTeleop();
 		mFeedController.Enable();
 
 		while (isOperatorControl() && isEnabled()) {
@@ -172,9 +176,14 @@ public class Robot extends SampleRobot {
 
 		if (SIMPLE_AUTONOMOUS_MODE) {
 
-			mMoveController.addMoveStraightCMD(-0.25, 350);
+			mMoveController.addMoveStraightCMD(0.25, 350);
 
-		} else {
+		} else if(SHOOTING_AUTONOMOUS_MODE){
+			mShooterController.setAutonomous();
+			mFeedController.setAutonomous();
+			mElevatorController.setAutonomous();
+		}
+		else{
 			// mMoveAimShoot = new Control_MoveAimShoot(this);
 
 			//mMoveController.addDelayCMD(2000);
@@ -191,14 +200,14 @@ public class Robot extends SampleRobot {
 			//mFeedController.Enable();
 			
 			mMoveController.mRobotDrive.arcadeDrive(0, 0);
-			// SendDataToSmartDashboard();
+			/*SendDataToSmartDashboard();
 			mMoveController.Tick();
 			//System.out.println("tick");
 			//mTurretController.Tick();
 			//mShooterController.Tick();
 			//mElevatorController.Tick();
 			// mMoveAimShoot.Tick(); //master sequencer of the above, it will
-			// enable/disable them as needed
+			// enable/disable them as needed*/
 			Timer.delay(0.005);
 		}
 	}// autonomous

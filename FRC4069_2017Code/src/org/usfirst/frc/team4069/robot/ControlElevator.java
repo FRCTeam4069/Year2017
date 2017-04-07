@@ -15,6 +15,8 @@ public class ControlElevator
   private boolean useSecondSpeed = false; // should second or first speed be
   // used
   private Robot mRobot;
+  
+  private boolean autonomousMode = false;
 
   public ControlElevator(Robot robot)
   {
@@ -86,11 +88,11 @@ public class ControlElevator
     // if second speed is toggled use second instead of main speed
     if (useSecondSpeed)
     {
-      return mSecondSpeed * mDirection * -1;
+      return mSecondSpeed * mDirection;
     }
     else
     { // else just use main speed
-      return mSpeed * mDirection * -1;
+      return mSpeed * mDirection;
     }
   }
 
@@ -112,34 +114,47 @@ public class ControlElevator
 
   public void Tick()
   {
-
-    updateDirection(); // if back button is pressed once, toggle between
-    // main/second speed
-    if (Robot.InputSystem.Back_Button_Control_Stick_Once)
-    {
-      useSecondSpeed = !useSecondSpeed;
-    }
-    if (InputSystem.RT_Button_Control_Stick_Pressed_Once)
-    {
-      if (mEnabled == 1)
-      {
-        Disable();
-      }
-      else
-      {
-        Enable();
-      }
-    }
-
-    double speed = 0;
-
-    if (mEnabled == 1)
-    {
-      speed = getElevatorSpeed();
-    }
-
-    mRobot.mElevatorSpeed = speed;
-
-    elevatorTalon.set(speed);
+	if(autonomousMode){
+		double speed = getElevatorSpeed();
+		elevatorTalon.set(speed);
+	}
+	else{
+	    updateDirection(); // if back button is pressed once, toggle between
+	    // main/second speed
+	    if (Robot.InputSystem.Back_Button_Control_Stick_Once)
+	    {
+	      useSecondSpeed = !useSecondSpeed;
+	    }
+	    if (InputSystem.RT_Button_Control_Stick_Pressed_Once)
+	    {
+	      if (mEnabled == 1)
+	      {
+	        Disable();
+	      }
+	      else
+	      {
+	        Enable();
+	      }
+	    }
+	
+	    double speed = 0;
+	
+	    if (mEnabled == 1)
+	    {
+	      speed = getElevatorSpeed();
+	    }
+	
+	    mRobot.mElevatorSpeed = speed;
+	
+	    elevatorTalon.set(speed);
+	}
+  }
+  
+  public void setAutonomous(){
+	  autonomousMode = true;
+  }
+  
+  public void setTeleop(){
+	  autonomousMode = false;
   }
 }

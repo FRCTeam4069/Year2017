@@ -9,6 +9,7 @@ public class ControlFeed
   private int mDebug = 0;
   private Robot mRobot;
   private double mFeedSpeed = 0.95;
+  private boolean autonomousMode = false;
 
   public ControlFeed(Robot robot)
   {
@@ -45,35 +46,45 @@ public class ControlFeed
 
   public void Tick()
   {
-    // Enable feed if shooter is moving, otherwise disable feed
-
-    if (mEnabled == 1)
-    {
-      // if(Robot.InputSystem.Y_Button_Driver_Stick || Robot.InputSystem.Y_Button_Control_Stick){
-      if (Math.abs(mRobot.mElevatorSpeed) > 0)
-      {
-        if (mRobot.mShooterTargetRPM > 0)
-        {
-          feedTalon.set(-mFeedSpeed);
-        }
-        else if (mRobot.mShooterTargetRPM == 0)
-        {
-          // feedTalon.set(mFeedSpeed);
-          feedTalon.set(0);
-        }
-      }
-      else
-      {
-        feedTalon.set(0);
-      }
-      // }
-      // else{
-      // feedTalon.set(0);
-      // }
-    }
-    else
-    {
-      feedTalon.set(0);
-    }
+	if(autonomousMode){
+		feedTalon.set(-mFeedSpeed);
+	}
+	else{
+	    // Enable feed if shooter is moving, otherwise disable feed
+		if (mEnabled == 1)
+	    {
+	      // if(Robot.InputSystem.Y_Button_Driver_Stick || Robot.InputSystem.Y_Button_Control_Stick){
+	      if (Math.abs(mRobot.mElevatorSpeed) > 0)
+	      {
+	        if (mRobot.mShooterTargetRPM > 0)
+	        {
+	          feedTalon.set(-mFeedSpeed);
+	        }
+	        else if (mRobot.mShooterTargetRPM == 0)
+	        {
+	          // feedTalon.set(mFeedSpeed);
+	          feedTalon.set(0);
+	        }
+	      }
+	      else
+	      {
+	        feedTalon.set(0);
+	      }
+	      // }
+	      // else{
+	      // feedTalon.set(0);
+	      // }
+	    }
+	    else
+	    {
+	      feedTalon.set(0);
+	    }
+	}
+  }
+  public void setAutonomous(){
+	  autonomousMode = true;
+  }
+  public void setTeleop(){
+	  autonomousMode = false;
   }
 }
