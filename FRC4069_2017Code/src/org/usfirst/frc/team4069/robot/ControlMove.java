@@ -124,9 +124,9 @@ public class ControlMove
     if ((mCurrentCommand == null) || (mCurrentCommand.Tick() == true)) // done?
     {
       // System.out.println("About to donextcommand num="+mCommandList.size());
-      if (DoNextCommand()==-1)
+      if (DoNextCommand() == -1)
       {
-    	  mRobot.mMoveController.mRobotDrive.arcadeDrive(0,0);
+        mRobot.mMoveController.mRobotDrive.arcadeDrive(0, 0);
       }
     }
   }// Tick
@@ -153,7 +153,7 @@ public class ControlMove
 
   public void addDoTurnCMD(boolean isRightWheel)
   {
-	  mCommandList.add(new MoveCommandTurnOneWheel(this, .80, 20, isRightWheel));
+    mCommandList.add(new MoveCommandTurnOneWheel(this, .80, 20, isRightWheel));
   }
 
   public void addDelayCMD(int milliseconds)

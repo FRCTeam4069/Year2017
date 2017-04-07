@@ -93,7 +93,7 @@ public class ThreadVisionProcessor implements Runnable
     
     // Other competition
     cregions.addRange(0x07, 0x77, 0x38, 0x30, 0x94, 0x51);
-    
+
     while ((true) && (mExitThread == false))
     {
       if (mProcessFrames)
@@ -339,7 +339,7 @@ public class ThreadVisionProcessor implements Runnable
       }
 
       Point centerbtm = new Point(0, 20);
-      Point rht = new Point(0,200);
+      Point rht = new Point(0, 200);
       double head = mRobot.arduino_thread_instance.lastHeading;
       if (head != -1.0)
       {
@@ -350,14 +350,13 @@ public class ThreadVisionProcessor implements Runnable
 
       if (mRobot.ON_RED_SIDE_OF_FIELD == true)
       {
-        Imgproc.putText(original,"RED",rht,0,0.5,RED);
+        Imgproc.putText(original, "RED", rht, 0, 0.5, RED);
       }
       else
       {
         Imgproc.putText(original, "BLUE", rht, 0, 0.5, BLUE);
       }
-      
-      
+
       Point lastsn = new Point(50, 230);
       Imgproc.putText(original, "Target Last Heading:" + lastHeadingTargetSeen, lastsn, 0, 0.5, YELLOW);
 
