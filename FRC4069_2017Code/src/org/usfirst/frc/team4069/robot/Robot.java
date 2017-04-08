@@ -15,8 +15,8 @@ public class Robot extends SampleRobot {
 	// --------------------------------------------------------- //
 
 	public boolean ON_RED_SIDE_OF_FIELD = false;
-	private boolean SIMPLE_AUTONOMOUS_MODE = false;
-	private boolean SHOOTING_AUTONOMOUS_MODE = true;
+	private boolean SIMPLE_AUTONOMOUS_MODE = true;
+	private boolean SHOOTING_AUTONOMOUS_MODE = false;
 
 	public ControlShooter mShooterController; // shooter functions
 	public ControlWinch mWinchController; // winch functions
@@ -158,7 +158,7 @@ public class Robot extends SampleRobot {
 	@Override
 	public void autonomous() {
 		
-		mTurretController.Enable();
+		//mTurretController.Enable();
 		//mShooterController.Enable(); // control_moveaimshoot will sequence
 		// these
 
@@ -203,12 +203,12 @@ public class Robot extends SampleRobot {
 			
 			mMoveController.mRobotDrive.arcadeDrive(0, 0);
 			SendDataToSmartDashboard();
-			//mMoveController.Tick();
+			mMoveController.Tick();
 			//System.out.println("tick");
 			//mTurretController.Tick();
-			mShooterController.Tick();
-			mElevatorController.Tick();
-			mFeedController.Tick();
+			//mShooterController.Tick();
+			//mElevatorController.Tick();
+			//mFeedController.Tick();
 			// mMoveAimShoot.Tick(); //master sequencer of the above, it will
 			// enable/disable them as needed*/
 			Timer.delay(0.005);
@@ -223,8 +223,8 @@ public class Robot extends SampleRobot {
 		if (deltat > 1000) {
 			SmartDashboard.putNumber("AUTOTARGET XPOS: ", vision_processor_instance.cregions.mXGreenLine);
 			SmartDashboard.putNumber("Auto TARGET Enabled: ", vision_processor_instance.cregions.mTargetVisible);
-			SmartDashboard.putBoolean("TURRETLIMITSWITCH", mTurretController.turretLimitSwitch.get());
-			SmartDashboard.putNumber("TURRETENCODER", mTurretController.GetShooterPosition());
+			//SmartDashboard.putBoolean("TURRETLIMITSWITCH", mTurretController.turretLimitSwitch.get());
+			//SmartDashboard.putNumber("TURRETENCODER", mTurretController.GetShooterPosition());
 			SmartDashboard.putNumber("LEFTENCODER", mMoveController.leftEncoder.get());
 			SmartDashboard.putNumber("RIGHTENCODER", mMoveController.rightEncoder.get());
 			SmartDashboard.putNumber("LEFTDISTANCE", mMoveController.leftEncoder.getDistance());

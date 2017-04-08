@@ -103,7 +103,7 @@ public class ControlShooter
   public void Tick()
   {
 	if(autonomousMode){
-		targetRPM = 3050;
+		targetRPM = 2900;
 	    shooterCANTalon.changeControlMode(TalonControlMode.Speed);
 	    shooterCANTalon.set(lpf.calculate(targetRPM));
 	}
