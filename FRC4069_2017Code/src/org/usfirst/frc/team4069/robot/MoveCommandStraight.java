@@ -9,7 +9,7 @@ public class MoveCommandStraight extends MoveCommand
   private double resultantleftspeed = 0.0;
   private double resultantrightspeed = 0.0;
   private double error = 0.0;
-  private final double ERROR_SCALING_CONST_P = .4;
+  private final double ERROR_SCALING_CONST_P = .01;
 
   MoveCommandStraight(ControlMove ctrlmove, double speed, double distance)
   {
@@ -40,22 +40,30 @@ public class MoveCommandStraight extends MoveCommand
       return true;
     }
 
+    /*
+     * L        R        delta   fwd+       bkwd-
+     * -10      0        -10     L++        R--(moreneg
+     * 10      -10       20      R++        L--(moreneg 
+     * -10     -5        -5      L++        R-- (moreneg
+     * 10      5          5      R++        L--(moreneg
+     */
+
     error = leftDistance - rightDistance; // if error > 0 left is ahead add - error to left
                                           // if error < 0 right is ahead add -error to right
     correctionFactor = error * ERROR_SCALING_CONST_P; // dampen error should come from ticks/wheelrotation data
-    double abscorrFactor = Math.abs(correctionFactor);
+    double abscorrFactor = Math.abs(correctionFactor) / 2;
 
-    if (mSpeed > 0)
+    if (mSpeed > 0) //going forward
     {
-      if (error > 0)
+      if (error > 0) //
       {
         resultantleftspeed = mSpeed - abscorrFactor; // left is ahead, slow it down by correctionFactor mspeed is >0
-        resultantrightspeed = mSpeed;
+        resultantrightspeed = mSpeed + abscorrFactor; //R++
       }
       else
       {
         resultantrightspeed = mSpeed - abscorrFactor; // right is ahead, slow it down by correctionFactor
-        resultantleftspeed = mSpeed;
+        resultantleftspeed = mSpeed + abscorrFactor; //L++
       }
 
       if (resultantleftspeed > 1.0)
@@ -69,15 +77,15 @@ public class MoveCommandStraight extends MoveCommand
     }
     else // her if moving backwards (mSpeed < 0)
     {
-      if (error > 0)
+      if (error > 0) //bkwd(L--)
       {
-        resultantleftspeed = mSpeed + abscorrFactor; // left is ahead, slow it down by correctionFactor mspeed is < 0
-        resultantrightspeed = mSpeed;
+        resultantleftspeed = mSpeed - abscorrFactor; // left is ahead, slow it down by correctionFactor mspeed is < 0
+        resultantrightspeed = mSpeed + abscorrFactor;
       }
       else
       {
-        resultantrightspeed = mSpeed + abscorrFactor; // right is ahead, slow it down by correctionFactor
-        resultantleftspeed = mSpeed;
+        resultantrightspeed = mSpeed - abscorrFactor; // right is ahead, slow it down by correctionFactor
+        resultantleftspeed = mSpeed + abscorrFactor;
       }
 
       if (resultantleftspeed > 1.0)
