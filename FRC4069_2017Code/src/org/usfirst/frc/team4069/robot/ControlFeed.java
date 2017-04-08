@@ -46,7 +46,12 @@ public class ControlFeed
   public void Tick()
   {
 	if(autonomousMode){
-		feedTalon.set(-mFeedSpeed);
+		if(mEnabled == 1){
+			feedTalon.set(-mFeedSpeed);
+		}
+		else{
+			feedTalon.set(0);
+		}
 	}
 	else{
 	    // Enable feed if shooter is moving, otherwise disable feed
@@ -82,8 +87,10 @@ public class ControlFeed
   }
   public void setAutonomous(){
 	  autonomousMode = true;
+	  Disable();
   }
   public void setTeleop(){
 	  autonomousMode = false;
+	  Disable();
   }
 }

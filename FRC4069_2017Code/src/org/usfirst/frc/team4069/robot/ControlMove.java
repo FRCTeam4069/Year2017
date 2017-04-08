@@ -28,9 +28,11 @@ public class ControlMove
   public static final double TICKS_PER_WHEEL_ROTATION = 150;
 
   public static final double WHEEL_CIRCUMFERENCE_IN_CM = 12.566; // 12.566cm = 4" diameter 2"radius= 2 * 6.28
-
+  
+  public static final double CM_PER_INCH = 2.54;
+  
   public static final double CM_PER_TICK = WHEEL_CIRCUMFERENCE_IN_CM / TICKS_PER_WHEEL_ROTATION;
-
+  
   public static final double TICKS_PER_CM = TICKS_PER_WHEEL_ROTATION / WHEEL_CIRCUMFERENCE_IN_CM;
 
   // Robot Geometry
@@ -89,7 +91,7 @@ public class ControlMove
    */
   public int DoNextCommand()
   {
-    // System.out.println("DoNextCommand....");
+    System.out.println("DoNextCommand....");
     if (mCommandList.size() == 0) // when no commands left, stop.
     {
       System.out.println("Commandlist empty, adding stop command");
@@ -149,6 +151,11 @@ public class ControlMove
   public void addMoveStraightCMD(double speed, double distance)
   {
     mCommandList.add(new MoveCommandStraight(this, speed, distance));
+  }
+  
+  public void addMoveStraightCMDBadly(double speed, double distance)
+  {
+    mCommandList.add(new MoveCommandStraightBadly(this, speed, distance));
   }
 
   public void addDoTurnCMD(boolean isRightWheel)

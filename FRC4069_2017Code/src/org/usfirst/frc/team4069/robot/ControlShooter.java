@@ -103,9 +103,14 @@ public class ControlShooter
   public void Tick()
   {
 	if(autonomousMode){
-		targetRPM = 2900;
-	    shooterCANTalon.changeControlMode(TalonControlMode.Speed);
-	    shooterCANTalon.set(lpf.calculate(targetRPM));
+		if(mEnabled == 1){
+			targetRPM = 2850;
+	    	shooterCANTalon.changeControlMode(TalonControlMode.Speed);
+	    	shooterCANTalon.set(lpf.calculate(targetRPM));
+		}
+		else{
+			shooterCANTalon.set(0);
+		}
 	}
 	else{
 	    if (mEnabled == 0)
@@ -160,10 +165,12 @@ public class ControlShooter
   
   public void setAutonomous(){
 	  autonomousMode = true;
+	  Disable();
   }
   
   public void setTeleop(){
 	  autonomousMode = false;
+	  Disable();
   }
 
 }// ShooterControl

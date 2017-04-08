@@ -115,8 +115,13 @@ public class ControlElevator
   public void Tick()
   {
 	if(autonomousMode){
-		double speed = getElevatorSpeed();
-		elevatorTalon.set(speed);
+		if(mEnabled == 1){
+			double speed = getElevatorSpeed();
+			elevatorTalon.set(speed);
+		}
+		else{
+			elevatorTalon.set(0);
+		}
 	}
 	else{
 	    updateDirection(); // if back button is pressed once, toggle between
@@ -152,9 +157,11 @@ public class ControlElevator
   
   public void setAutonomous(){
 	  autonomousMode = true;
+	  Disable();
   }
   
   public void setTeleop(){
 	  autonomousMode = false;
+	  Disable();
   }
 }

@@ -15,8 +15,9 @@ public class Robot extends SampleRobot {
 	// --------------------------------------------------------- //
 
 	public boolean ON_RED_SIDE_OF_FIELD = false;
-	private boolean SIMPLE_AUTONOMOUS_MODE = true;
+	private boolean SIMPLE_AUTONOMOUS_MODE = false;
 	private boolean SHOOTING_AUTONOMOUS_MODE = false;
+	private boolean SHOOT_AND_DRIVE_AUTONOMOUS_MODE = true;
 
 	public ControlShooter mShooterController; // shooter functions
 	public ControlWinch mWinchController; // winch functions
@@ -161,6 +162,9 @@ public class Robot extends SampleRobot {
 		//mTurretController.Enable();
 		//mShooterController.Enable(); // control_moveaimshoot will sequence
 		// these
+		long startTime = System.currentTimeMillis();
+		boolean addedMoveStraightCommandBadly = false;
+		boolean increasedShooterRPM = false;
 
 		mMoveController.mRobotDrive.setSafetyEnabled(false);
 		mMoveController.leftEncoder.reset();
@@ -175,15 +179,21 @@ public class Robot extends SampleRobot {
 	    //mFeedController.setFeedSpeed(-0.9);
 
 		if (SIMPLE_AUTONOMOUS_MODE) {
-
-			mMoveController.addMoveStraightCMD(0.25, 350);
-
+			
+			mMoveController.addMoveStraightCMD(0.6, 3.75);
+			//mMoveController.addMoveStraightCMDBadly(-0.4, 4);
+			
 		} else if(SHOOTING_AUTONOMOUS_MODE){
-			mShooterController.setAutonomous();
 			mFeedController.setAutonomous();
 			mElevatorController.setAutonomous();
-			mElevatorController.setElevatorSpeed(0.8);
-			mElevatorController.setElevatorSecondSpeed(0.6);
+			mShooterController.setAutonomous();
+			mShooterController.Enable();
+		}
+		else if(SHOOT_AND_DRIVE_AUTONOMOUS_MODE){
+			mFeedController.setAutonomous();
+			mElevatorController.setAutonomous();
+			mShooterController.setAutonomous();
+			mShooterController.Enable();
 		}
 		else{
 			// mMoveAimShoot = new Control_MoveAimShoot(this);
@@ -206,9 +216,34 @@ public class Robot extends SampleRobot {
 			mMoveController.Tick();
 			//System.out.println("tick");
 			//mTurretController.Tick();
-			//mShooterController.Tick();
-			//mElevatorController.Tick();
-			//mFeedController.Tick();
+			mShooterController.Tick();
+			mElevatorController.Tick();
+			mFeedController.Tick();
+			if(SHOOTING_AUTONOMOUS_MODE){
+				if((int)(System.currentTimeMillis() - startTime) >= 1500 && !increasedShooterRPM){
+					increasedShooterRPM = true;
+					mFeedController.Enable();
+					mElevatorController.setElevatorSpeed(0.8);
+					mElevatorController.setElevatorSecondSpeed(0.6);
+					mElevatorController.Enable();
+				}
+			}
+			if(SHOOT_AND_DRIVE_AUTONOMOUS_MODE){
+				if((int)(System.currentTimeMillis() - startTime) >= 1500 && !increasedShooterRPM){
+					increasedShooterRPM = true;
+					mFeedController.Enable();
+					mElevatorController.setElevatorSpeed(0.8);
+					mElevatorController.setElevatorSecondSpeed(0.6);
+					mElevatorController.Enable();
+				}
+				if((int)(System.currentTimeMillis() - startTime) >= 10000 && !addedMoveStraightCommandBadly){
+					addedMoveStraightCommandBadly = true;
+					mShooterController.Disable();
+					mFeedController.Disable();
+					mElevatorController.Disable();
+					mMoveController.addMoveStraightCMD(0.6, 3.75);
+				}
+			}
 			// mMoveAimShoot.Tick(); //master sequencer of the above, it will
 			// enable/disable them as needed*/
 			Timer.delay(0.005);

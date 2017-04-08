@@ -9,7 +9,7 @@ public class MoveCommandStraight extends MoveCommand
   private double resultantleftspeed = 0.0;
   private double resultantrightspeed = 0.0;
   private double error = 0.0;
-  private final double ERROR_SCALING_CONST_P = .01;
+  private final double ERROR_SCALING_CONST_P = .1;
 
   MoveCommandStraight(ControlMove ctrlmove, double speed, double distance)
   {
@@ -29,8 +29,8 @@ public class MoveCommandStraight extends MoveCommand
   public boolean Tick()
   {
     System.out.println("Move Command straight tick");
-    double leftDistance = mControlMove.leftEncoder.getDistance();
-    double rightDistance = mControlMove.rightEncoder.getDistance();
+    double leftDistance = ((mControlMove.leftEncoder.get() * ControlMove.CM_PER_TICK) / ControlMove.CM_PER_INCH) / 12;
+    double rightDistance = ((mControlMove.rightEncoder.get() * ControlMove.CM_PER_TICK) / ControlMove.CM_PER_INCH) / 12;
     double averageDistance = (leftDistance + rightDistance) / 2;
 
     if (Math.abs(averageDistance) >= mDistance)
@@ -98,7 +98,7 @@ public class MoveCommandStraight extends MoveCommand
         resultantrightspeed = -1.0;
     }
     System.out.println("leftdist=" + leftDistance + ",rightdist=" + rightDistance + ",error=" + error + ",correctionFactor=" + correctionFactor + ",resultleft=" + resultantleftspeed + ",resultsright=" + resultantrightspeed);
-    mControlMove.leftDriveMotor.set(resultantleftspeed); // +err means left ahead, subtract from left speed
+    mControlMove.leftDriveMotor.set(-resultantleftspeed); // +err means left ahead, subtract from left speed
     mControlMove.rightDriveMotor.set(resultantrightspeed); // -err means right ahead, add -err to right speed
     return false; // not done yet
   }// Tick
